@@ -24,7 +24,7 @@ class IndexController
 
     public function reader()
     {
-        $pokemon = '150';
+        $pokemon = '618-galarian';
 
         $data = file_get_contents("https://gamepress.gg/pokemongo/pokemon/$pokemon");
 
