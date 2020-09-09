@@ -61,7 +61,7 @@ class DataController
         $dado = $data['dado'];
         
         $this->dataStorage->inserirDado($dado);
-        header('Location: /baseweb/dados');
+        header('Location: /dados');
     }
     
     public function alterarDado()
@@ -72,7 +72,7 @@ class DataController
         $dado = $data['dado'];
         
         $this->dataStorage->atualizarDado($id, $dado);
-        header('Location: /baseweb/dados');
+        header('Location: /dados');
     }
     
     public function removerDado($idDado)
