@@ -9,13 +9,10 @@ use App\DB\Storage\DataStorage;
 
 class DataController
 {
-    protected $template;
-    
     protected $dataStorage;
 
     public function __construct()
     {
-        $this->template = new Templates();
         $this->dataStorage = new DataStorage();
     }
     
@@ -34,10 +31,8 @@ class DataController
         $args = [
             'DADOS' => $view
         ];
-        
-        $template 	= $this->template->getTemplate('dados.html');
-        $templateFinal = $this->template->parseTemplate($template, $args);
-        echo $templateFinal;
+
+        new Templates('dados.html', $args);
     }
     
     public function verDado(int $idDado)
@@ -48,10 +43,8 @@ class DataController
             'ID' => $dado->id,
             'DADO' => $dado->dado
         ];
-        
-        $template 	= $this->template->getTemplate('dado.html');
-        $templateFinal = $this->template->parseTemplate($template, $args);
-        echo $templateFinal;
+
+        new Templates('dados.html', $args);
     }
     
     public function inserirDado()

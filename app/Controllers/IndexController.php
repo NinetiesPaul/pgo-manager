@@ -11,18 +11,15 @@ namespace App\Controllers;
 use App\Templates;
 
 class IndexController
-{   
-    protected $template;
+{
 
     public function __construct()
     {
-        $this->template = new Templates();
     }
     
     public function index()
     {
-        $templateFinal 	= $this->template->getTemplate('index.html');
-        echo $templateFinal;
+        new Templates('index.html');
     }
 
     public function reader()
@@ -118,19 +115,13 @@ class IndexController
         }
         //echo "<pre>" . json_encode($resistToFixed, JSON_PRETTY_PRINT) . "</pre>";
 
-
-        $data = [
-            'WEAK_TO' => $weakToFixed,
-            'RESIST_TO' => $resistToFixed
-        ];
-
         $args = [
             'NOME' => 'Galarian Stunfisk',
             'WEAK' => json_encode($resistToFixed),
             'RESIST' => json_encode($weakToFixed),
         ];
 
-        $this->util->loadTemplate('reader.html', $args);
+        new Templates('reader.html', $args);
     }
 
     private function getType($string) {
