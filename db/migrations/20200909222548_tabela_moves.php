@@ -34,7 +34,7 @@ class TabelaMoves extends AbstractMigration
         $table = $this->table('moves', ['id' => true]);
         $table->addColumn('nome', 'string')
             ->addColumn('tipo_id', 'integer', ['null' => true])
-            //->addForeignKey('tipo_id', 'types', 'id', ['delete'=> 'CASCADE', 'update'=> 'NO_ACTION'])
+            ->addColumn('classificacao', 'enum', ['values' => ['QUICK', 'CHARGE']])
             ->create();
     }
 }
