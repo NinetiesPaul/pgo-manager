@@ -24,4 +24,25 @@ class Enum
     const TYPE_DRAGON_ID = 16;
     const TYPE_BUG_ID = 17;
     const TYPE_GHOST_ID = 18;
+
+    const TYPES_BY_NAME = [
+        'Normal' => 1,
+        'Grass' => 2,
+        'Fire'=> 3,
+        'Water'=> 4,
+        'Fighting'=> 5,
+        'Flying'=> 6,
+        'Poison'=> 7,
+        'Ground'=> 8,
+        'Rock'=> 9,
+        'Ice'=> 10,
+        'Fairy'=> 11,
+        'Steel'=> 12,
+        'Psychic'=> 13,
+        'Dark'=> 14,
+        'Electric'=> 15,
+        'Dragon'=> 16,
+        'Bug'=> 17,
+        'Ghost'=> 18
+    ];
 }
