@@ -15,11 +15,11 @@ class ReaderController
 {
     protected $population_type;
     protected $quick_rows;
-    protected $lines_quick;
+    protected $lines_quick = "INSERT INTO moves (nome, tipo_id, classificao) VALUES ";
     protected $charge_rows;
-    protected $lines_charge;
+    protected $lines_charge = "INSERT INTO moves (nome, tipo_id, classificao) VALUES ";
     protected $poke_rows;
-    protected $lines_pokemon;
+    protected $lines_pokemon = "INSERT INTO pokemon (nome, tipo_id_1, tipo_id_2) VALUES ";
     protected $processed = 0;
 
     public function __construct()
@@ -172,11 +172,12 @@ class ReaderController
                 echo "chamando https://pokeapi.co/api/v2/move/$nome<br>";
                 $api = file_get_contents("https://pokeapi.co/api/v2/move/$nome");
                 $api = json_decode($api);
-                $tipo = ($api->type->name) ? $api->type->name : 'move nao encontrado';
-                $line = "('$row[0]', " . Enum::TYPES_BY_NAME[ucfirst($tipo)] . ", 'QUICK')";
+                $api = (isset($api->type->name)) ? $api->type->name : false;
+                $tipo = ($api) ? Enum::TYPES_BY_NAME[ucfirst($api)] : 'NULL';
+                $line = "('$row[0]', $tipo, 'QUICK')";
                 $line .= ($key === count($this->quick_rows) - 1) ? ";" : ",";
                 $this->lines_quick .= $line . "\n";
-                $this->quick_rows[$key][1] = 'OK';
+                $this->quick_rows[$key][1] = ($api) ? 'OK' : 'ERRO';
                 $this->processed += 1;
             }
         }
@@ -199,11 +200,12 @@ class ReaderController
                 echo "chamando https://pokeapi.co/api/v2/move/$nome<br>";
                 $api = file_get_contents("https://pokeapi.co/api/v2/move/$nome");
                 $api = json_decode($api);
-                $tipo = ($api->type->name) ? $api->type->name : 'move nao encontrado';
-                $line = "('$row[0]', " . Enum::TYPES_BY_NAME[ucfirst($tipo)] . ", 'CHARGE')";
+                $api = (isset($api->type->name)) ? $api->type->name : false;
+                $tipo = ($api) ? Enum::TYPES_BY_NAME[ucfirst($api)] : 'NULL';
+                $line = "('$row[0]', $tipo, 'CHARGE')";
                 $line .= ($key === count($this->charge_rows) - 1) ? ";" : ",";
                 $this->lines_charge .= $line . "\n";
-                $this->charge_rows[$key][1] = 'OK';
+                $this->charge_rows[$key][1] = ($api) ? 'OK' : 'ERRO';
                 $this->processed += 1;
             }
         }
@@ -247,7 +249,10 @@ class ReaderController
 
                 fclose($fp);
 
-                file_put_contents('includes/files/pokemon.sql', $this->lines_pokemon);
+                if (substr($this->lines_pokemon, -3) === ','){
+                    $this->lines_pokemon[-3] = ";";
+                }
+                file_put_contents('includes/files/pokemon.sql', $this->lines_pokemon, FILE_APPEND);
                 break;
 
             case 'QUICK':
@@ -259,7 +264,10 @@ class ReaderController
 
                 fclose($fp);
 
-                file_put_contents('includes/files/quick.sql', $this->lines_quick);
+                if (substr($this->lines_quick, -3) === ','){
+                    $this->lines_quick[-3] = ";";
+                }
+                file_put_contents('includes/files/quick.sql', $this->lines_quick, FILE_APPEND);
                 break;
 
             case 'CHARGE':
@@ -271,7 +279,10 @@ class ReaderController
 
                 fclose($fp);
 
-                file_put_contents('includes/files/charge.sql', $this->lines_charge);
+                if (substr($this->lines_charge, -3) === ','){
+                    $this->lines_charge[-3] = ";";
+                }
+                file_put_contents('includes/files/charge.sql', $this->lines_charge, FILE_APPEND);
                 break;
         }
     }
