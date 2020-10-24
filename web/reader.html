@@ -11,71 +11,32 @@
         <link href="../includes/css/datatables.css" rel="stylesheet">
         <script src="../includes/js/jquery.js"></script>
         <script>
-        function verificarLogin(val) {
-            $.ajax({
-                type: "POST",
-                url: "/verificarLogin",
-                data: { login : val, tipo : "aluno" },
-                success: function(data){
-                    data = jQuery.parseJSON(data)
-                    if (data.loginTaken === true){
-                        $("#btn").attr("disabled", true)
-                        $("#disponibilidade").slideDown("slow", function(){});
-                    } else {
-                        $("#btn").attr("disabled", false)
-                        $("#disponibilidade").slideUp("slow", function(){});
+            function getPokemonData(val) {
+                val = val.replace(' ', '_');
+                $('#pokemonList').attr('disabled', 'disabled');
+
+                $.ajax({
+                    type: "GET",
+                    url: "getPokemon/" + val,
+                    success: function(data){
+                        $('#pokemonList').removeAttr('disabled');
+                        data = jQuery.parseJSON(data)
+                        $('.nome').html(data.name)
+                        $('.defense_type').html(data.type)
+                        console.log(data.defense_data.resistant_to)
+                        $('.resistant_to').html(JSON.stringify(data.defense_data.resistant_to))
+                        $('.vulnerable_to').html(JSON.stringify(data.defense_data.vulnerable_to))
+                        console.log(data)
                     }
-                }
-            });
-        }             
-            
-        function desativarAluno(val) {
-            $.ajax({
-                url: "aluno/" + val + '/desativar',
-                type: "PUT",
-                success: function(data){
-                    data = jQuery.parseJSON(data)
-                    if (data.error === true) {
-                        $('.alert').css('display', 'block');
-                        $('.alert').text(data.msg);
-                        $('.alert').delay(5000).fadeOut(1000, function(){
-                            $('.alert').css('display', 'none');
-                        });
-                    } else {
-                        if ($('.label-status_' + val).hasClass('label-success') == true) {
-                            $('.label-status_' + val).removeClass('label-success');
-                            $('.label-status_' + val).addClass('label-danger');
-                            $('.label-status_' + val).text('Inativo');
-                        } else {
-                            $('.label-status_' + val).removeClass('label-danger');
-                            $('.label-status_' + val).addClass('label-success');
-                            $('.label-status_' + val).text('Ativo');
-                        }
-                    }
-                }
-            });
-        }
+                });
+            }
 
-        $(document).on('click', '.desativar', function(){
-            desativarAluno(this.id);
-        });
-
-        $(document).on('focusout', '#email', function(){
-            verificarLogin(this.value);
-        });
-
-        $(document).ready(function(){
-            $("#disponibilidade").hide();
-        });
-        
-        $(document).ready( function () {
-            $('#tableAlunos').DataTable({
-                "paging": true,
-                "language": {
-                    "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Portuguese-Brasil.json"
-                }
+            $(document).on('change', '#pokemonList', function(){
+                getPokemonData(this.value);
             });
-        });        
+
+            $(document).ready( function () {
+            });
         
         </script>
         <title>PGO Manager :: Cadastro</title>
@@ -104,18 +65,22 @@
                 {CONTENT}
 
                 <div class="card" style="width: 18rem;">
-                    <img class="card-img-top" src="..." alt="Card image cap">
+                    <select id="pokemonList" name="pokemonList">
+                        <option>-- Selecione um pokemon --</option>
+                        {LISTA}
+                    </select>
+                    <img class="card-img-top" src="..." alt="(pokemon image)">
                     <div class="card-body">
-                        <h5 class="card-title">{NOME}</h5>
-                        <small>ATK | DEF | HP</small><br/>
+                        <h5 class="card-title nome"></h5>
+                        <small>ATK | DEF | STA</small><br/>
                         <small>100 | 100 | 100</small>
                         <hr/>
                         <p class="card-text">Attack</p>
                         <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
                             <tbody>
                                 <tr>
-                                    <td style="text-align:center">Quick</td>
-                                    <td>Type</td>
+                                    <td style="text-align:center">Quick Name</td>
+                                    <td>Quick Type</td>
                                 </tr>
                                 <tr>
                                     <td>Good against</td>
@@ -123,9 +88,21 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <!-- <p class="card-text"><strong>Weak to:</strong><br><small>{WEAK}</small></p>
-                        <p class="card-text"><strong>Resist to:</strong><br><small>{RESIST}</small></p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a> -->
+                        <hr/>
+                        <p class="card-text">Defense</p>
+                        <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
+                            <tbody>
+                                <tr>
+                                    <td class="defense_type" colspan="2" style="text-align:center"></td>
+                                </tr>
+                                <tr>
+                                    <td class="resistant_to"></td>
+                                </tr>
+                                <tr>
+                                    <td class="vulnerable_to"></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
