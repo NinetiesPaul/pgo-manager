@@ -23,10 +23,11 @@
                         data = jQuery.parseJSON(data)
                         $('.nome').html(data.name)
                         $('.defense_type').html(data.type)
-                        console.log(data.defense_data.resistant_to)
+                        $('.atk-stat').html("Atk: " + data.stats.atk)
+                        $('.def-stat').html("Def: " + data.stats.def)
+                        $('.sta-stat').html("Sta: " + data.stats.sta)
                         $('.resistant_to').html(JSON.stringify(data.defense_data.resistant_to))
                         $('.vulnerable_to').html(JSON.stringify(data.defense_data.vulnerable_to))
-                        console.log(data)
                     }
                 });
             }
@@ -72,9 +73,9 @@
                     <img class="card-img-top" src="..." alt="(pokemon image)">
                     <div class="card-body">
                         <h5 class="card-title nome"></h5>
-                        <span class="badge badge-pill badge-danger">Primary</span>
-                        <span class="badge badge-pill badge-success">Primary</span>
-                        <span class="badge badge-pill badge-primary">Primary</span>
+                        <span class="badge badge-pill badge-danger atk-stat"></span><br>
+                        <span class="badge badge-pill badge-success def-stat"></span><br>
+                        <span class="badge badge-pill badge-primary sta-stat"></span>
                         <hr/>
                         <p class="card-text">Attack</p>
                         <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">

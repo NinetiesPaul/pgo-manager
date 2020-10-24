@@ -44,7 +44,6 @@ class Controller
 
             $stats[$name] = $pokemonStats;
         }
-        //echo "<pre>" . json_encode($stats, JSON_PRETTY_PRINT) . "</pre>";
 
         $megaPokemonTypeApi = file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json");
         $megaPokemonTypeApi = json_decode($megaPokemonTypeApi, true);
@@ -293,22 +292,39 @@ class Controller
     {
         $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));
 
-        $megaPokemonTypeApi = file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json");
-        $megaPokemonTypeApi = json_decode($megaPokemonTypeApi, true);
-
         $pokemonTypeApi = file_get_contents("https://pogoapi.net/api/v1/pokemon_types.json");
         $pokemonTypeApi = str_replace(' ', '', $pokemonTypeApi);
         $pokemonTypeApi = json_decode($pokemonTypeApi, true);
-
         $pokemonType = [];
         foreach ($pokemonTypeApi as $item) {
             $type = (count($item['type']) > 1) ? implode("/", $item['type']) : $item['type'][0] ;
             $pokemonType[$item['pokemon_name']] = $type;
         }
 
+        $statsApi = file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json");
+        $statsApi = json_decode($statsApi, true);
+        $stats = [];
+        foreach ($statsApi as $item) {
+            $pokemonStats = [
+                'atk' => $item['base_attack'],
+                'def' => $item['base_defense'],
+                'sta' => $item['base_stamina'],
+            ];
+            $name = ($item['form'] === 'Shadow') ? "Shadow " . $item['pokemon_name'] : $item['pokemon_name'];
+
+            $stats[$name] = $pokemonStats;
+        }
+
+        $megaPokemonTypeApi = file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json");
+        $megaPokemonTypeApi = json_decode($megaPokemonTypeApi, true);
         $megaPokemonType = [];
         foreach ($megaPokemonTypeApi as $item) {
             $type = (count($item['type']) > 1) ? implode("/", $item['type']) : $item['type'][0] ;
+            $stats[$item['mega_name']] = [
+                'atk' => $item['stats']['base_attack'],
+                'def' => $item['stats']['base_defense'],
+                'sta' => $item['stats']['base_stamina'],
+            ];
             $megaPokemonType[$item['mega_name']] = $type;
         }
 
@@ -328,7 +344,7 @@ class Controller
                 continue;
 
             if (!in_array($line[0], array_keys($pokemons))) {
-                $type = 'PENDING';
+                $type = false;
                 if (in_array($line[0], array_keys($pokemonType))) {
                     $type = $pokemonType[$line[0]];
                 }
@@ -337,15 +353,14 @@ class Controller
                     $type = $megaPokemonType[$line[0]];
                 }
 
-                if ($type === 'PENDING') {
-                    if (strpos($line[0], "Shadow") !== false) {
-                        $realName = explode(" ", $line[0])[1];
-                        $type = $pokemonType[$realName];
-                    }
+                if (strpos($line[0], "Shadow") !== false) {
+                    $realName = explode(" ", $line[0])[1];
+                    $type = $pokemonType[$realName];
                 }
 
                 $newPokemon = [
-                    'type' => $type,
+                    'type' => ($type) ? $type : 'PENDING',
+                    'stats' => ($type) ? $stats[$line[0]] : [],
                     'moveset' => [
                         'quick' => [],
                         'charge' => []
