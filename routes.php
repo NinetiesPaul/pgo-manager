@@ -2,7 +2,7 @@
 
 use Pecee\SimpleRouter\SimpleRouter;
 use App\Controllers\IndexController;
-use App\Controllers\ReaderController;
+use App\Controllers\Controller;
 
 SimpleRouter::get('/', function() {
     $index = new IndexController();
@@ -10,21 +10,16 @@ SimpleRouter::get('/', function() {
 });
 
 SimpleRouter::get('/reader', function() {
-    $reader = new ReaderController();
-    $reader->reader();
+    $reader = new Controller();
+    $reader->teamBuilder();
 });
 
-SimpleRouter::get('/populate_pokemons', function() {
-    $reader = new ReaderController();
-    $reader->populate_pokemons();
+SimpleRouter::get('/main_reader', function() {
+    $reader = new Controller();
+    $reader->main_reader();
 });
 
-SimpleRouter::get('/populate_quick', function() {
-    $reader = new ReaderController();
-    $reader->populate_quick();
-});
-
-SimpleRouter::get('/populate_charge', function() {
-    $reader = new ReaderController();
-    $reader->populate_charge();
+SimpleRouter::get('/getPokemon/{name}', function($name) {
+    $reader = new Controller();
+    $reader->getPokemon($name);
 });
