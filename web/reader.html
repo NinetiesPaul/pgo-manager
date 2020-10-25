@@ -5,12 +5,38 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
-        <link href="../includes/css/status.css" rel="stylesheet">
         <link href="../includes/css/glyphicons.css" rel="stylesheet">
         <link href="../includes/css/navbar.css" rel="stylesheet">
-        <link href="../includes/css/datatables.css" rel="stylesheet">
+        <link href="../includes/css/css.css" rel="stylesheet">
         <script src="../includes/js/jquery.js"></script>
         <script>
+            var colors = {
+                "Normal": "darkgrey",
+                "Grass": "darkgreen",
+                "Water": "dodgerblue",
+                "Dark": "#303030",
+                "Rock": "saddlebrown",
+                "Poison": "mediumpurple",
+                "Ground": "sandybrown",
+                "Fairy": "lightpink",
+                "Psychic": "deeppink",
+                "Steel": "grey",
+                "Ghost": "darkslateblue",
+                "Bug": "limegreen",
+                "Fire": "orangered",
+                "Flying": "cornflowerblue",
+                "Dragon": "grey",
+                "Ice": "deepskyblue",
+                "Electric": "darkgoldenrod",
+                "Fight": "brown",
+            }
+
+            function clearLayout() {
+                $('.resistant_to').html('');
+                $('.vulnerable_to').html('');
+                $('.defense_type_row').html("<td class='defense_typeA'>&nbsp;</td>");
+            }
+
             function getPokemonData(val) {
                 val = val.replace(' ', '_');
                 $('#pokemonList').attr('disabled', 'disabled');
@@ -19,15 +45,35 @@
                     type: "GET",
                     url: "getPokemon/" + val,
                     success: function(data){
+                        clearLayout();
                         $('#pokemonList').removeAttr('disabled');
                         data = jQuery.parseJSON(data)
-                        $('.nome').html(data.name)
-                        $('.defense_type').html(data.type)
-                        $('.atk-stat').html("Atk: " + data.stats.atk)
-                        $('.def-stat').html("Def: " + data.stats.def)
-                        $('.sta-stat').html("Sta: " + data.stats.sta)
-                        $('.resistant_to').html(JSON.stringify(data.defense_data.resistant_to))
-                        $('.vulnerable_to').html(JSON.stringify(data.defense_data.vulnerable_to))
+                        pokemonTypeA =  data.type[0];
+                        $('.defense_typeA')
+                            .attr('colspan', 2)
+                            .addClass('defense_one_type_style')
+                            .css('background-color', colors[pokemonTypeA])
+                            .html(pokemonTypeA)
+                        if (data.type.length > 1) {
+                            $('.defense_typeA')
+                                .removeAttr('colspan')
+                                .removeClass('defense_one_type_style')
+                                .addClass('defense_typeA_style');
+                            $('.defense_type_row').append("<td class='defense_typeB'>&nbsp;</td>");
+                            $('.defense_typeB')
+                                .addClass('defense_typeB_style')
+                                .css('background-color', colors[data.type[1]])
+                                .html(data.type[1]);
+                        }
+                        $('.atk-stat').html(data.stats.atk)
+                        $('.def-stat').html(data.stats.def)
+                        $('.sta-stat').html(data.stats.sta)
+                        $.each(data.defense_data.resistant_to, function (index,value){
+                            $('.resistant_to').append(index + " | " + value + "<br>")
+                        });
+                        $.each(data.defense_data.vulnerable_to, function (index,value){
+                            $('.vulnerable_to').append(index + " | " + value + "<br>")
+                        });
                     }
                 });
             }
@@ -72,12 +118,19 @@
                     </select>
                     <img class="card-img-top" src="..." alt="(pokemon image)">
                     <div class="card-body">
-                        <h5 class="card-title nome"></h5>
-                        <span class="badge badge-pill badge-danger atk-stat"></span><br>
-                        <span class="badge badge-pill badge-success def-stat"></span><br>
-                        <span class="badge badge-pill badge-primary sta-stat"></span>
-                        <hr/>
-                        <p class="card-text">Attack</p>
+                        <table  class="table-borderless" style="margin: 0 auto; width: 100%; text-align: center;">
+                            <tr>
+                                <td><span class="badge badge-pill badge-danger full-pill">Atk</span></td>
+                                <td><span class="badge badge-pill badge-success full-pill">Def</span></td>
+                                <td><span class="badge badge-pill badge-primary full-pill">Sta</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-pill atk-stat full-pill">&nbsp;</span></td>
+                                <td><span class="badge badge-pill def-stat full-pill">&nbsp;</span></td>
+                                <td><span class="badge badge-pill sta-stat full-pill">&nbsp;</span></td>
+                            </tr>
+                        </table>
+                        <p class="separator">Attack</p>
                         <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
                             <tbody>
                                 <tr>
@@ -90,17 +143,18 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <hr/>
-                        <p class="card-text">Defense</p>
+                        <p class="separator">Defense</p>
                         <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
                             <tbody>
-                                <tr>
-                                    <td class="defense_type" colspan="2" style="text-align:center"></td>
+                                <tr class="defense_type_row">
+                                    <td class="defense_typeA">&nbsp;</td>
                                 </tr>
                                 <tr>
+                                    <td><small><b>Resistant To</b></small></td>
+                                    <td><small><b>Vulnerable To</b></small></td>
+                                </tr>
+                                <tr valign="top" style="font-size: 0.7em;">
                                     <td class="resistant_to"></td>
-                                </tr>
-                                <tr>
                                     <td class="vulnerable_to"></td>
                                 </tr>
                             </tbody>
