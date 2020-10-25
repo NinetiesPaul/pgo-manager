@@ -1,6 +1,4 @@
-.container{
-	font-size: 13px;
-}
+/* General settings */
 
 strong{
 	font-size: 16px;
@@ -8,4 +6,62 @@ strong{
 
 .mobile{
     display: none;
+}
+
+/* separator styling */
+
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.separator::before, .separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid lightgray;
+  margin-top: 4px;
+}
+
+.separator::before {
+  margin-right: .25em;
+}
+
+.separator::after {
+  margin-left: .25em;
+}
+
+p {
+  margin-bottom: 0;
+}
+
+/* others */
+
+.full-pill {
+  width: 100%;
+}
+
+.defense_one_type_style{
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.defense_typeA_style{
+  border-radius: 5px 0px 0px 5px;
+  text-align: right;
+  padding-right: 1em;
+  color: white;
+  font-weight: bold;
+  width: 50%;
+}
+
+.defense_typeB_style{
+  border-radius: 0px 5px 5px 0px;
+  text-align: left;
+  padding-left: 1em;
+  color: white;
+  font-weight: bold;
+  width: 50%;
 }
