@@ -128,6 +128,8 @@ class Controller
 
         $pokemon = $this->getPokemonData($name);
 
+        $pokemon['type'] = explode("/", $pokemon['type']);
+
         $defense_data = $this->getPokemonDefenseData($pokemon['type']);
 
         $pokemon['defense_data'] = $defense_data;
@@ -162,8 +164,6 @@ class Controller
         $types = file_get_contents("https://pogoapi.net/api/v1/type_effectiveness.json");
 
         $types = json_decode($types, true);
-
-        $inTypes = explode("/", $inTypes);
 
         $getTypeA = $inTypes[0];
         $getTypeB = false;
