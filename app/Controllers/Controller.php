@@ -230,18 +230,9 @@ class Controller
                 if ($resistantToB[$keyA] == 0.625) {
                     unset($finalVulnerableTo[$keyA]);
                 } else {
-                    $finalVulnerableTo[$keyA] = 0.625;
-                }
-            }
-        }
-
-        foreach ($vulnerableToB as $keyB => $item) {
-            $finalVulnerableTo[$keyB] = $item;
-            if (in_array($keyB, array_keys($resistantToA))) {
-                if ($resistantToA[$keyB] == 0.625) {
-                    unset($finalVulnerableTo[$keyB]);
-                } else {
-                    $finalVulnerableTo[$keyB] = 0.625;
+                    unset($vulnerableToA[$keyA]);
+                    unset($finalVulnerableTo[$keyA]);
+                    $resistantToB[$keyA] = 0.625;
                 }
             }
         }
@@ -255,6 +246,18 @@ class Controller
             if (in_array($keyA, array_keys($vulnerableToB))) {
                 if ($vulnerableToB[$keyA] == 1.6) {
                     unset($finalResistantTo[$keyA]);
+                }
+            }
+        }
+
+        foreach ($vulnerableToB as $keyB => $item) {
+            $finalVulnerableTo[$keyB] = $item;
+            if (in_array($keyB, array_keys($resistantToA))) {
+                if ($resistantToA[$keyB] == 0.625) {
+                    unset($finalVulnerableTo[$keyB]);
+                } else {
+                    unset($finalVulnerableTo[$keyB]);
+                    $finalResistantTo[$keyB] = 0.625;
                 }
             }
         }
