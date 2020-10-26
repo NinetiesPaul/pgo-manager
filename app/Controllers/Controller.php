@@ -18,7 +18,7 @@ class Controller
 
     }
 
-    public function main_reader()
+    public function debug()
     {
         $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));
 
@@ -88,6 +88,10 @@ class Controller
                     $type = $pokemonType[$realName];
                 }
 
+                if (!$type)
+                    if (strpos($line[0], "Alolan") === false)
+                        continue;
+
                 $newPokemon = [
                     'type' => ($type) ? $type : 'PENDING',
                     'stats' => ($type) ? $stats[$line[0]] : [],
@@ -137,6 +141,13 @@ class Controller
         $pokemon['name'] = $name;
 
         echo json_encode($pokemon);
+    }
+
+    public function name()
+    {
+        $response = $this->getPokemonsNames();
+
+        echo "<pre>" . json_encode($response, JSON_PRETTY_PRINT) . "</pre>";
     }
 
     public function teamBuilder()
@@ -399,15 +410,40 @@ class Controller
 
         $pokemonsNameList = [];
 
+        $pokemonNameApi = file_get_contents("https://pogoapi.net/api/v1/pokemon_names.json");
+        $pokemonNameApi = json_decode($pokemonNameApi, true);
+        $pokemonName = [];
+        foreach ($pokemonNameApi as $item) {
+            $pokemonName[$item['name']] = $item['id'];
+        }
+
+
         foreach ($pokemonsCsv as $row => $line) {
 
             if ($row === 0)
                 continue;
 
-            if (!in_array($line[0], $pokemonsNameList)) {
-                $pokemonsNameList[] = $line[0];
+            $name = false;
+
+            if (strpos($line[0], "Shadow") !== false) {
+                $name = explode(" ", $line[0])[1];
+            }
+
+            if (strpos($line[0], "Alolan") !== false) {
+                $name = explode(" ", $line[0])[1];
+            }
+
+            if (strpos($line[0], "Mega") !== false) {
+                $name = explode(" ", $line[0])[1];
+            }
+            echo "$pokemonName[$name] - $line[0]" . "<br>";
+
+            if (!in_array("$pokemonName[$name] - $line[0]", $pokemonsNameList)) {
+                $pokemonsNameList[] = "$pokemonName[$name] - $line[0]";
             }
         }
+
+        die();
 
         sort($pokemonsNameList);
 

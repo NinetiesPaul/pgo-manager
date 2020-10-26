@@ -16,7 +16,12 @@ SimpleRouter::get('/reader', function() {
 
 SimpleRouter::get('/main_reader', function() {
     $reader = new Controller();
-    $reader->main_reader();
+    $reader->debug();
+});
+
+SimpleRouter::get('/name', function() {
+    $reader = new Controller();
+    $reader->name();
 });
 
 SimpleRouter::get('/getPokemon/{name}', function($name) {
