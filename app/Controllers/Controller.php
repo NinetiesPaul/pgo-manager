@@ -141,11 +141,11 @@ class Controller
 
     public function teamBuilder()
     {
-        $pokemonsNameList = $this->getPokemonsNames();
+        $pokemonsNameList = $this->getPokemonsNameList();
 
         $pokemonList = '';
         foreach ($pokemonsNameList as $name) {
-            $pokemonList .= "<option>$name</option>";
+            $pokemonList .= "<option value='".explode(" - ", $name)[1]."'>$name</option>";
         }
 
         $args = [
@@ -153,10 +153,6 @@ class Controller
         ];
 
         new Templates('reader.html', $args);
-    }
-
-    private function formatValue($number, $decimal = 0) {
-        return number_format($number * 100, $decimal) . "%";
     }
 
     private function getPokemonDefenseData($inTypes)
@@ -296,7 +292,6 @@ class Controller
         $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));
 
         $pokemonTypeApi = file_get_contents("https://pogoapi.net/api/v1/pokemon_types.json");
-        $pokemonTypeApi = str_replace(' ', '', $pokemonTypeApi);
         $pokemonTypeApi = json_decode($pokemonTypeApi, true);
         $pokemonType = [];
         foreach ($pokemonTypeApi as $item) {
@@ -393,7 +388,57 @@ class Controller
         return $pokemons[$getName];
     }
 
-    private function getPokemonsNames()
+    private function getPokemonsNameList()
+    {
+        $pokemonNameApi = file_get_contents("https://pogoapi.net/api/v1/pokemon_names.json");
+        $pokemonNameApi = json_decode($pokemonNameApi, true);
+        $pokemonName = [];
+        foreach ($pokemonNameApi as $item) {
+            $pokemonName[$item['name']] = $item['id'];
+        }
+
+        $galarianApi = file_get_contents("https://pogoapi.net/api/v1/galarian_pokemon.json");
+        $galarianApi = json_decode($galarianApi, true);
+        foreach ($galarianApi as $item) {
+            $galarianName = "Galarian " . $item['name'];
+            $pokemonName[$galarianName] = $item['id'];
+        }
+
+        $alolanApi = file_get_contents("https://pogoapi.net/api/v1/alolan_pokemon.json");
+        $alolanApi = json_decode($alolanApi, true);
+        foreach ($alolanApi as $item) {
+            $alolanName = "Alolan " . $item['name'];
+            $pokemonName[$alolanName] = $item['id'];
+        }
+
+        $shadowApi = file_get_contents("https://pogoapi.net/api/v1/shadow_pokemon.json");
+        $shadowApi = json_decode($shadowApi, true);
+        foreach ($shadowApi as $item) {
+            $shadowName = "Shadow " . $item['name'];
+            $pokemonName[$shadowName] = $item['id'];
+        }
+
+        $megaPokemonTypeApi = file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json");
+        $megaPokemonTypeApi = json_decode($megaPokemonTypeApi, true);
+        foreach ($megaPokemonTypeApi as $item) {
+            $pokemonName[$item['mega_name']] = $item['pokemon_id'];
+        }
+
+        $names = $this->getPokemonsNamesFromCsv();
+        foreach ($names as $index => $name) {
+            if (!in_array($name, array_keys($pokemonName))) {
+                unset($names[$index]);
+                continue;
+            }
+            $names[$index] = $pokemonName[$name] . " - " . $names[$index];
+        }
+
+        sort($names);
+
+        return $names;
+    }
+
+    private function getPokemonsNamesFromCsv()
     {
         $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));
 
@@ -412,5 +457,9 @@ class Controller
         sort($pokemonsNameList);
 
         return $pokemonsNameList;
+    }
+
+    private function formatValue($number, $decimal = 0) {
+        return number_format($number * 100, $decimal) . "%";
     }
 }
