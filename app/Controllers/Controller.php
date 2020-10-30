@@ -430,7 +430,7 @@ class Controller
                 unset($names[$index]);
                 continue;
             }
-            $names[$index] = $pokemonName[$name] . " - " . $names[$index];
+            $names[$index] = str_pad($pokemonName[$name], 3, '0', 0) . " - " . $names[$index];
         }
 
         sort($names);
