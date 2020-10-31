@@ -28,61 +28,78 @@
                 "Dragon": "grey",
                 "Ice": "deepskyblue",
                 "Electric": "darkgoldenrod",
-                "Fight": "brown",
+                "Fighting": "brown",
             }
 
-            function clearLayout() {
-                $('.resistant_to').html('');
-                $('.vulnerable_to').html('');
-                $('.defense_type_row').html("<td class='defense_typeA'>&nbsp;</td>");
+            function clearLayout(slot) {
+                $('.resistant_to-' + slot).html('');
+                $('.vulnerable_to-' + slot).html('');
+                $('.defense_type_row-' + slot).html("<td class='defense_typeA-" + slot + "'>&nbsp;</td>");
             }
 
-            function getPokemonData(val) {
-                val = val.replace(' ', '_');
-                $('#pokemonList').attr('disabled', 'disabled');
+            function getPokemonData(pokemon, slot) {
+                pokemon = pokemon.replace(' ', '_');
+
+                slot = slot.split("_");
+                slot = slot[1];
+                $('#pokemonList_' + slot).attr('disabled', 'disabled');
+                console.log(slot);
+
 
                 $.ajax({
                     type: "GET",
-                    url: "getPokemon/" + val,
+                    url: "getPokemon/" + pokemon,
                     success: function(data){
-                        clearLayout();
-                        $('#pokemonList').removeAttr('disabled');
+                        clearLayout(slot);
+                        $('#pokemonList_' + slot).removeAttr('disabled');
                         data = jQuery.parseJSON(data)
                         pokemonTypeA =  data.type[0];
-                        $('.defense_typeA')
+                        $('.defense_typeA-' + slot)
                             .attr('colspan', 2)
-                            .addClass('defense_one_type_style')
+                            .addClass('defense_one_type_style-' + slot)
                             .css('background-color', colors[pokemonTypeA])
                             .html(pokemonTypeA)
                         if (data.type.length > 1) {
-                            $('.defense_typeA')
+                            $('.defense_typeA-' + slot)
                                 .removeAttr('colspan')
-                                .removeClass('defense_one_type_style')
-                                .addClass('defense_typeA_style');
-                            $('.defense_type_row').append("<td class='defense_typeB'>&nbsp;</td>");
-                            $('.defense_typeB')
-                                .addClass('defense_typeB_style')
+                                .removeClass('defense_one_type_style-' + slot)
+                                .addClass('defense_typeA_style-' + slot);
+                            $('.defense_type_row-' + slot).append("<td class='defense_typeB-" + slot + "'>&nbsp;</td>");
+                            $('.defense_typeB-' + slot)
+                                .addClass('defense_typeB_style-' + slot)
                                 .css('background-color', colors[data.type[1]])
                                 .html(data.type[1]);
                         }
-                        $('.atk-stat').html(data.stats.atk)
-                        $('.def-stat').html(data.stats.def)
-                        $('.sta-stat').html(data.stats.sta)
+                        $('#atk-' + slot).html(data.stats.atk)
+                        $('#def-' + slot).html(data.stats.def)
+                        $('#sta-' + slot).html(data.stats.sta)
                         $.each(data.defense_data.resistant_to, function (index,value){
-                            $('.resistant_to').append(index + " | " + value + "<br>")
+                            $('.resistant_to-' + slot).append(index + " | " + value + "<br>")
                         });
                         $.each(data.defense_data.vulnerable_to, function (index,value){
-                            $('.vulnerable_to').append(index + " | " + value + "<br>")
+                            $('.vulnerable_to-' + slot).append(index + " | " + value + "<br>")
                         });
                     }
                 });
             }
 
             $(document).ready( function () {
-                var pokemonSelect = $('#pokemonList');
-                pokemonSelect.select2();
-                pokemonSelect.on('change', function(){
-                    getPokemonData(this.value);
+                var pokemonSelectSlot1 = $('#pokemonList_slot1');
+                pokemonSelectSlot1.select2();
+                pokemonSelectSlot1.on('change', function(){
+                    getPokemonData(this.value, this.id);
+                });
+
+                var pokemonSelectSlot2 = $('#pokemonList_slot2');
+                pokemonSelectSlot2.select2();
+                pokemonSelectSlot2.on('change', function(){
+                    getPokemonData(this.value, this.id);
+                });
+
+                var pokemonSelectSlot3 = $('#pokemonList_slot3');
+                pokemonSelectSlot3.select2();
+                pokemonSelectSlot3.on('change', function(){
+                    getPokemonData(this.value, this.id);
                 });
 
             });
@@ -110,11 +127,10 @@
         </nav>
 
         <div class="container">
-            <div class="jumbotron text-center">
-                {CONTENT}
+            <div class="jumbotron text-center" style="min-height: 40em;">
 
-                <div class="card" style="width: 18rem;">
-                    <select id="pokemonList" name="pokemonList">
+                <div class="card" style="width: 33%; float: left">
+                    <select id="pokemonList_slot1" name="pokemonList_slot1">
                         <option>-- Selecione um pokemon --</option>
                         {LISTA}
                     </select>
@@ -127,9 +143,9 @@
                                 <td><span class="badge badge-pill badge-primary full-pill">Sta</span></td>
                             </tr>
                             <tr>
-                                <td><span class="badge badge-pill atk-stat full-pill">&nbsp;</span></td>
-                                <td><span class="badge badge-pill def-stat full-pill">&nbsp;</span></td>
-                                <td><span class="badge badge-pill sta-stat full-pill">&nbsp;</span></td>
+                                <td><span class="badge badge-pill full-pill" id="atk-slot1">&nbsp;</span></td>
+                                <td><span class="badge badge-pill full-pill" id="def-slot1">&nbsp;</span></td>
+                                <td><span class="badge badge-pill full-pill" id="sta-slot1">&nbsp;</span></td>
                             </tr>
                         </table>
                         <p class="separator">Attack</p>
@@ -148,17 +164,119 @@
                         <p class="separator">Defense</p>
                         <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
                             <tbody>
-                                <tr class="defense_type_row">
-                                    <td class="defense_typeA">&nbsp;</td>
+                                <tr class="defense_type_row-slot1">
+                                    <td class="defense_typeA-slot1">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td><small><b>Resistant To</b></small></td>
                                     <td><small><b>Vulnerable To</b></small></td>
                                 </tr>
                                 <tr valign="top" style="font-size: 0.7em;">
-                                    <td class="resistant_to"></td>
-                                    <td class="vulnerable_to"></td>
+                                    <td class="resistant_to-slot1"></td>
+                                    <td class="vulnerable_to-slot1"></td>
                                 </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" style="width: 33%; float: left">
+                    <select id="pokemonList_slot2" name="pokemonList_slot2">
+                        <option>-- Selecione um pokemon --</option>
+                        {LISTA}
+                    </select>
+                    <img class="card-img-top" src="..." alt="(pokemon image)">
+                    <div class="card-body">
+                        <table  class="table-borderless" style="margin: 0 auto; width: 100%; text-align: center;">
+                            <tr>
+                                <td><span class="badge badge-pill badge-danger full-pill">Atk</span></td>
+                                <td><span class="badge badge-pill badge-success full-pill">Def</span></td>
+                                <td><span class="badge badge-pill badge-primary full-pill">Sta</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-pill full-pill" id="atk-slot2">&nbsp;</span></td>
+                                <td><span class="badge badge-pill full-pill" id="def-slot2">&nbsp;</span></td>
+                                <td><span class="badge badge-pill full-pill" id="sta-slot2">&nbsp;</span></td>
+                            </tr>
+                        </table>
+                        <p class="separator">Attack</p>
+                        <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
+                            <tbody>
+                            <tr>
+                                <td style="text-align:center">Quick Name</td>
+                                <td>Quick Type</td>
+                            </tr>
+                            <tr>
+                                <td>Good against</td>
+                                <td>Weak to</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p class="separator">Defense</p>
+                        <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
+                            <tbody>
+                            <tr class="defense_type_row-slot2">
+                                <td class="defense_typeA-slot2">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td><small><b>Resistant To</b></small></td>
+                                <td><small><b>Vulnerable To</b></small></td>
+                            </tr>
+                            <tr valign="top" style="font-size: 0.7em;">
+                                <td class="resistant_to-slot2"></td>
+                                <td class="vulnerable_to-slot2"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card" style="width: 33%; ">
+                    <select id="pokemonList_slot3" name="pokemonList_slot3">
+                        <option>-- Selecione um pokemon --</option>
+                        {LISTA}
+                    </select>
+                    <img class="card-img-top" src="..." alt="(pokemon image)">
+                    <div class="card-body">
+                        <table  class="table-borderless" style="margin: 0 auto; width: 100%; text-align: center;">
+                            <tr>
+                                <td><span class="badge badge-pill badge-danger full-pill">Atk</span></td>
+                                <td><span class="badge badge-pill badge-success full-pill">Def</span></td>
+                                <td><span class="badge badge-pill badge-primary full-pill">Sta</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-pill full-pill" id="atk-slot3">&nbsp;</span></td>
+                                <td><span class="badge badge-pill full-pill" id="def-slot3">&nbsp;</span></td>
+                                <td><span class="badge badge-pill full-pill" id="sta-slot3">&nbsp;</span></td>
+                            </tr>
+                        </table>
+                        <p class="separator">Attack</p>
+                        <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
+                            <tbody>
+                            <tr>
+                                <td style="text-align:center">Quick Name</td>
+                                <td>Quick Type</td>
+                            </tr>
+                            <tr>
+                                <td>Good against</td>
+                                <td>Weak to</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p class="separator">Defense</p>
+                        <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
+                            <tbody>
+                            <tr class="defense_type_row-slot3">
+                                <td class="defense_typeA-slot3">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td><small><b>Resistant To</b></small></td>
+                                <td><small><b>Vulnerable To</b></small></td>
+                            </tr>
+                            <tr valign="top" style="font-size: 0.7em;">
+                                <td class="resistant_to-slot3"></td>
+                                <td class="vulnerable_to-slot3"></td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
