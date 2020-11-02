@@ -35,6 +35,9 @@
                 $('.resistant_to-' + slot).html('');
                 $('.vulnerable_to-' + slot).html('');
                 $('.defense_type_row-' + slot).html("<td class='defense_typeA-" + slot + "'>&nbsp;</td>");
+                $('#quick_move-' + slot).html("<option>-- Selecione  --</option>");
+                $('#charge1_move-' + slot).html("<option>-- Selecione  --</option>");
+                $('#charge2_move-' + slot).html("<option>-- Selecione  --</option>");
             }
 
             function getPokemonData(pokemon, slot) {
@@ -43,8 +46,6 @@
                 slot = slot.split("_");
                 slot = slot[1];
                 $('#pokemonList_' + slot).attr('disabled', 'disabled');
-                console.log(slot);
-
 
                 $.ajax({
                     type: "GET",
@@ -78,6 +79,13 @@
                         });
                         $.each(data.defense_data.vulnerable_to, function (index,value){
                             $('.vulnerable_to-' + slot).append(index + " | " + value + "<br>")
+                        });
+                        $.each(data.moveset.quick, function (index,value){
+                            $('#quick_move-' + slot).append("<option>" + value + "</option>")
+                        });
+                        $.each(data.moveset.charge, function (index,value){
+                            $('#charge1_move-' + slot).append("<option>" + value + "</option>")
+                            $('#charge2_move-' + slot).append("<option>" + value + "</option>")
                         });
                     }
                 });
@@ -152,12 +160,28 @@
                         <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
                             <tbody>
                                 <tr>
-                                    <td style="text-align:center">Quick Name</td>
-                                    <td>Quick Type</td>
+                                    <td style="text-align:center">Quick Move</td>
+                                    <td>
+                                        <select id="quick_move-slot1" name="quick_move-slot1">
+                                            <option>-- Selecione  --</option>
+                                        </select>
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td>Good against</td>
-                                    <td>Weak to</td>
+                                    <td style="text-align:center">Charge Move I</td>
+                                    <td>
+                                        <select id="charge1_move-slot1" name="charge1_move-slot1">
+                                            <option>-- Selecione  --</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center">Charge Move II</td>
+                                    <td>
+                                        <select id="charge2_move-slot1" name="charge2_move-slot1">
+                                            <option>-- Selecione  --</option>
+                                        </select>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -203,12 +227,28 @@
                         <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
                             <tbody>
                             <tr>
-                                <td style="text-align:center">Quick Name</td>
-                                <td>Quick Type</td>
+                                <td style="text-align:center">Quick Move</td>
+                                <td>
+                                    <select id="quick_move-slot2" name="quick_move-slot2">
+                                        <option>-- Selecione  --</option>
+                                    </select>
+                                </td>
                             </tr>
                             <tr>
-                                <td>Good against</td>
-                                <td>Weak to</td>
+                                <td style="text-align:center">Charge Move I</td>
+                                <td>
+                                    <select id="charge1_move-slot2" name="charge1_move-slot2">
+                                        <option>-- Selecione  --</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">Charge Move II</td>
+                                <td>
+                                    <select id="charge2_move-slot2" name="charge2_move-slot2">
+                                        <option>-- Selecione  --</option>
+                                    </select>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -254,12 +294,28 @@
                         <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
                             <tbody>
                             <tr>
-                                <td style="text-align:center">Quick Name</td>
-                                <td>Quick Type</td>
+                                <td style="text-align:center">Quick Move</td>
+                                <td>
+                                    <select id="quick_move-slot3" name="quick_move-slot3">
+                                        <option>-- Selecione  --</option>
+                                    </select>
+                                </td>
                             </tr>
                             <tr>
-                                <td>Good against</td>
-                                <td>Weak to</td>
+                                <td style="text-align:center">Charge Move I</td>
+                                <td>
+                                    <select id="charge1_move-slot3" name="charge1_move-slot3">
+                                        <option>-- Selecione  --</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">Charge Move II</td>
+                                <td>
+                                    <select id="charge2_move-slot3" name="charge2_move-slot3">
+                                        <option>-- Selecione  --</option>
+                                    </select>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
