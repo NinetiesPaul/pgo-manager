@@ -10,116 +10,13 @@ namespace App\Controllers;
 
 use App\Enum;
 use App\Templates;
+use App\Util;
 
 class Controller
 {
     public function __construct()
     {
 
-    }
-
-    public function main_reader()
-    {
-        $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));
-
-        $pokemonTypeApi = file_get_contents("https://pogoapi.net/api/v1/pokemon_types.json");
-        $pokemonTypeApi = str_replace(' ', '', $pokemonTypeApi);
-        $pokemonTypeApi = json_decode($pokemonTypeApi, true);
-        $pokemonType = [];
-        foreach ($pokemonTypeApi as $item) {
-            $type = (count($item['type']) > 1) ? implode(",", $item['type']) : $item['type'][0] ;
-            $pokemonType[$item['pokemon_name']] = $type;
-        }
-
-        $statsApi = file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json");
-        $statsApi = json_decode($statsApi, true);
-        $stats = [];
-        foreach ($statsApi as $item) {
-            $pokemonStats = [
-                'atk' => $item['base_attack'],
-                'def' => $item['base_defense'],
-                'sta' => $item['base_stamina'],
-            ];
-            $name = ($item['form'] === 'Shadow') ? "Shadow " . $item['pokemon_name'] : $item['pokemon_name'];
-
-            $stats[$name] = $pokemonStats;
-        }
-
-        $megaPokemonTypeApi = file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json");
-        $megaPokemonTypeApi = json_decode($megaPokemonTypeApi, true);
-        $megaPokemonType = [];
-        foreach ($megaPokemonTypeApi as $item) {
-            $type = (count($item['type']) > 1) ? implode(",", $item['type']) : $item['type'][0] ;
-            $stats[$item['mega_name']] = [
-                'atk' => $item['stats']['base_attack'],
-                'def' => $item['stats']['base_defense'],
-                'sta' => $item['stats']['base_stamina'],
-            ];
-            $megaPokemonType[$item['mega_name']] = $type;
-        }
-
-        // $quickApi = file_get_contents("https://pogoapi.net/api/v1/fast_moves.json");
-
-        // $chargeApi = file_get_contents("https://pogoapi.net/api/v1/charged_moves.json");
-
-        $pokemons = [];
-
-        $quickMoves = [];
-
-        $chargeMoves = [];
-
-        foreach ($pokemonsCsv as $row => $line) {
-
-            if ($row === 0)
-                continue;
-
-            if (!in_array($line[0], array_keys($pokemons))) {
-                $type = false;
-                if (in_array($line[0], array_keys($pokemonType))) {
-                    $type = $pokemonType[$line[0]];
-                }
-
-                if (in_array($line[0], array_keys($megaPokemonType))) {
-                    $type = $megaPokemonType[$line[0]];
-                }
-
-                if (strpos($line[0], "Shadow") !== false) {
-                    $realName = explode(" ", $line[0])[1];
-                    $type = $pokemonType[$realName];
-                }
-
-                $newPokemon = [
-                    'type' => ($type) ? $type : 'PENDING',
-                    'stats' => ($type) ? $stats[$line[0]] : [],
-                    'moveset' => [
-                        'quick' => [],
-                        'charge' => []
-                    ]
-                ];
-                $pokemons[$line[0]] = $newPokemon;
-            }
-
-            if (!in_array($line[1], $quickMoves)) {
-                $quickMoves[] = $line[1];
-            }
-
-            if (!in_array($line[1], $pokemons[$line[0]]['moveset']['quick'])) {
-                $pokemons[$line[0]]['moveset']['quick'][] = $line[1];
-            }
-
-            if (!in_array($line[2], $chargeMoves)) {
-                $chargeMoves[] = $line[2];
-            }
-
-            if (!in_array($line[2], $pokemons[$line[0]]['moveset']['charge'])) {
-                $pokemons[$line[0]]['moveset']['charge'][] = $line[2];
-            }
-
-        }
-
-        echo "<pre>" . json_encode($pokemons, JSON_PRETTY_PRINT) . "</pre>";
-
-        echo "<Br> ###TOTAL:"  . count($pokemons);
     }
 
     public function getPokemon($name)
@@ -157,9 +54,7 @@ class Controller
 
     private function getPokemonDefenseData($inTypes)
     {
-        $types = file_get_contents("https://pogoapi.net/api/v1/type_effectiveness.json");
-
-        $types = json_decode($types, true);
+        $types = Util::getTypeEffectiveness();
 
         $getTypeA = $inTypes[0];
         $getTypeB = false;
@@ -291,16 +186,14 @@ class Controller
     {
         $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));
 
-        $pokemonTypeApi = file_get_contents("https://pogoapi.net/api/v1/pokemon_types.json");
-        $pokemonTypeApi = json_decode($pokemonTypeApi, true);
+        $pokemonTypeApi = Util::getType();
         $pokemonType = [];
         foreach ($pokemonTypeApi as $item) {
             $type = (count($item['type']) > 1) ? implode("/", $item['type']) : $item['type'][0] ;
             $pokemonType[$item['pokemon_name']] = $type;
         }
 
-        $statsApi = file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json");
-        $statsApi = json_decode($statsApi, true);
+        $statsApi = Util::getStats();
         $stats = [];
         foreach ($statsApi as $item) {
             $pokemonStats = [
@@ -313,8 +206,7 @@ class Controller
             $stats[$name] = $pokemonStats;
         }
 
-        $megaPokemonTypeApi = file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json");
-        $megaPokemonTypeApi = json_decode($megaPokemonTypeApi, true);
+        $megaPokemonTypeApi = Util::getMegaPokemons();
         $megaPokemonType = [];
         foreach ($megaPokemonTypeApi as $item) {
             $type = (count($item['type']) > 1) ? implode("/", $item['type']) : $item['type'][0] ;
@@ -390,36 +282,31 @@ class Controller
 
     private function getPokemonsNameList()
     {
-        $pokemonNameApi = file_get_contents("https://pogoapi.net/api/v1/pokemon_names.json");
-        $pokemonNameApi = json_decode($pokemonNameApi, true);
+        $pokemonNameApi = Util::getPokemonsNames();
         $pokemonName = [];
         foreach ($pokemonNameApi as $item) {
             $pokemonName[$item['name']] = $item['id'];
         }
 
-        $galarianApi = file_get_contents("https://pogoapi.net/api/v1/galarian_pokemon.json");
-        $galarianApi = json_decode($galarianApi, true);
+        $galarianApi = Util::getGalarianPokemons();
         foreach ($galarianApi as $item) {
             $galarianName = "Galarian " . $item['name'];
             $pokemonName[$galarianName] = $item['id'];
         }
 
-        $alolanApi = file_get_contents("https://pogoapi.net/api/v1/alolan_pokemon.json");
-        $alolanApi = json_decode($alolanApi, true);
+        $alolanApi = Util::getAlolanPokemons();
         foreach ($alolanApi as $item) {
             $alolanName = "Alolan " . $item['name'];
             $pokemonName[$alolanName] = $item['id'];
         }
 
-        $shadowApi = file_get_contents("https://pogoapi.net/api/v1/shadow_pokemon.json");
-        $shadowApi = json_decode($shadowApi, true);
+        $shadowApi = Util::getShadowPokemons();
         foreach ($shadowApi as $item) {
             $shadowName = "Shadow " . $item['name'];
             $pokemonName[$shadowName] = $item['id'];
         }
 
-        $megaPokemonTypeApi = file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json");
-        $megaPokemonTypeApi = json_decode($megaPokemonTypeApi, true);
+        $megaPokemonTypeApi = Util::getMegaPokemons();
         foreach ($megaPokemonTypeApi as $item) {
             $pokemonName[$item['mega_name']] = $item['pokemon_id'];
         }
