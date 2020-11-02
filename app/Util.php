@@ -8,43 +8,94 @@ class Util
 {
     const SHADOW_JSON = 'includes/files/shadow_pokemon.json';
     const POKEMON_NAMES_JSON = 'includes/files/pokemon_names.json';
+    const GALARIAN_JSON = 'includes/files/galarian_pokemon.json';
+    const ALOLAN_JSON = 'includes/files/alolan_pokemon.json';
+    const MEGA_JSON = 'includes/files/mega_pokemon.json';
+    const TYPES_JSON = 'includes/files/pokemon_types.json';
+    const TYPE_EFFECTIVENESS_JSON = 'includes/files/type_effectiveness.json';
+    const STATS_JSON = 'includes/files/pokemon_stats.json';
 
     public static function getShadowPokemons()
     {
-        if (file_exists(self::SHADOW_JSON)) {
-            $hashed = hash_file('md5', self::SHADOW_JSON);
-            self::compareHashWithApi($hashed, 'shadow_pokemon.json');
+        if (!file_exists(self::SHADOW_JSON)) {
+            file_put_contents(self::SHADOW_JSON, file_get_contents("https://pogoapi.net/api/v1/shadow_pokemon.json"));
         }
 
-        $shadowApi = file_get_contents("https://pogoapi.net/api/v1/shadow_pokemon.json");
-        file_put_contents(SElf::SHADOW_JSON, $shadowApi);
-        //return $shadowApi;
+        $content = file_get_contents(self::SHADOW_JSON);
+        return json_decode($content, true);
     }
 
     public static function getPokemonsNames()
     {
-        if (file_exists(self::POKEMON_NAMES_JSON)) {
-            $hashed = hash_file('md5', self::POKEMON_NAMES_JSON);
-            self::compareHashWithApi($hashed, 'pokemon_names.json');
+        if (!file_exists(self::POKEMON_NAMES_JSON)) {
+            file_put_contents(self::POKEMON_NAMES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_names.json"));
         }
 
-        $namesApi = file_get_contents("https://pogoapi.net/api/v1/pokemon_names.json");
-        file_put_contents(SElf::POKEMON_NAMES_JSON, $namesApi);
-        //return $shadowApi;
+        $content = file_get_contents(self::POKEMON_NAMES_JSON);
+        return json_decode($content, true);
     }
 
-    private static function compareHashWithApi($content, $fileOnApi)
+    public static function getGalarianPokemons()
     {
-        $apiHash = file_get_contents("https://pogoapi.net/api/v1/api_hashes.json");
-        $apiHash = json_decode($apiHash, true);
-        echo $apiHash[$fileOnApi]['hash_md5'];
-        echo "<br>";
-        echo $content;
-
-        if ($apiHash[$fileOnApi]['hash_md5'] === $content) {
-            echo "<br>igual";
-        } else {
-            echo "<br>diferente";
+        if (!file_exists(self::GALARIAN_JSON)) {
+            file_put_contents(self::GALARIAN_JSON, file_get_contents("https://pogoapi.net/api/v1/galarian_pokemon.json"));
         }
+
+        $content = file_get_contents(self::GALARIAN_JSON);
+        return json_decode($content, true);
+    }
+
+    public static function getAlolanPokemons()
+    {
+        if (!file_exists(self::ALOLAN_JSON)) {
+            file_put_contents(self::ALOLAN_JSON, file_get_contents("https://pogoapi.net/api/v1/alolan_pokemon.json"));
+        }
+
+        $content = file_get_contents(self::ALOLAN_JSON);
+        return json_decode($content, true);
+    }
+
+    public static function getMegaPokemons()
+    {
+        if (!file_exists(self::MEGA_JSON)) {
+            file_put_contents(self::MEGA_JSON, file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json"));
+        }
+
+        $content = file_get_contents(self::MEGA_JSON);
+        return json_decode($content, true);
+    }
+
+    public static function getTypeEffectiveness()
+    {
+        if (!file_exists(self::TYPE_EFFECTIVENESS_JSON)) {
+            file_put_contents(self::TYPE_EFFECTIVENESS_JSON, file_get_contents("https://pogoapi.net/api/v1/type_effectiveness.json"));
+        }
+
+        $content = file_get_contents(self::TYPE_EFFECTIVENESS_JSON);
+        return json_decode($content, true);
+    }
+
+    public static function getType()
+    {
+        if (!file_exists(self::TYPES_JSON)) {
+            file_put_contents(self::TYPES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_types.json"));
+        }
+
+        $content = file_get_contents(self::TYPES_JSON);
+        return json_decode($content, true);
+    }
+
+    public static function getStats()
+    {
+        if (!file_exists(self::STATS_JSON)) {
+            file_put_contents(self::STATS_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json"));
+        }
+
+        $content = file_get_contents(self::STATS_JSON);
+        return json_decode($content, true);
+    }
+
+    private static function compareHashes()
+    {
     }
 }
