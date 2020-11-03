@@ -14,9 +14,9 @@ SimpleRouter::get('/reader', function() {
     $reader->teamBuilder();
 });
 
-SimpleRouter::get('/main_reader', function() {
+SimpleRouter::get('/pokedb', function() {
     $reader = new Controller();
-    $reader->main_reader();
+    $reader->pokeDB();
 });
 
 SimpleRouter::get('/getPokemon/{name}', function($name) {
