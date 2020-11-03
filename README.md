@@ -1,4 +1,4 @@
-#Simple web system for small school management
+#Simple web system for Pokemon PVP Team management
 
 Project running on:
 * ```PHP 7.2```
@@ -26,4 +26,6 @@ Configuring the project:
 * ```Copy phinx.yml.dist to phinx.yml locally```
 * ```Configure the phinx.yml file with DB connection info```
 * ```Run vendor/bin/phinx migrate```
+* ```Copy includes/files/pokedb/_hash.json.dist to hash.json locally```
+* ```Put CSV file with DPS information on includes/files with comprehensive_dps name```
 * ```Access local address depending on your hosting configuration. The project is ready to use!```
