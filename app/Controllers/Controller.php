@@ -158,12 +158,12 @@ class Controller
 
             switch (file_exists($this->POKEMON_DB_FOLDER . $name . ".json")) {
                 case true:
-                    $innerSummary = "<br>$pokemon já consta";
+                    $innerSummary = "<br>[consta]: $pokemon";
 
                     if (in_array($name, array_keys($hashdb)) && $hashdb[$name] !== hash('md5', json_encode($pokemons[$pokemon]))){
                         file_put_contents($this->POKEMON_DB_FOLDER . $name . ".json", json_encode($pokemons[$pokemon], JSON_PRETTY_PRINT));
                         $hashdb[$name] = hash('md5', json_encode($pokemons[$pokemon]));
-                        $innerSummary = "<br>$pokemon atualizado";
+                        $innerSummary = "<br>[atualizado]: $pokemon";
                     }
 
                     $summary .= $innerSummary;
@@ -171,7 +171,7 @@ class Controller
                     break;
 
                 case false:
-                    $summary .= "<br>$pokemon inserido";
+                    $summary .= "<br>[criado]: $pokemon";
 
                     file_put_contents($this->POKEMON_DB_FOLDER . $name . ".json", json_encode($pokemons[$pokemon], JSON_PRETTY_PRINT));
                     $hashdb[$name] = hash('md5', json_encode($pokemons[$pokemon]));
