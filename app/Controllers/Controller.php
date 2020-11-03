@@ -8,12 +8,13 @@
 
 namespace App\Controllers;
 
-use App\Enum;
 use App\Templates;
 use App\Util;
 
 class Controller
 {
+    protected $POKEMON_DB_FOLDER = 'includes/files/pokedb/';
+
     public function __construct()
     {
 
@@ -50,6 +51,137 @@ class Controller
         ];
 
         new Templates('reader.html', $args);
+    }
+
+    public function pokeDB()
+    {
+        $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));
+
+        $pokemonTypeApi = Util::getType();
+        $pokemonType = [];
+        foreach ($pokemonTypeApi as $item) {
+            $type = (count($item['type']) > 1) ? implode("/", $item['type']) : $item['type'][0] ;
+            $pokemonType[$item['pokemon_name']] = $type;
+        }
+
+        $statsApi = Util::getStats();
+        $stats = [];
+        foreach ($statsApi as $item) {
+            $pokemonStats = [
+                'atk' => $item['base_attack'],
+                'def' => $item['base_defense'],
+                'sta' => $item['base_stamina'],
+            ];
+            $name = ($item['form'] === 'Shadow') ? "Shadow " . $item['pokemon_name'] : $item['pokemon_name'];
+
+            $stats[$name] = $pokemonStats;
+        }
+
+        $megaPokemonTypeApi = Util::getMegaPokemons();
+        $megaPokemonType = [];
+        foreach ($megaPokemonTypeApi as $item) {
+            $type = (count($item['type']) > 1) ? implode("/", $item['type']) : $item['type'][0] ;
+            $stats[$item['mega_name']] = [
+                'atk' => $item['stats']['base_attack'],
+                'def' => $item['stats']['base_defense'],
+                'sta' => $item['stats']['base_stamina'],
+            ];
+            $megaPokemonType[$item['mega_name']] = $type;
+        }
+
+        // $quickApi = file_get_contents("https://pogoapi.net/api/v1/fast_moves.json");
+
+        // $chargeApi = file_get_contents("https://pogoapi.net/api/v1/charged_moves.json");
+
+        $pokemons = [];
+
+        $quickMoves = [];
+
+        $chargeMoves = [];
+
+        foreach ($pokemonsCsv as $row => $line) {
+
+            if ($row === 0)
+                continue;
+
+            if (!in_array($line[0], array_keys($pokemons))) {
+                $type = false;
+                if (in_array($line[0], array_keys($pokemonType))) {
+                    $type = $pokemonType[$line[0]];
+                }
+
+                if (in_array($line[0], array_keys($megaPokemonType))) {
+                    $type = $megaPokemonType[$line[0]];
+                }
+
+                if (strpos($line[0], "Shadow") !== false) {
+                    $realName = explode(" ", $line[0])[1];
+                    $type = $pokemonType[$realName];
+                }
+
+                $newPokemon = [
+                    'type' => ($type) ? $type : 'PENDING',
+                    'stats' => ($type) ? $stats[$line[0]] : [],
+                    'moveset' => [
+                        'quick' => [],
+                        'charge' => []
+                    ]
+                ];
+                $pokemons[$line[0]] = $newPokemon;
+            }
+
+            if (!in_array($line[1], $quickMoves)) {
+                $quickMoves[] = $line[1];
+            }
+
+            if (!in_array($line[1], $pokemons[$line[0]]['moveset']['quick'])) {
+                $pokemons[$line[0]]['moveset']['quick'][] = $line[1];
+            }
+
+            if (!in_array($line[2], $chargeMoves)) {
+                $chargeMoves[] = $line[2];
+            }
+
+            if (!in_array($line[2], $pokemons[$line[0]]['moveset']['charge'])) {
+                $pokemons[$line[0]]['moveset']['charge'][] = $line[2];
+            }
+
+        }
+
+        $summary = '';
+
+        $hashdb = file_get_contents($this->POKEMON_DB_FOLDER . "_hash.json");
+        $hashdb = json_decode($hashdb, true);
+
+        foreach (array_keys($pokemons) as $pokemon) {
+            $name = strtolower(str_replace(" ", "_", $pokemon));
+
+            switch (file_exists($this->POKEMON_DB_FOLDER . $name . ".json")) {
+                case true:
+                    $innerSummary = "<br>$pokemon já consta";
+
+                    if (in_array($name, array_keys($hashdb)) && $hashdb[$name] !== hash('md5', json_encode($pokemons[$pokemon]))){
+                        file_put_contents($this->POKEMON_DB_FOLDER . $name . ".json", json_encode($pokemons[$pokemon], JSON_PRETTY_PRINT));
+                        $hashdb[$name] = hash('md5', json_encode($pokemons[$pokemon]));
+                        $innerSummary = "<br>$pokemon atualizado";
+                    }
+
+                    $summary .= $innerSummary;
+
+                    break;
+
+                case false:
+                    $summary .= "<br>$pokemon inserido";
+
+                    file_put_contents($this->POKEMON_DB_FOLDER . $name . ".json", json_encode($pokemons[$pokemon], JSON_PRETTY_PRINT));
+                    $hashdb[$name] = hash('md5', json_encode($pokemons[$pokemon]));
+                    break;
+            }
+
+            file_put_contents($this->POKEMON_DB_FOLDER . "_hash.json", json_encode($hashdb, JSON_PRETTY_PRINT));
+        }
+
+        echo $summary;
     }
 
     private function getPokemonDefenseData($inTypes)
@@ -184,6 +316,14 @@ class Controller
 
     private function getPokemonData($getName)
     {
+        $simplifiedName = strtolower(str_replace(" ", "_", $getName));
+        if (file_exists($this->POKEMON_DB_FOLDER . $simplifiedName . ".json")) {
+            $poke = file_get_contents($this->POKEMON_DB_FOLDER . $simplifiedName . ".json");
+            $poke =  json_decode($poke, true);
+            $poke['fromdb'] = true;
+            return $poke;
+        }
+
         $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));
 
         $pokemonTypeApi = Util::getType();
