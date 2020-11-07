@@ -23,15 +23,14 @@ class Controller
     public function storePkmPvp()
     {
         $newPkm = [
-            "$_POST[pkmpve]" => [
-                "role" => $_POST['role'],
-                "cp" => $_POST['cp'],
-                "lv" => $_POST['lv'],
-                "sta-iv" => $_POST['staiv'],
-                "def-iv" => $_POST['defiv'],
-                "atk-iv" => $_POST['atkiv'],
-                "iv-percentage" => $_POST['ivpercentage'],
-            ]
+            "name" => $_POST['pkmpve'],
+            "role" => $_POST['role'],
+            "cp" => $_POST['cp'],
+            "lv" => $_POST['lv'],
+            "sta-iv" => $_POST['staiv'],
+            "def-iv" => $_POST['defiv'],
+            "atk-iv" => $_POST['atkiv'],
+            "iv-percentage" => $_POST['ivpercentage'],
         ];
 
         $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
@@ -42,7 +41,7 @@ class Controller
 
         $newRow = "<tr id='$_POST[idpkmpve]' class='pkm-pve-row' ><td>$_POST[pkmpve]</td><td>$_POST[cp]</td><td>$_POST[lv]</td><td>$_POST[staiv]</td><td>$_POST[defiv]</td><td>$_POST[atkiv]</td><td>$_POST[ivpercentage]</td><td></td><td></td><td></td><td>$_POST[role]</td></tr>";
         
-        $nextId = count($pkmsPvp) + 1;
+        $nextId = max(array_keys($pkmsPvp)) + 1;
         
         $result = [
             'newRow' => $newRow,
@@ -50,6 +49,17 @@ class Controller
         ];
         
         echo json_encode($result);
+    }
+
+    public function deletePkmPvp($idPkm)
+    {
+        $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
+        $pkmsPvp = json_decode($pkmsPvp, true);
+
+        unset($pkmsPvp[$idPkm]);
+        file_put_contents('includes/files/pkm_pve.json', json_encode($pkmsPvp, JSON_PRETTY_PRINT));
+
+        echo 'supostamente deletou';
     }
 
     public function getPokemon($name)
@@ -85,20 +95,21 @@ class Controller
         foreach ($pkmsPve as $key => $pkmPve) {
             $pkmPveRows .=
                 "<tr id='" . $key . "' class='pkm-pve-row' >
-                    <td>" . key($pkmPve) . "</td>
+                    <td>$pkmPve[name]</td>
+                    <td>$pkmPve[cp]</td>
+                    <td>$pkmPve[lv]</td>
+                    <td>".$pkmPve['sta-iv']."</td>
+                    <td>".$pkmPve['atk-iv']."</td>
+                    <td>".$pkmPve['def-iv']."</td>
+                    <td>".$pkmPve['iv-percentage']."</td>
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>$pkmPve[role]</td>
                 </tr>";
         }
-        $pkmPveRows .= "<tr id='" . (count($pkmsPve) + 1) . "' class='store'><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
+
+        $pkmPveRows .= "<tr id='" . (max(array_keys($pkmsPve)) + 1) . "' class='store'><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
 
         $args = [
             'LISTA' => $pokemonList,
