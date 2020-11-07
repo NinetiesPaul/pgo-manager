@@ -101,7 +101,7 @@
                 });
             }
 
-            $(document).on('click','.pkm-pvp-row',function() {
+            $(document).on('click','.pkm-pve-row',function() {
                 $('.edit-btn').removeAttr('disabled');
                 $('.delete-btn').removeAttr('disabled');
                 console.log($(this).closest('tr').attr('id'))
@@ -128,8 +128,8 @@
                     getPokemonData(this.value, this.id);
                 });
 
-                var pkmPvp = $('#pkmpvp');
-                pkmPvp.select2({
+                var pkmPve = $('#pkmpve');
+                pkmPve.select2({
                     width: 'resolve'
                 });
 
@@ -158,8 +158,8 @@
                 });
 
                 $('.add-btn').on('click', function() {
-                    $('#exampleModal').modal('show');
-                    $('#idpkmpvp').val($('.store').attr('id'));
+                    $('#modalPkmPveAdd').modal('show');
+                    $('#idpkmpve').val($('.store').attr('id'));
                 });
 
                 $('.save-btn').on('click', function() {
@@ -167,8 +167,8 @@
                         type: 'POST',
                         url: 'pkmpvp',
                         data: {
-                            idpkmpvp: $("#idpkmpvp").val(),
-                            pkmpvp: $("#pkmpvp").val(),
+                            idpkmpve: $("#idpkmpve").val(),
+                            pkmpve: $("#pkmpve").val(),
                             role: $("#role").val(),
                             cp: $("#cp").val(),
                             lv: $("#lv").val(),
@@ -182,7 +182,7 @@
                             $(".store")
                                 .before(response.newRow)
                                 .attr('id', response.nextId);
-                            $("#idpkmpvp").val(response.nextId);
+                            $("#idpkmpve").val(response.nextId);
                         }
                     });
                 });
@@ -474,7 +474,7 @@
                                 </tr>
                             </thead>
                             <tbody id="pkm-pve-rows">
-                                {PKMPVP}
+                                {PKMPVE}
                             </tbody>
                             <tr style="text-align: left;">
                                 <td colspan="11">
@@ -498,20 +498,20 @@
 </html>
 	
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalPkmPveAdd" tabindex="-1" role="dialog" aria-labelledby="modalPkmPveAdd" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Inserir Pokemon (PVE)</h5>
+                <h5 class="modal-title" id="modalPkmPveAddLabel">Inserir Pokemon (PVE)</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <form action="" method="post" role="form" class="form form-group " >
-                    <input type="hidden" name="idpkmpvp" id="idpkmpvp" required>
+                    <input type="hidden" name="idpkmpve" id="idpkmpve" required>
                     <div class="form-group row justify-content-center ">
-                       <select name="pkmpvp" id="pkmpvp" required style="width: 60%;">
+                       <select name="pkmpve" id="pkmpve" required style="width: 60%;">
                            <option>Pokemon</option>
                            {LISTA}
                        </select>

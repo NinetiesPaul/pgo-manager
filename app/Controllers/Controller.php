@@ -23,7 +23,7 @@ class Controller
     public function storePkmPvp()
     {
         $newPkm = [
-            "$_POST[pkmpvp]" => [
+            "$_POST[pkmpve]" => [
                 "role" => $_POST['role'],
                 "cp" => $_POST['cp'],
                 "lv" => $_POST['lv'],
@@ -37,10 +37,10 @@ class Controller
         $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
         $pkmsPvp = json_decode($pkmsPvp, true);
 
-        $pkmsPvp[$_POST['idpkmpvp']] = $newPkm;
+        $pkmsPvp[$_POST['idpkmpve']] = $newPkm;
         file_put_contents('includes/files/pkm_pve.json', json_encode($pkmsPvp, JSON_PRETTY_PRINT));
 
-        $newRow = "<tr id='$_POST[idpkmpvp]' class='pkm-pvp-row' ><td>$_POST[pkmpvp]</td><td>$_POST[cp]</td><td>$_POST[lv]</td><td>$_POST[staiv]</td><td>$_POST[defiv]</td><td>$_POST[atkiv]</td><td>$_POST[ivpercentage]</td><td></td><td></td><td></td><td>$_POST[role]</td></tr>";
+        $newRow = "<tr id='$_POST[idpkmpve]' class='pkm-pve-row' ><td>$_POST[pkmpve]</td><td>$_POST[cp]</td><td>$_POST[lv]</td><td>$_POST[staiv]</td><td>$_POST[defiv]</td><td>$_POST[atkiv]</td><td>$_POST[ivpercentage]</td><td></td><td></td><td></td><td>$_POST[role]</td></tr>";
         
         $nextId = count($pkmsPvp) + 1;
         
@@ -78,14 +78,14 @@ class Controller
             $pokemonList .= "<option value='".explode(" - ", $name)[1]."'>$name</option>";
         }
 
-        $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
-        $pkmsPvp = json_decode($pkmsPvp, true);
+        $pkmsPve = file_get_contents('includes/files/pkm_pve.json');
+        $pkmsPve = json_decode($pkmsPve, true);
 
-        $pkmPvpRows = '';
-        foreach ($pkmsPvp as $key => $pkmPvp) {
-            $pkmPvpRows .=
-                "<tr id='" . $key . "' class='pkm-pvp-row' >
-                    <td>" . key($pkmPvp) . "</td>
+        $pkmPveRows = '';
+        foreach ($pkmsPve as $key => $pkmPve) {
+            $pkmPveRows .=
+                "<tr id='" . $key . "' class='pkm-pve-row' >
+                    <td>" . key($pkmPve) . "</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -98,11 +98,11 @@ class Controller
                     <td></td>
                 </tr>";
         }
-        $pkmPvpRows .= "<tr id='" . (count($pkmsPvp) + 1) . "' class='store'><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
+        $pkmPveRows .= "<tr id='" . (count($pkmsPve) + 1) . "' class='store'><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
 
         $args = [
             'LISTA' => $pokemonList,
-            'PKMPVP' => $pkmPvpRows,
+            'PKMPVE' => $pkmPveRows,
         ];
 
         new Templates('reader.html', $args);
