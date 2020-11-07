@@ -14,6 +14,7 @@ class Util
     const TYPES_JSON = 'includes/files/pokemon_types.json';
     const TYPE_EFFECTIVENESS_JSON = 'includes/files/type_effectiveness.json';
     const STATS_JSON = 'includes/files/pokemon_stats.json';
+    const CP_MULTIPLIER_JSON = 'includes/files/cp_multiplier.json';
 
     public static function getShadowPokemons()
     {
@@ -92,6 +93,16 @@ class Util
         }
 
         $content = file_get_contents(self::STATS_JSON);
+        return json_decode($content, true);
+    }
+
+    public static function getCpMultiplier()
+    {
+        if (!file_exists(self::CP_MULTIPLIER_JSON)) {
+            file_put_contents(self::CP_MULTIPLIER_JSON, file_get_contents("https://pogoapi.net/api/v1/cp_multiplier.json"));
+        }
+
+        $content = file_get_contents(self::CP_MULTIPLIER_JSON);
         return json_decode($content, true);
     }
 
