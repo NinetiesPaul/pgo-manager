@@ -104,9 +104,7 @@
             $(document).on('click','.pkm-pve-row',function() {
                 $('.edit-btn').removeAttr('disabled');
                 $('.delete-btn').removeAttr('disabled');
-                console.log($(this).closest('tr').attr('id'))
-                /*console.log( $(this).closest('tr').attr('id') );
-                $(this).html("<input type='text' />");*/
+                $('#idpkmpvedel').val($(this).closest('tr').attr('id'));
             });
 
             $(document).ready( function () {
@@ -162,6 +160,10 @@
                     $('#idpkmpve').val($('.store').attr('id'));
                 });
 
+                $('.delete-btn').on('click', function() {
+                    $('#modalPkmPveDel').modal('show');
+                });
+
                 $('.save-btn').on('click', function() {
                     $.ajax({
                         type: 'POST',
@@ -183,6 +185,22 @@
                                 .before(response.newRow)
                                 .attr('id', response.nextId);
                             $("#idpkmpve").val(response.nextId);
+                        }
+                    });
+                });
+
+                $('.del-btn').on('click', function() {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: 'pkmpvp/' + $("#idpkmpvedel").val(),
+                        complete: function (response) {
+                            $('#modalPkmPveDel').modal('hide');
+                            $('#pkm-pve-rows tr').each(function(){
+                                if ($(this).attr('id') == $("#idpkmpvedel").val()){
+                                    $(this).remove();
+                                }
+                            });
+                            $("#idpkmpvedel").val('');
                         }
                     });
                 });
@@ -547,6 +565,28 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success btn-sm save-btn">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalPkmPveDel" tabindex="-1" role="dialog" aria-labelledby="modalPkmPveDel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPkmPveDelLabel">Excluir Pokemon (PVE)</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que quer excluir esse Pokemon PVE?
+                <form action="" method="post" role="form" class="form form-group " >
+                    <input type="hidden" name="idpkmpvedel" id="idpkmpvedel" required>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-sm del-btn">Excluir</button>
             </div>
         </div>
     </div>
