@@ -22,3 +22,8 @@ SimpleRouter::post('/pkmpvp', function() {
     $reader = new Controller();
     $reader->storePkmPvp();
 });
+
+SimpleRouter::delete('/pkmpvp/{idPkm}', function($idPkm) {
+    $reader = new Controller();
+    $reader->deletePkmPvp($idPkm);
+});
