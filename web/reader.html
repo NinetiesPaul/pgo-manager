@@ -101,6 +101,14 @@
                 });
             }
 
+            $(document).on('click','.pkm-pvp-row',function() {
+                $('.edit-btn').removeAttr('disabled');
+                $('.delete-btn').removeAttr('disabled');
+                console.log($(this).closest('tr').attr('id'))
+                /*console.log( $(this).closest('tr').attr('id') );
+                $(this).html("<input type='text' />");*/
+            });
+
             $(document).ready( function () {
                 var pokemonSelectSlot1 = $('#pokemonList_slot1');
                 pokemonSelectSlot1.select2();
@@ -118,6 +126,11 @@
                 pokemonSelectSlot3.select2();
                 pokemonSelectSlot3.on('change', function(){
                     getPokemonData(this.value, this.id);
+                });
+
+                var pkmPvp = $('#pkmpvp');
+                pkmPvp.select2({
+                    width: 'resolve'
                 });
 
                 $('#charge1_move-slot1').on('change', function() {
@@ -144,24 +157,52 @@
                     disableMove(this.value, 'charge1_move-slot3');
                 });
 
+                $('.add-btn').on('click', function() {
+                    $('#exampleModal').modal('show');
+                    $('#idpkmpvp').val($('.store').attr('id'));
+                });
+
+                $('.save-btn').on('click', function() {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'pkmpvp',
+                        data: {
+                            idpkmpvp: $("#idpkmpvp").val(),
+                            pkmpvp: $("#pkmpvp").val(),
+                            role: $("#role").val(),
+                            cp: $("#cp").val(),
+                            lv: $("#lv").val(),
+                            staiv: $("#sta-iv").val(),
+                            defiv: $("#def-iv").val(),
+                            atkiv: $("#atk-iv").val(),
+                            ivpercentage: $("#percentage-iv").val()
+                        },
+                        complete: function (response) {
+                            response = jQuery.parseJSON(response.responseText)
+                            $(".store")
+                                .before(response.newRow)
+                                .attr('id', response.nextId);
+                            $("#idpkmpvp").val(response.nextId);
+                        }
+                    });
+                });
             });
         
         </script>
-        <title>PGO Manager :: Cadastro</title>
+        <title>PGO Manager</title>
     </head>
     <body>
         <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-            <a class="navbar-brand" href="home">PGO Manager</a>
+            <a class="navbar-brand" href="#">PGO Manager</a>
             <div class="collapse navbar-collapse" id="navbarsExampleDefault">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Logado como admin
+                            Navegação
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            {LINKS}
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="../logout">Sair</a>
+                            <a class="dropdown-item" href="pokedb">Atualizar tabela de Pokemons</a>
+                            <!-- <div class="dropdown-divider"></div> -->
                         </div>
                     </li>
                 </ul>
@@ -170,205 +211,278 @@
 
         <div class="container">
             <div class="jumbotron text-center" style="min-height: 40em;">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="pvp-teambuilder-tab" data-toggle="tab" href="#pvp-teambuilder" role="tab" aria-controls="home"
+                           aria-selected="true">PVP Team Builder</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pkm-pvp-tab" data-toggle="tab" href="#pkm-pvp" role="tab" aria-controls="home"
+                           aria-selected="false">Meus Pokemons - PVP</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pkm-pve-tab" data-toggle="tab" href="#pkm-pve" role="tab" aria-controls="home"
+                           aria-selected="false">Meus Pokemons - PVE</a>
+                    </li>
+                </ul>
 
-                <div class="card" style="width: 33%; float: left">
-                    <select id="pokemonList_slot1" name="pokemonList_slot1">
-                        <option>-- Selecione um pokemon --</option>
-                        {LISTA}
-                    </select>
-                    <img class="card-img-top" src="..." alt="(pokemon image)">
-                    <div class="card-body">
-                        <table  class="table-borderless" style="margin: 0 auto; width: 100%; text-align: center;">
-                            <tr>
-                                <td><span class="badge badge-pill badge-danger full-pill">Atk</span></td>
-                                <td><span class="badge badge-pill badge-success full-pill">Def</span></td>
-                                <td><span class="badge badge-pill badge-primary full-pill">Sta</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="badge badge-pill full-pill" id="atk-slot1">&nbsp;</span></td>
-                                <td><span class="badge badge-pill full-pill" id="def-slot1">&nbsp;</span></td>
-                                <td><span class="badge badge-pill full-pill" id="sta-slot1">&nbsp;</span></td>
-                            </tr>
-                        </table>
-                        <p class="separator">Attack</p>
-                        <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
-                            <tbody>
-                                <tr>
-                                    <td style="text-align:center">Quick Move</td>
-                                    <td>
-                                        <select id="quick_move-slot1" name="quick_move-slot1">
-                                            <option>-- Selecione  --</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:center">Charge Move I</td>
-                                    <td>
-                                        <select id="charge1_move-slot1" name="charge1_move-slot1">
-                                            <option>-- Selecione  --</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:center">Charge Move II</td>
-                                    <td>
-                                        <select id="charge2_move-slot1" name="charge2_move-slot1">
-                                            <option>-- Selecione  --</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <p class="separator">Defense</p>
-                        <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
-                            <tbody>
-                                <tr class="defense_type_row-slot1">
-                                    <td class="defense_typeA-slot1">&nbsp;</td>
-                                </tr>
-                                <tr>
-                                    <td><small><b>Resistant To</b></small></td>
-                                    <td><small><b>Vulnerable To</b></small></td>
-                                </tr>
-                                <tr valign="top" style="font-size: 0.7em;">
-                                    <td class="resistant_to-slot1"></td>
-                                    <td class="vulnerable_to-slot1"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <br><br>
 
-                <div class="card" style="width: 33%; float: left">
-                    <select id="pokemonList_slot2" name="pokemonList_slot2">
-                        <option>-- Selecione um pokemon --</option>
-                        {LISTA}
-                    </select>
-                    <img class="card-img-top" src="..." alt="(pokemon image)">
-                    <div class="card-body">
-                        <table  class="table-borderless" style="margin: 0 auto; width: 100%; text-align: center;">
-                            <tr>
-                                <td><span class="badge badge-pill badge-danger full-pill">Atk</span></td>
-                                <td><span class="badge badge-pill badge-success full-pill">Def</span></td>
-                                <td><span class="badge badge-pill badge-primary full-pill">Sta</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="badge badge-pill full-pill" id="atk-slot2">&nbsp;</span></td>
-                                <td><span class="badge badge-pill full-pill" id="def-slot2">&nbsp;</span></td>
-                                <td><span class="badge badge-pill full-pill" id="sta-slot2">&nbsp;</span></td>
-                            </tr>
-                        </table>
-                        <p class="separator">Attack</p>
-                        <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
-                            <tbody>
-                            <tr>
-                                <td style="text-align:center">Quick Move</td>
-                                <td>
-                                    <select id="quick_move-slot2" name="quick_move-slot2">
-                                        <option>-- Selecione  --</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:center">Charge Move I</td>
-                                <td>
-                                    <select id="charge1_move-slot2" name="charge1_move-slot2">
-                                        <option>-- Selecione  --</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:center">Charge Move II</td>
-                                <td>
-                                    <select id="charge2_move-slot2" name="charge2_move-slot2">
-                                        <option>-- Selecione  --</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <p class="separator">Defense</p>
-                        <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
-                            <tbody>
-                            <tr class="defense_type_row-slot2">
-                                <td class="defense_typeA-slot2">&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <td><small><b>Resistant To</b></small></td>
-                                <td><small><b>Vulnerable To</b></small></td>
-                            </tr>
-                            <tr valign="top" style="font-size: 0.7em;">
-                                <td class="resistant_to-slot2"></td>
-                                <td class="vulnerable_to-slot2"></td>
-                            </tr>
-                            </tbody>
-                        </table>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="pvp-teambuilder" role="tabpanel" >
+
+                        <div class="card" style="width: 33%; float: left">
+                            <select id="pokemonList_slot1" name="pokemonList_slot1">
+                                <option>-- Selecione um pokemon --</option>
+                                {LISTA}
+                            </select>
+                            <img class="card-img-top" src="..." alt="(pokemon image)">
+                            <div class="card-body">
+                                <table  class="table-borderless" style="margin: 0 auto; width: 100%; text-align: center;">
+                                    <tr>
+                                        <td><span class="badge badge-pill badge-danger full-pill">Atk</span></td>
+                                        <td><span class="badge badge-pill badge-success full-pill">Def</span></td>
+                                        <td><span class="badge badge-pill badge-primary full-pill">Sta</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge-pill full-pill" id="atk-slot1">&nbsp;</span></td>
+                                        <td><span class="badge badge-pill full-pill" id="def-slot1">&nbsp;</span></td>
+                                        <td><span class="badge badge-pill full-pill" id="sta-slot1">&nbsp;</span></td>
+                                    </tr>
+                                </table>
+                                <p class="separator">Attack</p>
+                                <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="text-align:center">Quick Move</td>
+                                            <td>
+                                                <select id="quick_move-slot1" name="quick_move-slot1">
+                                                    <option>-- Selecione  --</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center">Charge Move I</td>
+                                            <td>
+                                                <select id="charge1_move-slot1" name="charge1_move-slot1">
+                                                    <option>-- Selecione  --</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center">Charge Move II</td>
+                                            <td>
+                                                <select id="charge2_move-slot1" name="charge2_move-slot1">
+                                                    <option>-- Selecione  --</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p class="separator">Defense</p>
+                                <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
+                                    <tbody>
+                                        <tr class="defense_type_row-slot1">
+                                            <td class="defense_typeA-slot1">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td><small><b>Resistant To</b></small></td>
+                                            <td><small><b>Vulnerable To</b></small></td>
+                                        </tr>
+                                        <tr valign="top" style="font-size: 0.7em;">
+                                            <td class="resistant_to-slot1"></td>
+                                            <td class="vulnerable_to-slot1"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card" style="width: 33%; float: left">
+                            <select id="pokemonList_slot2" name="pokemonList_slot2">
+                                <option>-- Selecione um pokemon --</option>
+                                {LISTA}
+                            </select>
+                            <img class="card-img-top" src="..." alt="(pokemon image)">
+                            <div class="card-body">
+                                <table  class="table-borderless" style="margin: 0 auto; width: 100%; text-align: center;">
+                                    <tr>
+                                        <td><span class="badge badge-pill badge-danger full-pill">Atk</span></td>
+                                        <td><span class="badge badge-pill badge-success full-pill">Def</span></td>
+                                        <td><span class="badge badge-pill badge-primary full-pill">Sta</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge-pill full-pill" id="atk-slot2">&nbsp;</span></td>
+                                        <td><span class="badge badge-pill full-pill" id="def-slot2">&nbsp;</span></td>
+                                        <td><span class="badge badge-pill full-pill" id="sta-slot2">&nbsp;</span></td>
+                                    </tr>
+                                </table>
+                                <p class="separator">Attack</p>
+                                <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
+                                    <tbody>
+                                    <tr>
+                                        <td style="text-align:center">Quick Move</td>
+                                        <td>
+                                            <select id="quick_move-slot2" name="quick_move-slot2">
+                                                <option>-- Selecione  --</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center">Charge Move I</td>
+                                        <td>
+                                            <select id="charge1_move-slot2" name="charge1_move-slot2">
+                                                <option>-- Selecione  --</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center">Charge Move II</td>
+                                        <td>
+                                            <select id="charge2_move-slot2" name="charge2_move-slot2">
+                                                <option>-- Selecione  --</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <p class="separator">Defense</p>
+                                <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
+                                    <tbody>
+                                    <tr class="defense_type_row-slot2">
+                                        <td class="defense_typeA-slot2">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td><small><b>Resistant To</b></small></td>
+                                        <td><small><b>Vulnerable To</b></small></td>
+                                    </tr>
+                                    <tr valign="top" style="font-size: 0.7em;">
+                                        <td class="resistant_to-slot2"></td>
+                                        <td class="vulnerable_to-slot2"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card" style="width: 33%; ">
+                            <select id="pokemonList_slot3" name="pokemonList_slot3">
+                                <option>-- Selecione um pokemon --</option>
+                                {LISTA}
+                            </select>
+                            <img class="card-img-top" src="..." alt="(pokemon image)">
+                            <div class="card-body">
+                                <table  class="table-borderless" style="margin: 0 auto; width: 100%; text-align: center;">
+                                    <tr>
+                                        <td><span class="badge badge-pill badge-danger full-pill">Atk</span></td>
+                                        <td><span class="badge badge-pill badge-success full-pill">Def</span></td>
+                                        <td><span class="badge badge-pill badge-primary full-pill">Sta</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="badge badge-pill full-pill" id="atk-slot3">&nbsp;</span></td>
+                                        <td><span class="badge badge-pill full-pill" id="def-slot3">&nbsp;</span></td>
+                                        <td><span class="badge badge-pill full-pill" id="sta-slot3">&nbsp;</span></td>
+                                    </tr>
+                                </table>
+                                <p class="separator">Attack</p>
+                                <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
+                                    <tbody>
+                                    <tr>
+                                        <td style="text-align:center">Quick Move</td>
+                                        <td>
+                                            <select id="quick_move-slot3" name="quick_move-slot3">
+                                                <option>-- Selecione  --</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center">Charge Move I</td>
+                                        <td>
+                                            <select id="charge1_move-slot3" name="charge1_move-slot3">
+                                                <option>-- Selecione  --</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center">Charge Move II</td>
+                                        <td>
+                                            <select id="charge2_move-slot3" name="charge2_move-slot3">
+                                                <option>-- Selecione  --</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <p class="separator">Defense</p>
+                                <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
+                                    <tbody>
+                                    <tr class="defense_type_row-slot3">
+                                        <td class="defense_typeA-slot3">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td><small><b>Resistant To</b></small></td>
+                                        <td><small><b>Vulnerable To</b></small></td>
+                                    </tr>
+                                    <tr valign="top" style="font-size: 0.7em;">
+                                        <td class="resistant_to-slot3"></td>
+                                        <td class="vulnerable_to-slot3"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
-                </div>
-                
-                <div class="card" style="width: 33%; ">
-                    <select id="pokemonList_slot3" name="pokemonList_slot3">
-                        <option>-- Selecione um pokemon --</option>
-                        {LISTA}
-                    </select>
-                    <img class="card-img-top" src="..." alt="(pokemon image)">
-                    <div class="card-body">
-                        <table  class="table-borderless" style="margin: 0 auto; width: 100%; text-align: center;">
-                            <tr>
-                                <td><span class="badge badge-pill badge-danger full-pill">Atk</span></td>
-                                <td><span class="badge badge-pill badge-success full-pill">Def</span></td>
-                                <td><span class="badge badge-pill badge-primary full-pill">Sta</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="badge badge-pill full-pill" id="atk-slot3">&nbsp;</span></td>
-                                <td><span class="badge badge-pill full-pill" id="def-slot3">&nbsp;</span></td>
-                                <td><span class="badge badge-pill full-pill" id="sta-slot3">&nbsp;</span></td>
-                            </tr>
-                        </table>
-                        <p class="separator">Attack</p>
-                        <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
-                            <tbody>
-                            <tr>
-                                <td style="text-align:center">Quick Move</td>
-                                <td>
-                                    <select id="quick_move-slot3" name="quick_move-slot3">
-                                        <option>-- Selecione  --</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:center">Charge Move I</td>
-                                <td>
-                                    <select id="charge1_move-slot3" name="charge1_move-slot3">
-                                        <option>-- Selecione  --</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:center">Charge Move II</td>
-                                <td>
-                                    <select id="charge2_move-slot3" name="charge2_move-slot3">
-                                        <option>-- Selecione  --</option>
-                                    </select>
-                                </td>
-                            </tr>
+
+                    <div class="tab-pane fade show" id="pkm-pvp" role="tabpanel" >
+
+                        PKM PVP
+
+                    </div>
+
+                    <div class="tab-pane fade show" id="pkm-pve" role="tabpanel" >
+
+                        <table class="table table-sm table-bordered " style="margin: 0 auto; width: 100%; text-align: center;" >
+                            <thead>
+                                <tr style="padding: 5px; text-align: left">
+                                    <td colspan="11">
+                                        <button type="button" class="btn btn-success btn-sm add-btn" >Adicionar</button>
+                                        <button type="button" class="btn btn-info btn-sm edit-btn" disabled="disabled">Editar</button>
+                                        <button type="button" class="btn btn-danger btn-sm delete-btn" disabled="disabled">Excluir</button>
+                                    </td>
+                                </tr>
+                            </thead>
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Pokemon</th>
+                                    <th>CP</th>
+                                    <th>Lv</th>
+                                    <th>I STA</th>
+                                    <th>I ATK</th>
+                                    <th>I DEF</th>
+                                    <th>IV%</th> <!--
+                                    <th>STA</th>
+                                    <th>ATK</th>
+                                    <th>DEF</th>
+                                    <th>AVG</th> -->
+                                    <th>Fast</th>
+                                    <th>Charge</th>
+                                    <th>Type</th>
+                                    <th>Role</th> <!--
+                                    <th>SD to Evolve</th>
+                                    <th>Candy to Evolve</th> -->
+                                </tr>
+                            </thead>
+                            <tbody id="pkm-pve-rows">
+                                {PKMPVP}
                             </tbody>
+                            <tr style="text-align: left;">
+                                <td colspan="11">
+                                    <button type="button" class="btn btn-success btn-sm add-btn" >Adicionar</button>
+                                </td>
+                            </tr>
                         </table>
-                        <p class="separator">Defense</p>
-                        <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
-                            <tbody>
-                            <tr class="defense_type_row-slot3">
-                                <td class="defense_typeA-slot3">&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <td><small><b>Resistant To</b></small></td>
-                                <td><small><b>Vulnerable To</b></small></td>
-                            </tr>
-                            <tr valign="top" style="font-size: 0.7em;">
-                                <td class="resistant_to-slot3"></td>
-                                <td class="vulnerable_to-slot3"></td>
-                            </tr>
-                            </tbody>
-                        </table>
+
                     </div>
                 </div>
 
@@ -384,3 +498,56 @@
 </html>
 	
 
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Inserir Pokemon (PVE)</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="post" role="form" class="form form-group " >
+                    <input type="hidden" name="idpkmpvp" id="idpkmpvp" required>
+                    <div class="form-group row justify-content-center ">
+                       <select name="pkmpvp" id="pkmpvp" required style="width: 60%;">
+                           <option>Pokemon</option>
+                           {LISTA}
+                       </select>
+                   </div>
+                   <div class="form-group row justify-content-center ">
+                       <div class="col-md-5">
+                           <input type="text" name="role" id="role" class="form-control form-control-sm" required placeholder="Role">
+                       </div>
+                   </div>
+                   <div class="form-group row justify-content-center ">
+                       <div class="col-md-3">
+                           <input type="text" name="cp" id="cp" class="form-control form-control-sm" required placeholder="CP">
+                       </div>
+                       <div class="col-md-3">
+                           <input type="text" name="lv" id="lv" class="form-control form-control-sm" required placeholder="Lv">
+                       </div>
+                   </div>
+                   <div class="form-group row justify-content-center ">
+                       <div class="col-md-2">
+                           <input type="text" name="sta-iv" id="sta-iv" class="form-control form-control-sm" placeholder="StaIV" required>
+                       </div>
+                       <div class="col-md-2">
+                           <input type="text" name="atk-iv" id="atk-iv" class="form-control form-control-sm" placeholder="AtkIV" required>
+                       </div>
+                       <div class="col-md-2">
+                           <input type="text" name="def-iv" id="def-iv" class="form-control form-control-sm" placeholder="DefIV" required>
+                       </div>
+                       <div class="col-md-2">
+                           <input type="text" name="percentage-iv" id="percentage-iv" class="form-control form-control-sm" placeholder="%IV" required>
+                       </div>
+                   </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm save-btn">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
