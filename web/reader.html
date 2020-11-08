@@ -234,6 +234,10 @@
                         }
                     });
                 });
+
+                $('#modalPkmPveAdd').on('hidden.bs.modal', function () {
+                    $(this).find('form').trigger('reset');
+                })
             });
         
         </script>
@@ -560,7 +564,6 @@
                     <input type="hidden" name="idpkmpve" id="idpkmpve" required>
                     <div class="form-group row justify-content-center ">
                        <select name="pkmpve" id="pkmpve" required style="width: 60%;">
-                           <option>Pokemon</option>
                            {LISTA}
                        </select>
                    </div>

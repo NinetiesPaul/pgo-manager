@@ -20,20 +20,20 @@ SimpleRouter::get('/getPokemon/{name}', function($name) {
 
 SimpleRouter::post('/pkmpvp', function() {
     $reader = new Controller();
-    $reader->storePkmPvp();
+    $reader->storePkmPve();
 });
 
 SimpleRouter::delete('/pkmpvp/{idPkm}', function($idPkm) {
     $reader = new Controller();
-    $reader->deletePkmPvp($idPkm);
+    $reader->deletePkmPve($idPkm);
 });
 
 SimpleRouter::post('/pkmpvp/{idPkm}', function($idPkm) {
     $reader = new Controller();
-    $reader->updatePkmPvp($idPkm);
+    $reader->updatePkmPve($idPkm);
 });
 
 SimpleRouter::get('/pkmpvp/{idPkm}', function($idPkm) {
     $reader = new Controller();
-    $reader->getPkmPvp($idPkm);
+    $reader->getPkmPve($idPkm);
 });

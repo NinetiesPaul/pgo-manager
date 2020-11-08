@@ -20,7 +20,7 @@ class Controller
 
     }
 
-    public function storePkmPvp()
+    public function storePkmPve()
     {
         $newPkm = [
             "name" => $_POST['pkmpve'],
@@ -51,7 +51,7 @@ class Controller
         echo json_encode($result);
     }
 
-    public function deletePkmPvp($idPkm)
+    public function deletePkmPve($idPkm)
     {
         $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
         $pkmsPvp = json_decode($pkmsPvp, true);
@@ -60,14 +60,14 @@ class Controller
         file_put_contents('includes/files/pkm_pve.json', json_encode($pkmsPvp, JSON_PRETTY_PRINT));
     }
 
-    public function getPkmPvp($idPkm)
+    public function getPkmPve($idPkm)
     {
         $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
         $pkmsPvp = json_decode($pkmsPvp, true);
         echo json_encode($pkmsPvp[$idPkm]);
     }
 
-    public function updatePkmPvp($idPkm)
+    public function updatePkmPve($idPkm)
     {
         $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
         $pkmsPvp = json_decode($pkmsPvp, true);
