@@ -27,3 +27,13 @@ SimpleRouter::delete('/pkmpvp/{idPkm}', function($idPkm) {
     $reader = new Controller();
     $reader->deletePkmPvp($idPkm);
 });
+
+SimpleRouter::post('/pkmpvppost/{idPkm}', function($idPkm) {
+    $reader = new Controller();
+    $reader->updatePkmPvp($idPkm);
+});
+
+SimpleRouter::get('/pkmpvp/{idPkm}', function($idPkm) {
+    $reader = new Controller();
+    $reader->getPkmPvp($idPkm);
+});
