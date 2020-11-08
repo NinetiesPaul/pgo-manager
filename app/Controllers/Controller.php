@@ -27,10 +27,10 @@ class Controller
             "role" => $_POST['role'],
             "cp" => $_POST['cp'],
             "lv" => $_POST['lv'],
-            "sta-iv" => $_POST['staiv'],
-            "def-iv" => $_POST['defiv'],
-            "atk-iv" => $_POST['atkiv'],
-            "iv-percentage" => $_POST['ivpercentage'],
+            "sta_iv" => $_POST['staiv'],
+            "def_iv" => $_POST['defiv'],
+            "atk_iv" => $_POST['atkiv'],
+            "iv_percentage" => $_POST['ivpercentage'],
         ];
 
         $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
@@ -58,8 +58,36 @@ class Controller
 
         unset($pkmsPvp[$idPkm]);
         file_put_contents('includes/files/pkm_pve.json', json_encode($pkmsPvp, JSON_PRETTY_PRINT));
+    }
 
-        echo 'supostamente deletou';
+    public function getPkmPvp($idPkm)
+    {
+        $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
+        $pkmsPvp = json_decode($pkmsPvp, true);
+        echo json_encode($pkmsPvp[$idPkm]);
+    }
+
+    public function updatePkmPvp($idPkm)
+    {
+        $newPkm = [
+            "name" => $_POST['pkmpve'],
+            "role" => $_POST['role'],
+            "cp" => $_POST['cp'],
+            "lv" => $_POST['lv'],
+            "sta_iv" => $_POST['staiv'],
+            "def_iv" => $_POST['defiv'],
+            "atk_iv" => $_POST['atkiv'],
+            "iv_percentage" => $_POST['ivpercentage'],
+        ];
+
+        $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
+        $pkmsPvp = json_decode($pkmsPvp, true);
+
+        $pkmsPvp[$idPkm] = $newPkm;
+        file_put_contents('includes/files/pkm_pve.json', json_encode($pkmsPvp, JSON_PRETTY_PRINT));
+
+        $updatedRow = "<tr id='$idPkm' class='pkm-pve-row' ><td>$_POST[pkmpve]</td><td>$_POST[cp]</td><td>$_POST[lv]</td><td>$_POST[staiv]</td><td>$_POST[defiv]</td><td>$_POST[atkiv]</td><td>$_POST[ivpercentage]</td><td></td><td></td><td></td><td>$_POST[role]</td></tr>";
+        echo $updatedRow;
     }
 
     public function getPokemon($name)
@@ -98,10 +126,10 @@ class Controller
                     <td>$pkmPve[name]</td>
                     <td>$pkmPve[cp]</td>
                     <td>$pkmPve[lv]</td>
-                    <td>".$pkmPve['sta-iv']."</td>
-                    <td>".$pkmPve['atk-iv']."</td>
-                    <td>".$pkmPve['def-iv']."</td>
-                    <td>".$pkmPve['iv-percentage']."</td>
+                    <td>".$pkmPve['sta_iv']."</td>
+                    <td>".$pkmPve['atk_iv']."</td>
+                    <td>".$pkmPve['def_iv']."</td>
+                    <td>".$pkmPve['iv_percentage']."</td>
                     <td></td>
                     <td></td>
                     <td></td>
