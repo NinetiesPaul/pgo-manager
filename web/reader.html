@@ -105,6 +105,7 @@
                 $('.edit-btn').removeAttr('disabled');
                 $('.delete-btn').removeAttr('disabled');
                 $('#idpkmpvedel').val($(this).closest('tr').attr('id'));
+                $('#idpkmpveedt').val($(this).closest('tr').attr('id'));
             });
 
             $(document).ready( function () {
@@ -164,6 +165,26 @@
                     $('#modalPkmPveDel').modal('show');
                 });
 
+                $('.edit-btn').on('click', function() {
+                    $.ajax({
+                        type: 'GET',
+                        url: 'pkmpvp/' + $("#idpkmpvedel").val(),
+                        complete: function (response) {
+                            response = jQuery.parseJSON(response.responseText)
+                            $("#name-edt").val(response.name);
+                            $("#cp-edt").val(response.cp);
+                            $("#lv-edt").val(response.lv);
+                            $("#atk-iv-edt").val(response.atk_iv);
+                            $("#def-iv-edt").val(response.def_iv);
+                            $("#sta-iv-edt").val(response.sta_iv);
+                            $("#percentage-iv-edt").val(response.iv_percentage);
+                            $("#role-edt").val(response.role);
+                        }
+                    });
+
+                    $('#modalPkmPveEdt').modal('show');
+                });
+
                 $('.save-btn').on('click', function() {
                     $.ajax({
                         type: 'POST',
@@ -189,11 +210,39 @@
                     });
                 });
 
+                $('.edt-btn').on('click', function() {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'pkmpvppost/' + $("#idpkmpveedt").val(),
+                        data: {
+                            pkmpve: $("#name-edt").val(),
+                            role: $("#role-edt").val(),
+                            cp: $("#cp-edt").val(),
+                            lv: $("#lv-edt").val(),
+                            staiv: $("#sta-iv-edt").val(),
+                            defiv: $("#def-iv-edt").val(),
+                            atkiv: $("#atk-iv-edt").val(),
+                            ivpercentage: $("#percentage-iv-edt").val()
+                        },
+                        complete: function (response) {
+                            $('#pkm-pve-rows tr').each(function(){
+                                if ($(this).attr('id') == $("#idpkmpveedt").val()){
+                                    $(this)
+                                        .before(response.responseText)
+                                        .remove();
+                                }
+                            });
+                            $('#modalPkmPveEdt').modal('hide');
+                            $("#idpkmpveedt").val('');
+                        }
+                    });
+                });
+
                 $('.del-btn').on('click', function() {
                     $.ajax({
                         type: 'DELETE',
                         url: 'pkmpvp/' + $("#idpkmpvedel").val(),
-                        complete: function (response) {
+                        complete: function () {
                             $('#modalPkmPveDel').modal('hide');
                             $('#pkm-pve-rows tr').each(function(){
                                 if ($(this).attr('id') == $("#idpkmpvedel").val()){
@@ -587,6 +636,59 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger btn-sm del-btn">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalPkmPveEdt" tabindex="-1" role="dialog" aria-labelledby="modalPkmPveEdt" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPkmPveEdtLabel">Alterar Pokemon (PVE)</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="post" role="form" class="form form-group " >
+                    <input type="hidden" name="idpkmpveedt" id="idpkmpveedt" required>
+                    <div class="form-group row justify-content-center ">
+                        <div class="col-md-6">
+                            <input type="text" name="name-edt" id="name-edt" class="form-control form-control-sm" required placeholder="Name" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center ">
+                        <div class="col-md-5">
+                            <input type="text" name="role-edt" id="role-edt" class="form-control form-control-sm" required placeholder="Role">
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center ">
+                        <div class="col-md-3">
+                            <input type="text" name="cp-edt" id="cp-edt" class="form-control form-control-sm" required placeholder="CP">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" name="lv-edt" id="lv-edt" class="form-control form-control-sm" required placeholder="Lv">
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center ">
+                        <div class="col-md-2">
+                            <input type="text" name="sta-iv-edt" id="sta-iv-edt" class="form-control form-control-sm" placeholder="StaIV" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" name="atk-iv-edt" id="atk-iv-edt" class="form-control form-control-sm" placeholder="AtkIV" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" name="def-iv-edt" id="def-iv-edt" class="form-control form-control-sm" placeholder="DefIV" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" name="percentage-iv-edt" id="percentage-iv-edt" class="form-control form-control-sm" placeholder="%IV" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-sm edt-btn">Editar</button>
             </div>
         </div>
     </div>
