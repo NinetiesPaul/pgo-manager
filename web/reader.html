@@ -171,14 +171,14 @@
                         url: 'pkmpvp/' + $("#idpkmpvedel").val(),
                         complete: function (response) {
                             response = jQuery.parseJSON(response.responseText)
-                            $("#name-edt").val(response.name);
-                            $("#cp-edt").val(response.cp);
-                            $("#lv-edt").val(response.lv);
-                            $("#atk-iv-edt").val(response.atk_iv);
-                            $("#def-iv-edt").val(response.def_iv);
-                            $("#sta-iv-edt").val(response.sta_iv);
-                            $("#percentage-iv-edt").val(response.iv_percentage);
-                            $("#role-edt").val(response.role);
+                            $("#name_edt").val(response.name);
+                            $("#cp_edt").val(response.cp);
+                            $("#lv_edt").val(response.lv);
+                            $("#atk_iv_edt").val(response.atk_iv);
+                            $("#def_iv_edt").val(response.def_iv);
+                            $("#sta_iv_edt").val(response.sta_iv);
+                            $("#percentage_iv_edt").val(response.iv_percentage);
+                            $("#role_edt").val(response.role);
                         }
                     });
 
@@ -189,17 +189,7 @@
                     $.ajax({
                         type: 'POST',
                         url: 'pkmpvp',
-                        data: {
-                            idpkmpve: $("#idpkmpve").val(),
-                            pkmpve: $("#pkmpve").val(),
-                            role: $("#role").val(),
-                            cp: $("#cp").val(),
-                            lv: $("#lv").val(),
-                            staiv: $("#sta-iv").val(),
-                            defiv: $("#def-iv").val(),
-                            atkiv: $("#atk-iv").val(),
-                            ivpercentage: $("#percentage-iv").val()
-                        },
+                        data: $("#idpkmpve-form").serialize(),
                         complete: function (response) {
                             response = jQuery.parseJSON(response.responseText)
                             $(".store")
@@ -213,17 +203,8 @@
                 $('.edt-btn').on('click', function() {
                     $.ajax({
                         type: 'POST',
-                        url: 'pkmpvppost/' + $("#idpkmpveedt").val(),
-                        data: {
-                            pkmpve: $("#name-edt").val(),
-                            role: $("#role-edt").val(),
-                            cp: $("#cp-edt").val(),
-                            lv: $("#lv-edt").val(),
-                            staiv: $("#sta-iv-edt").val(),
-                            defiv: $("#def-iv-edt").val(),
-                            atkiv: $("#atk-iv-edt").val(),
-                            ivpercentage: $("#percentage-iv-edt").val()
-                        },
+                        url: 'pkmpvp/' + $("#idpkmpveedt").val(),
+                        data: $("#idpkmpveedt-form").serialize(),
                         complete: function (response) {
                             $('#pkm-pve-rows tr').each(function(){
                                 if ($(this).attr('id') == $("#idpkmpveedt").val()){
@@ -575,7 +556,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="" method="post" role="form" class="form form-group " >
+                <form action="" method="post" role="form" class="form form-group " id="idpkmpve-form">
                     <input type="hidden" name="idpkmpve" id="idpkmpve" required>
                     <div class="form-group row justify-content-center ">
                        <select name="pkmpve" id="pkmpve" required style="width: 60%;">
@@ -598,16 +579,16 @@
                    </div>
                    <div class="form-group row justify-content-center ">
                        <div class="col-md-2">
-                           <input type="text" name="sta-iv" id="sta-iv" class="form-control form-control-sm" placeholder="StaIV" required>
+                           <input type="text" name="sta_iv" id="sta_iv" class="form-control form-control-sm" placeholder="StaIV" required>
                        </div>
                        <div class="col-md-2">
-                           <input type="text" name="atk-iv" id="atk-iv" class="form-control form-control-sm" placeholder="AtkIV" required>
+                           <input type="text" name="atk_iv" id="atk_iv" class="form-control form-control-sm" placeholder="AtkIV" required>
                        </div>
                        <div class="col-md-2">
-                           <input type="text" name="def-iv" id="def-iv" class="form-control form-control-sm" placeholder="DefIV" required>
+                           <input type="text" name="def_iv" id="def_iv" class="form-control form-control-sm" placeholder="DefIV" required>
                        </div>
                        <div class="col-md-2">
-                           <input type="text" name="percentage-iv" id="percentage-iv" class="form-control form-control-sm" placeholder="%IV" required>
+                           <input type="text" name="percentage_iv" id="percentage_iv" class="form-control form-control-sm" placeholder="%IV" required>
                        </div>
                    </div>
                 </form>
@@ -651,38 +632,38 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="" method="post" role="form" class="form form-group " >
+                <form action="" method="post" role="form" class="form form-group " id ="idpkmpveedt-form">
                     <input type="hidden" name="idpkmpveedt" id="idpkmpveedt" required>
                     <div class="form-group row justify-content-center ">
                         <div class="col-md-6">
-                            <input type="text" name="name-edt" id="name-edt" class="form-control form-control-sm" required placeholder="Name" disabled>
+                            <input type="text" name="name_edt" id="name_edt" class="form-control form-control-sm" required placeholder="Name" disabled>
                         </div>
                     </div>
                     <div class="form-group row justify-content-center ">
                         <div class="col-md-5">
-                            <input type="text" name="role-edt" id="role-edt" class="form-control form-control-sm" required placeholder="Role">
+                            <input type="text" name="role_edt" id="role_edt" class="form-control form-control-sm" required placeholder="Role">
                         </div>
                     </div>
                     <div class="form-group row justify-content-center ">
                         <div class="col-md-3">
-                            <input type="text" name="cp-edt" id="cp-edt" class="form-control form-control-sm" required placeholder="CP">
+                            <input type="text" name="cp_edt" id="cp_edt" class="form-control form-control-sm" required placeholder="CP">
                         </div>
                         <div class="col-md-3">
-                            <input type="text" name="lv-edt" id="lv-edt" class="form-control form-control-sm" required placeholder="Lv">
+                            <input type="text" name="lv_edt" id="lv_edt" class="form-control form-control-sm" required placeholder="Lv">
                         </div>
                     </div>
                     <div class="form-group row justify-content-center ">
                         <div class="col-md-2">
-                            <input type="text" name="sta-iv-edt" id="sta-iv-edt" class="form-control form-control-sm" placeholder="StaIV" required>
+                            <input type="text" name="sta_iv_edt" id="sta_iv_edt" class="form-control form-control-sm" placeholder="StaIV" required>
                         </div>
                         <div class="col-md-2">
-                            <input type="text" name="atk-iv-edt" id="atk-iv-edt" class="form-control form-control-sm" placeholder="AtkIV" required>
+                            <input type="text" name="atk_iv_edt" id="atk_iv_edt" class="form-control form-control-sm" placeholder="AtkIV" required>
                         </div>
                         <div class="col-md-2">
-                            <input type="text" name="def-iv-edt" id="def-iv-edt" class="form-control form-control-sm" placeholder="DefIV" required>
+                            <input type="text" name="def_iv_edt" id="def_iv_edt" class="form-control form-control-sm" placeholder="DefIV" required>
                         </div>
                         <div class="col-md-2">
-                            <input type="text" name="percentage-iv-edt" id="percentage-iv-edt" class="form-control form-control-sm" placeholder="%IV" required>
+                            <input type="text" name="percentage_iv_edt" id="percentage_iv_edt" class="form-control form-control-sm" placeholder="%IV" required>
                         </div>
                     </div>
                 </form>
