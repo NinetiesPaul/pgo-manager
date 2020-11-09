@@ -211,6 +211,10 @@
                 });
 
                 $('.save-btn').on('click', function() {
+                    /*$( "#idpkmpve-form input, #idpkmpve-form select" ).each(function(){
+                        console.log($(this).attr('id') + " " + $(this).attr('required') + " " + $(this).val());
+                    }); */
+
                     $.ajax({
                         type: 'POST',
                         url: 'pkmpvp',
@@ -586,49 +590,49 @@
             </div>
             <div class="modal-body">
                 <form action="" method="post" role="form" class="form form-group " id="idpkmpve-form">
-                    <input type="hidden" name="idpkmpve" id="idpkmpve" required>
+                    <input type="hidden" name="idpkmpve" id="idpkmpve" >
                     <div class="form-group row justify-content-center ">
-                        <select name="pkmpve" id="pkmpve" required style="width: 60%;">
-                            <option>-- Selecione --</option>
+                        <select name="pkmpve" id="pkmpve"  style="width: 60%;">
+                            <option value="">Selecione um Pokemon</option>
                             {LISTA}
                         </select>
                     </div>
                     <div class="form-group row justify-content-center ">
                         <select id="quick_move-pkmpve" name="quick_move-pkmpve">
-                            <option>Quick Move</option>
+                            <option value="">Quick Move</option>
                         </select>
                         <select id="charge1_move-pkmpve" name="charge1_move-pkmpve">
-                            <option>Charge Move 1</option>
+                            <option value="">Charge Move 1</option>
                         </select>
                         <select id="charge2_move-pkmpve" name="charge2_move-pkmpve">
-                            <option>Charge Move 2</option>
+                            <option value="">Charge Move 2</option>
                         </select>
                     </div>
                     <div class="form-group row justify-content-center ">
                         <div class="col-md-5">
-                            <input type="text" name="role" id="role" class="form-control form-control-sm" required placeholder="Role">
+                            <input type="text" name="role" id="role" class="form-control form-control-sm"  placeholder="Role">
                         </div>
                     </div>
                     <div class="form-group row justify-content-center ">
                         <div class="col-md-3">
-                            <input type="text" name="cp" id="cp" class="form-control form-control-sm" required placeholder="CP">
+                            <input type="text" name="cp" id="cp" class="form-control form-control-sm"  placeholder="CP">
                         </div>
                         <div class="col-md-3">
-                            <input type="text" name="lv" id="lv" class="form-control form-control-sm" required placeholder="Lv">
+                            <input type="text" name="lv" id="lv" class="form-control form-control-sm"  placeholder="Lv">
                         </div>
                     </div>
                     <div class="form-group row justify-content-center ">
                         <div class="col-md-2">
-                            <input type="text" name="sta_iv" id="sta_iv" class="form-control form-control-sm" placeholder="StaIV" required>
+                            <input type="text" name="sta_iv" id="sta_iv" class="form-control form-control-sm" placeholder="StaIV" >
                         </div>
                         <div class="col-md-2">
-                            <input type="text" name="atk_iv" id="atk_iv" class="form-control form-control-sm" placeholder="AtkIV" required>
+                            <input type="text" name="atk_iv" id="atk_iv" class="form-control form-control-sm" placeholder="AtkIV" >
                         </div>
                         <div class="col-md-2">
-                            <input type="text" name="def_iv" id="def_iv" class="form-control form-control-sm" placeholder="DefIV" required>
+                            <input type="text" name="def_iv" id="def_iv" class="form-control form-control-sm" placeholder="DefIV" >
                         </div>
                         <div class="col-md-2">
-                            <input type="text" name="percentage_iv" id="percentage_iv" class="form-control form-control-sm" placeholder="%IV" required>
+                            <input type="text" name="percentage_iv" id="percentage_iv" class="form-control form-control-sm" placeholder="%IV" >
                         </div>
                     </div>
                 </form>
@@ -652,7 +656,7 @@
             <div class="modal-body">
                 Tem certeza que quer excluir esse Pokemon PVE?
                 <form action="" method="post" role="form" class="form form-group " >
-                    <input type="hidden" name="idpkmpvedel" id="idpkmpvedel" required>
+                    <input type="hidden" name="idpkmpvedel" id="idpkmpvedel" >
                 </form>
             </div>
             <div class="modal-footer">
@@ -673,37 +677,37 @@
             </div>
             <div class="modal-body">
                 <form action="" method="post" role="form" class="form form-group " id ="idpkmpveedt-form">
-                    <input type="hidden" name="idpkmpveedt" id="idpkmpveedt" required>
+                    <input type="hidden" name="idpkmpveedt" id="idpkmpveedt" >
                     <div class="form-group row justify-content-center ">
                         <div class="col-md-6">
-                            <input type="text" name="name_edt" id="name_edt" class="form-control form-control-sm" required placeholder="Name" disabled>
+                            <input type="text" name="name_edt" id="name_edt" class="form-control form-control-sm"  placeholder="Name" disabled>
                         </div>
                     </div>
                     <div class="form-group row justify-content-center ">
                         <div class="col-md-5">
-                            <input type="text" name="role_edt" id="role_edt" class="form-control form-control-sm" required placeholder="Role">
+                            <input type="text" name="role_edt" id="role_edt" class="form-control form-control-sm"  placeholder="Role">
                         </div>
                     </div>
                     <div class="form-group row justify-content-center ">
                         <div class="col-md-3">
-                            <input type="text" name="cp_edt" id="cp_edt" class="form-control form-control-sm" required placeholder="CP">
+                            <input type="text" name="cp_edt" id="cp_edt" class="form-control form-control-sm"  placeholder="CP">
                         </div>
                         <div class="col-md-3">
-                            <input type="text" name="lv_edt" id="lv_edt" class="form-control form-control-sm" required placeholder="Lv">
+                            <input type="text" name="lv_edt" id="lv_edt" class="form-control form-control-sm"  placeholder="Lv">
                         </div>
                     </div>
                     <div class="form-group row justify-content-center ">
                         <div class="col-md-2">
-                            <input type="text" name="sta_iv_edt" id="sta_iv_edt" class="form-control form-control-sm" placeholder="StaIV" required>
+                            <input type="text" name="sta_iv_edt" id="sta_iv_edt" class="form-control form-control-sm" placeholder="StaIV" >
                         </div>
                         <div class="col-md-2">
-                            <input type="text" name="atk_iv_edt" id="atk_iv_edt" class="form-control form-control-sm" placeholder="AtkIV" required>
+                            <input type="text" name="atk_iv_edt" id="atk_iv_edt" class="form-control form-control-sm" placeholder="AtkIV" >
                         </div>
                         <div class="col-md-2">
-                            <input type="text" name="def_iv_edt" id="def_iv_edt" class="form-control form-control-sm" placeholder="DefIV" required>
+                            <input type="text" name="def_iv_edt" id="def_iv_edt" class="form-control form-control-sm" placeholder="DefIV" >
                         </div>
                         <div class="col-md-2">
-                            <input type="text" name="percentage_iv_edt" id="percentage_iv_edt" class="form-control form-control-sm" placeholder="%IV" required>
+                            <input type="text" name="percentage_iv_edt" id="percentage_iv_edt" class="form-control form-control-sm" placeholder="%IV" >
                         </div>
                     </div>
                 </form>
