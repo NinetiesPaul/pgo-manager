@@ -31,6 +31,9 @@ class Controller
             "def_iv" => $_POST['def_iv'],
             "atk_iv" => $_POST['atk_iv'],
             "iv_percentage" => $_POST['percentage_iv'],
+            "quick_move" => $_POST['quick_move-pkmpve'],
+            "charge1_move" => $_POST['charge1_move-pkmpve'],
+            "charge2_move" => $_POST['charge2_move-pkmpve'],
         ];
 
         $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
@@ -415,7 +418,6 @@ class Controller
         if (file_exists($this->POKEMON_DB_FOLDER . $simplifiedName . ".json")) {
             $poke = file_get_contents($this->POKEMON_DB_FOLDER . $simplifiedName . ".json");
             $poke =  json_decode($poke, true);
-            $poke['fromdb'] = true;
             return $poke;
         }
 
