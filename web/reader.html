@@ -101,6 +101,25 @@
                 });
             }
 
+            function getPokemonMoves(pokemon) {
+                pokemon = pokemon.replace(' ', '_');
+
+                $.ajax({
+                    type: "GET",
+                    url: "getPokemon/" + pokemon,
+                    success: function(data){
+                        data = jQuery.parseJSON(data)
+                        $.each(data.moveset.quick, function (index,value){
+                            $('#quick_move-pkmpve').append("<option>" + value + "</option>")
+                        });
+                        $.each(data.moveset.charge, function (index,value){
+                            $('#charge1_move-pkmpve').append("<option>" + value + "</option>")
+                            $('#charge2_move-pkmpve').append("<option>" + value + "</option>")
+                        });
+                    }
+                });
+            }
+
             $(document).on('click','.pkm-pve-row',function() {
                 $('.edit-btn').removeAttr('disabled');
                 $('.delete-btn').removeAttr('disabled');
@@ -130,6 +149,12 @@
                 var pkmPve = $('#pkmpve');
                 pkmPve.select2({
                     width: 'resolve'
+                });
+                pkmPve.on('change', function(){
+                    $('#quick_move-pkmpve').html("<option>Quick Move</option>");
+                    $('#charge1_move-pkmpve').html("<option>Charge Move 1</option>");
+                    $('#charge2_move-pkmpve').html("<option>Charge Move 2</option>");
+                    getPokemonMoves(this.value);
                 });
 
                 $('#charge1_move-slot1').on('change', function() {
@@ -563,37 +588,49 @@
                 <form action="" method="post" role="form" class="form form-group " id="idpkmpve-form">
                     <input type="hidden" name="idpkmpve" id="idpkmpve" required>
                     <div class="form-group row justify-content-center ">
-                       <select name="pkmpve" id="pkmpve" required style="width: 60%;">
-                           {LISTA}
-                       </select>
-                   </div>
-                   <div class="form-group row justify-content-center ">
-                       <div class="col-md-5">
-                           <input type="text" name="role" id="role" class="form-control form-control-sm" required placeholder="Role">
-                       </div>
-                   </div>
-                   <div class="form-group row justify-content-center ">
-                       <div class="col-md-3">
-                           <input type="text" name="cp" id="cp" class="form-control form-control-sm" required placeholder="CP">
-                       </div>
-                       <div class="col-md-3">
-                           <input type="text" name="lv" id="lv" class="form-control form-control-sm" required placeholder="Lv">
-                       </div>
-                   </div>
-                   <div class="form-group row justify-content-center ">
-                       <div class="col-md-2">
-                           <input type="text" name="sta_iv" id="sta_iv" class="form-control form-control-sm" placeholder="StaIV" required>
-                       </div>
-                       <div class="col-md-2">
-                           <input type="text" name="atk_iv" id="atk_iv" class="form-control form-control-sm" placeholder="AtkIV" required>
-                       </div>
-                       <div class="col-md-2">
-                           <input type="text" name="def_iv" id="def_iv" class="form-control form-control-sm" placeholder="DefIV" required>
-                       </div>
-                       <div class="col-md-2">
-                           <input type="text" name="percentage_iv" id="percentage_iv" class="form-control form-control-sm" placeholder="%IV" required>
-                       </div>
-                   </div>
+                        <select name="pkmpve" id="pkmpve" required style="width: 60%;">
+                            <option>-- Selecione --</option>
+                            {LISTA}
+                        </select>
+                    </div>
+                    <div class="form-group row justify-content-center ">
+                        <select id="quick_move-pkmpve" name="quick_move-pkmpve">
+                            <option>Quick Move</option>
+                        </select>
+                        <select id="charge1_move-pkmpve" name="charge1_move-pkmpve">
+                            <option>Charge Move 1</option>
+                        </select>
+                        <select id="charge2_move-pkmpve" name="charge2_move-pkmpve">
+                            <option>Charge Move 2</option>
+                        </select>
+                    </div>
+                    <div class="form-group row justify-content-center ">
+                        <div class="col-md-5">
+                            <input type="text" name="role" id="role" class="form-control form-control-sm" required placeholder="Role">
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center ">
+                        <div class="col-md-3">
+                            <input type="text" name="cp" id="cp" class="form-control form-control-sm" required placeholder="CP">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" name="lv" id="lv" class="form-control form-control-sm" required placeholder="Lv">
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center ">
+                        <div class="col-md-2">
+                            <input type="text" name="sta_iv" id="sta_iv" class="form-control form-control-sm" placeholder="StaIV" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" name="atk_iv" id="atk_iv" class="form-control form-control-sm" placeholder="AtkIV" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" name="def_iv" id="def_iv" class="form-control form-control-sm" placeholder="DefIV" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" name="percentage_iv" id="percentage_iv" class="form-control form-control-sm" placeholder="%IV" required>
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
