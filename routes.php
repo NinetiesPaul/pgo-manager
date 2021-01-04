@@ -13,6 +13,11 @@ SimpleRouter::get('/pokedb', function() {
     $reader->pokeDB();
 });
 
+SimpleRouter::get('/json_update', function() {
+    $reader = new Controller();
+    $reader->jsonUpdate();
+});
+
 SimpleRouter::get('/getPokemon/{name}', function($name) {
     $reader = new Controller();
     $reader->getPokemon($name);

@@ -151,6 +151,19 @@ class Controller
         new Templates('reader.html', $args);
     }
 
+    public function jsonUpdate()
+    {
+        file_put_contents(Util::SHADOW_JSON, file_get_contents("https://pogoapi.net/api/v1/shadow_pokemon.json"));
+        file_put_contents(Util::POKEMON_NAMES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_names.json"));
+        file_put_contents(Util::GALARIAN_JSON, file_get_contents("https://pogoapi.net/api/v1/galarian_pokemon.json"));
+        file_put_contents(Util::ALOLAN_JSON, file_get_contents("https://pogoapi.net/api/v1/alolan_pokemon.json"));
+        file_put_contents(Util::MEGA_JSON, file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json"));
+        file_put_contents(Util::TYPE_EFFECTIVENESS_JSON, file_get_contents("https://pogoapi.net/api/v1/type_effectiveness.json"));
+        file_put_contents(Util::TYPES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_types.json"));
+        file_put_contents(Util::STATS_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json"));
+        file_put_contents(Util::CP_MULTIPLIER_JSON, file_get_contents("https://pogoapi.net/api/v1/cp_multiplier.json"));
+    }
+
     public function pokeDB()
     {
         $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));
