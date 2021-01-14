@@ -171,8 +171,18 @@ class Controller
         $pokemonTypeApi = Util::getType();
         $pokemonType = [];
         foreach ($pokemonTypeApi as $item) {
-            $type = (count($item['type']) > 1) ? implode("/", $item['type']) : $item['type'][0] ;
-            $pokemonType[$item['pokemon_name']] = $type;
+            $type = (count($item['type']) > 1) ? implode("/", $item['type']) : $item['type'][0];
+
+            $name = $item['pokemon_name'];
+            switch ($item['form']) {
+                case 'Galarian':
+                    $name = "Galarian " . $item['pokemon_name'];
+                    break;
+                case 'Alola':
+                    $name = "Alolan " . $item['pokemon_name'];
+                    break;
+            }
+            $pokemonType[$name] = $type;
         }
 
         $statsApi = Util::getStats();
@@ -183,13 +193,24 @@ class Controller
                 'def' => $item['base_defense'],
                 'sta' => $item['base_stamina'],
             ];
-            $name = ($item['form'] === 'Shadow') ? "Shadow " . $item['pokemon_name'] : $item['pokemon_name'];
+
+            $name = $item['pokemon_name'];
+            switch ($item['form']) {
+                case 'Shadow':
+                    $name = 'Shadow ' . $item['pokemon_name'];
+                    break;
+                case 'Galarian':
+                    $name = 'Galarian ' . $item['pokemon_name'];
+                    break;
+                case 'Alola':
+                    $name = 'Alolan ' . $item['pokemon_name'];
+                    break;
+            }
 
             $stats[$name] = $pokemonStats;
         }
 
         $megaPokemonTypeApi = Util::getMegaPokemons();
-        $megaPokemonType = [];
         foreach ($megaPokemonTypeApi as $item) {
             $type = (count($item['type']) > 1) ? implode("/", $item['type']) : $item['type'][0] ;
             $stats[$item['mega_name']] = [
@@ -197,7 +218,7 @@ class Controller
                 'def' => $item['stats']['base_defense'],
                 'sta' => $item['stats']['base_stamina'],
             ];
-            $megaPokemonType[$item['mega_name']] = $type;
+            $pokemonType[$item['mega_name']] = $type;
         }
 
         $pokemons = [];
@@ -212,13 +233,10 @@ class Controller
                 continue;
 
             if (!in_array($line[0], array_keys($pokemons))) {
-                $type = false;
+                $type = 'PENDING';
+
                 if (in_array($line[0], array_keys($pokemonType))) {
                     $type = $pokemonType[$line[0]];
-                }
-
-                if (in_array($line[0], array_keys($megaPokemonType))) {
-                    $type = $megaPokemonType[$line[0]];
                 }
 
                 if (strpos($line[0], "Shadow") !== false) {
@@ -227,8 +245,8 @@ class Controller
                 }
 
                 $newPokemon = [
-                    'type' => ($type) ? $type : 'PENDING',
-                    'stats' => ($type) ? $stats[$line[0]] : [],
+                    'type' => $type,
+                    'stats' => $stats[$line[0]],
                     'moveset' => [
                         'quick' => [],
                         'charge' => []
