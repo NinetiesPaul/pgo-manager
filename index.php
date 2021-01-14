@@ -1,5 +1,7 @@
 <?php
 
+error_reporting(E_ERROR | E_WARNING);
+
 use Pecee\SimpleRouter\SimpleRouter;
 
 include 'vendor/autoload.php';
