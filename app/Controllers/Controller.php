@@ -267,6 +267,7 @@ class Controller
 
                     if ($pokedb[$pokemon]['hash'] !== hash('md5', json_encode($pokemons[$pokemon]))){
                         $pokemons[$pokemon]['hash'] = hash('md5', json_encode($pokemons[$pokemon]));
+                        $pokedb[$pokemon] = $pokemons[$pokemon];
                         $innerSummary = "<br>[atualizado]: $pokemon";
                     }
 
@@ -277,11 +278,12 @@ class Controller
                     $summary .= "<br>[criado]: $pokemon";
 
                     $pokemons[$pokemon]['hash'] = hash('md5', json_encode($pokemons[$pokemon]));
+                    $pokedb[$pokemon] = $pokemons[$pokemon];
                     break;
             }
         }
 
-        file_put_contents('includes/files/pokedb.json', json_encode($pokemons, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        file_put_contents('includes/files/pokedb.json', json_encode($pokedb, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         echo $summary;
     }
