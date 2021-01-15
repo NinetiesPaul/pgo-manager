@@ -84,6 +84,8 @@
                         $('#atk-' + slot).html(data.stats.atk)
                         $('#def-' + slot).html(data.stats.def)
                         $('#sta-' + slot).html(data.stats.sta)
+                        imageSrc = "https://raw.githubusercontent.com/HybridShivam/Pokemon/master/assets/thumbnails-compressed/" + data.id + ".png";
+                        $('#pokemon_img-' + slot).attr('src', imageSrc)
                         $.each(data.defense_data.resistant_to, function (index,value){
                             $('.resistant_to-' + slot).append(index + " | " + value + "<br>")
                         });
@@ -318,7 +320,7 @@
                                 <option>-- Selecione um pokemon --</option>
                                 {LISTA}
                             </select>
-                            <img class="card-img-top" src="..." alt="(pokemon image)">
+                            <img class="" id="pokemon_img-slot1" src="..." style="margin: 0 auto;" alt="(pokemon image)">
                             <div class="card-body">
                                 <table  class="table-borderless" style="margin: 0 auto; width: 100%; text-align: center;">
                                     <tr>
@@ -385,7 +387,7 @@
                                 <option>-- Selecione um pokemon --</option>
                                 {LISTA}
                             </select>
-                            <img class="card-img-top" src="..." alt="(pokemon image)">
+                            <img class="" id="pokemon_img-slot2" src="..." style="margin: 0 auto;" alt="(pokemon image)">
                             <div class="card-body">
                                 <table  class="table-borderless" style="margin: 0 auto; width: 100%; text-align: center;">
                                     <tr>
@@ -452,7 +454,7 @@
                                 <option>-- Selecione um pokemon --</option>
                                 {LISTA}
                             </select>
-                            <img class="card-img-top" src="..." alt="(pokemon image)">
+                            <img class="" id="pokemon_img-slot3" src="..." style="margin: 0 auto;" alt="(pokemon image)">
                             <div class="card-body">
                                 <table  class="table-borderless" style="margin: 0 auto; width: 100%; text-align: center;">
                                     <tr>
