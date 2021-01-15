@@ -10,8 +10,8 @@ use Pecee\Http\Request;
  *
  * The name parameter supports the following values:
  * - Route name
- * - Controller/resource name (with or without method)
- * - Controller class name
+ * - MainController/resource name (with or without method)
+ * - MainController class name
  *
  * When searching for controller/resource by name, you can use this syntax "route.name@method".
  * You can also use the same syntax when searching for a specific controller-class "MyController@home".

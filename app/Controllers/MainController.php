@@ -1,99 +1,19 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace App\Controllers;
 
 use App\Templates;
-use App\Util;
+use App\Utils\JsonUtil;
 
-class Controller
+class MainController
 {
-    protected $POKEMON_DB_FOLDER = 'includes/files/pokedb/';
-
     public function __construct()
     {
-
     }
 
-    public function storePkmPve()
-    {
-        $newPkm = [
-            "name" => $_POST['pkmpve'],
-            "role" => $_POST['role'],
-            "cp" => $_POST['cp'],
-            "lv" => $_POST['lv'],
-            "sta_iv" => $_POST['sta_iv'],
-            "def_iv" => $_POST['def_iv'],
-            "atk_iv" => $_POST['atk_iv'],
-            "iv_percentage" => $_POST['percentage_iv'],
-            "quick_move" => $_POST['quick_move-pkmpve'],
-            "charge1_move" => $_POST['charge1_move-pkmpve'],
-            "charge2_move" => $_POST['charge2_move-pkmpve'],
-        ];
-
-        $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
-        $pkmsPvp = json_decode($pkmsPvp, true);
-
-        $pkmsPvp[$_POST['idpkmpve']] = $newPkm;
-        file_put_contents('includes/files/pkm_pve.json', json_encode($pkmsPvp, JSON_PRETTY_PRINT));
-
-        $newRow = "<tr id='$_POST[idpkmpve]' class='pkm-pve-row' ><td>$_POST[pkmpve]</td><td>$_POST[cp]</td><td>$_POST[lv]</td><td>$_POST[sta_iv]</td><td>$_POST[def_iv]</td><td>$_POST[atk_iv]</td><td>$_POST[percentage_iv]</td><td></td><td></td><td></td><td>$_POST[role]</td></tr>";
-        
-        $nextId = max(array_keys($pkmsPvp)) + 1;
-        
-        $result = [
-            'newRow' => $newRow,
-            'nextId' => $nextId,
-        ];
-        
-        echo json_encode($result);
-    }
-
-    public function deletePkmPve($idPkm)
-    {
-        $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
-        $pkmsPvp = json_decode($pkmsPvp, true);
-
-        unset($pkmsPvp[$idPkm]);
-        file_put_contents('includes/files/pkm_pve.json', json_encode($pkmsPvp, JSON_PRETTY_PRINT));
-    }
-
-    public function getPkmPve($idPkm)
-    {
-        $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
-        $pkmsPvp = json_decode($pkmsPvp, true);
-        echo json_encode($pkmsPvp[$idPkm]);
-    }
-
-    public function updatePkmPve($idPkm)
-    {
-        $pkmsPvp = file_get_contents('includes/files/pkm_pve.json');
-        $pkmsPvp = json_decode($pkmsPvp, true);
-        $pkmPvp = $pkmsPvp[$idPkm];
-
-        $pkmPvp = [
-            "name" => $pkmPvp['name'],
-            "role" => $_POST['role_edt'],
-            "cp" => $_POST['cp_edt'],
-            "lv" => $_POST['lv_edt'],
-            "sta_iv" => $_POST['sta_iv_edt'],
-            "def_iv" => $_POST['def_iv_edt'],
-            "atk_iv" => $_POST['atk_iv_edt'],
-            "iv_percentage" => $_POST['percentage_iv_edt'],
-        ];
-
-        $pkmsPvp[$idPkm] = $pkmPvp;
-        file_put_contents('includes/files/pkm_pve.json', json_encode($pkmsPvp, JSON_PRETTY_PRINT));
-
-        $updatedRow = "<tr id='$idPkm' class='pkm-pve-row' ><td>$pkmPvp[name]</td><td>$_POST[cp_edt]</td><td>$_POST[lv_edt]</td><td>$_POST[sta_iv_edt]</td><td>$_POST[def_iv_edt]</td><td>$_POST[atk_iv_edt]</td><td>$_POST[percentage_iv_edt]</td><td></td><td></td><td></td><td>$_POST[role_edt]</td></tr>";
-        echo $updatedRow;
-    }
-
+    /*
+     * Retrieve complete Pokemon data to the front end
+     */
     public function getPokemon($name)
     {
         $name = str_replace("_", " ", $name);
@@ -111,6 +31,9 @@ class Controller
         echo json_encode($pokemon);
     }
 
+    /*
+     * Main loading method for the App
+     */
     public function teamBuilder()
     {
         $pokemonsNameList = $this->getPokemonsNameList();
@@ -151,24 +74,30 @@ class Controller
         new Templates('reader.html', $args);
     }
 
+    /*
+     * This function force updates the local auxiliary json files
+     */
     public function jsonUpdate()
     {
-        file_put_contents(Util::SHADOW_JSON, file_get_contents("https://pogoapi.net/api/v1/shadow_pokemon.json"));
-        file_put_contents(Util::POKEMON_NAMES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_names.json"));
-        file_put_contents(Util::GALARIAN_JSON, file_get_contents("https://pogoapi.net/api/v1/galarian_pokemon.json"));
-        file_put_contents(Util::ALOLAN_JSON, file_get_contents("https://pogoapi.net/api/v1/alolan_pokemon.json"));
-        file_put_contents(Util::MEGA_JSON, file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json"));
-        file_put_contents(Util::TYPE_EFFECTIVENESS_JSON, file_get_contents("https://pogoapi.net/api/v1/type_effectiveness.json"));
-        file_put_contents(Util::TYPES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_types.json"));
-        file_put_contents(Util::STATS_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json"));
-        file_put_contents(Util::CP_MULTIPLIER_JSON, file_get_contents("https://pogoapi.net/api/v1/cp_multiplier.json"));
+        file_put_contents(JsonUtil::SHADOW_JSON, file_get_contents("https://pogoapi.net/api/v1/shadow_pokemon.json"));
+        file_put_contents(JsonUtil::POKEMON_NAMES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_names.json"));
+        file_put_contents(JsonUtil::GALARIAN_JSON, file_get_contents("https://pogoapi.net/api/v1/galarian_pokemon.json"));
+        file_put_contents(JsonUtil::ALOLAN_JSON, file_get_contents("https://pogoapi.net/api/v1/alolan_pokemon.json"));
+        file_put_contents(JsonUtil::MEGA_JSON, file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json"));
+        file_put_contents(JsonUtil::TYPE_EFFECTIVENESS_JSON, file_get_contents("https://pogoapi.net/api/v1/type_effectiveness.json"));
+        file_put_contents(JsonUtil::TYPES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_types.json"));
+        file_put_contents(JsonUtil::STATS_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json"));
+        file_put_contents(JsonUtil::CP_MULTIPLIER_JSON, file_get_contents("https://pogoapi.net/api/v1/cp_multiplier.json"));
     }
 
+    /*
+     * This function updates the PokeDB json file
+     */
     public function pokeDB()
     {
         $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));
 
-        $pokemonTypeApi = Util::getType();
+        $pokemonTypeApi = JsonUtil::getType();
         $pokemonType = [];
         $pokemonId = [];
         foreach ($pokemonTypeApi as $item) {
@@ -186,7 +115,7 @@ class Controller
             $pokemonType[$name] = $type;
         }
 
-        $statsApi = Util::getStats();
+        $statsApi = JsonUtil::getStats();
         $stats = [];
         foreach ($statsApi as $item) {
             $pokemonStats = [
@@ -212,7 +141,7 @@ class Controller
             $pokemonId[$name] =  str_pad($item['pokemon_id'], 3, '0', 0);
         }
 
-        $megaPokemonTypeApi = Util::getMegaPokemons();
+        $megaPokemonTypeApi = JsonUtil::getMegaPokemons();
         foreach ($megaPokemonTypeApi as $item) {
             $type = (count($item['type']) > 1) ? implode("/", $item['type']) : $item['type'][0] ;
             $stats[$item['mega_name']] = [
@@ -298,9 +227,12 @@ class Controller
         echo $summary;
     }
 
+    /*
+     * This function retrieves vulnerable/resistant information based on types
+     */
     private function getPokemonDefenseData($inTypes)
     {
-        $types = Util::getTypeEffectiveness();
+        $types = JsonUtil::getTypeEffectiveness();
 
         $getTypeA = $inTypes[0];
         $getTypeB = false;
@@ -428,6 +360,9 @@ class Controller
         ];
     }
 
+    /*
+     * This function retrieves a pokemon data from PokeDB json file
+     */
     private function getPokemonData($getName)
     {
         $pokedb = file_get_contents('includes/files/pokedb.json');
@@ -436,33 +371,36 @@ class Controller
         return $pokedb[$getName];
     }
 
+    /*
+     * Retrieve a list of released Pokemon
+     */
     private function getPokemonsNameList()
     {
-        $pokemonNameApi = Util::getPokemonsNames();
+        $pokemonNameApi = JsonUtil::getPokemonsNames();
         $pokemonName = [];
         foreach ($pokemonNameApi as $item) {
             $pokemonName[$item['name']] = $item['id'];
         }
 
-        $galarianApi = Util::getGalarianPokemons();
+        $galarianApi = JsonUtil::getGalarianPokemons();
         foreach ($galarianApi as $item) {
             $galarianName = "Galarian " . $item['name'];
             $pokemonName[$galarianName] = $item['id'];
         }
 
-        $alolanApi = Util::getAlolanPokemons();
+        $alolanApi = JsonUtil::getAlolanPokemons();
         foreach ($alolanApi as $item) {
             $alolanName = "Alolan " . $item['name'];
             $pokemonName[$alolanName] = $item['id'];
         }
 
-        $shadowApi = Util::getShadowPokemons();
+        $shadowApi = JsonUtil::getShadowPokemons();
         foreach ($shadowApi as $item) {
             $shadowName = "Shadow " . $item['name'];
             $pokemonName[$shadowName] = $item['id'];
         }
 
-        $megaPokemonTypeApi = Util::getMegaPokemons();
+        $megaPokemonTypeApi = JsonUtil::getMegaPokemons();
         foreach ($megaPokemonTypeApi as $item) {
             $pokemonName[$item['mega_name']] = $item['pokemon_id'];
         }
@@ -481,6 +419,9 @@ class Controller
         return $names;
     }
 
+    /*
+     * Retrieve a list of Pokemon names from the CSV file
+     */
     private function getPokemonsNamesFromCsv()
     {
         $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));

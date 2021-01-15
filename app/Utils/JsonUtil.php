@@ -1,11 +1,15 @@
 <?php
 
 
-namespace App;
+namespace App\Utils;
 
 
-class Util
+class JsonUtil
 {
+    /*
+     * This class is responsible for retrieving auxiliary JSON content
+     */
+
     const SHADOW_JSON = 'includes/files/shadow_pokemon.json';
     const POKEMON_NAMES_JSON = 'includes/files/pokemon_names.json';
     const GALARIAN_JSON = 'includes/files/galarian_pokemon.json';

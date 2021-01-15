@@ -1,44 +1,45 @@
 <?php
 
 use Pecee\SimpleRouter\SimpleRouter;
-use App\Controllers\Controller;
+use App\Controllers\MainController;
+use App\Controllers\PkmPveController;
 
 SimpleRouter::get('/', function() {
-    $reader = new Controller();
-    $reader->teamBuilder();
+    $controller = new MainController();
+    $controller->teamBuilder();
 });
 
 SimpleRouter::get('/pokedb', function() {
-    $reader = new Controller();
-    $reader->pokeDB();
+    $controller = new MainController();
+    $controller->pokeDB();
 });
 
 SimpleRouter::get('/json_update', function() {
-    $reader = new Controller();
-    $reader->jsonUpdate();
+    $controller = new MainController();
+    $controller->jsonUpdate();
 });
 
 SimpleRouter::get('/getPokemon/{name}', function($name) {
-    $reader = new Controller();
-    $reader->getPokemon($name);
+    $controller = new MainController();
+    $controller->getPokemon($name);
 });
 
-SimpleRouter::post('/pkmpvp', function() {
-    $reader = new Controller();
+SimpleRouter::post('/pkmpve', function() {
+    $reader = new PkmPveController();
     $reader->storePkmPve();
 });
 
-SimpleRouter::delete('/pkmpvp/{idPkm}', function($idPkm) {
-    $reader = new Controller();
+SimpleRouter::delete('/pkmpve/{idPkm}', function($idPkm) {
+    $reader = new PkmPveController();
     $reader->deletePkmPve($idPkm);
 });
 
-SimpleRouter::post('/pkmpvp/{idPkm}', function($idPkm) {
-    $reader = new Controller();
+SimpleRouter::post('/pkmpve/{idPkm}', function($idPkm) {
+    $reader = new PkmPveController();
     $reader->updatePkmPve($idPkm);
 });
 
-SimpleRouter::get('/pkmpvp/{idPkm}', function($idPkm) {
-    $reader = new Controller();
+SimpleRouter::get('/pkmpve/{idPkm}', function($idPkm) {
+    $reader = new PkmPveController();
     $reader->getPkmPve($idPkm);
 });
