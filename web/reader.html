@@ -51,7 +51,7 @@
             }
 
             function getPokemonData(pokemon, slot) {
-                pokemon = pokemon.replace(' ', '_');
+                pokemon = pokemon.replaceAll(' ', '_');
 
                 slot = slot.split("_");
                 slot = slot[1];
@@ -195,7 +195,7 @@
                 $('.edit-btn').on('click', function() {
                     $.ajax({
                         type: 'GET',
-                        url: 'pkmpvp/' + $("#idpkmpvedel").val(),
+                        url: 'pkmpve/' + $("#idpkmpvedel").val(),
                         complete: function (response) {
                             response = jQuery.parseJSON(response.responseText)
                             $("#name_edt").val(response.name);
@@ -219,7 +219,7 @@
 
                     $.ajax({
                         type: 'POST',
-                        url: 'pkmpvp',
+                        url: 'pkmpve',
                         data: $("#idpkmpve-form").serialize(),
                         complete: function (response) {
                             response = jQuery.parseJSON(response.responseText)
@@ -234,7 +234,7 @@
                 $('.edt-btn').on('click', function() {
                     $.ajax({
                         type: 'POST',
-                        url: 'pkmpvp/' + $("#idpkmpveedt").val(),
+                        url: 'pkmpve/' + $("#idpkmpveedt").val(),
                         data: $("#idpkmpveedt-form").serialize(),
                         complete: function (response) {
                             $('#pkm-pve-rows tr').each(function(){
@@ -253,7 +253,7 @@
                 $('.del-btn').on('click', function() {
                     $.ajax({
                         type: 'DELETE',
-                        url: 'pkmpvp/' + $("#idpkmpvedel").val(),
+                        url: 'pkmpve/' + $("#idpkmpvedel").val(),
                         complete: function () {
                             $('#modalPkmPveDel').modal('hide');
                             $('#pkm-pve-rows tr').each(function(){
