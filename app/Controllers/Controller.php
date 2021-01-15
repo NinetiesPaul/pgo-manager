@@ -170,6 +170,7 @@ class Controller
 
         $pokemonTypeApi = Util::getType();
         $pokemonType = [];
+        $pokemonId = [];
         foreach ($pokemonTypeApi as $item) {
             $type = (count($item['type']) > 1) ? implode("/", $item['type']) : $item['type'][0];
 
@@ -208,6 +209,7 @@ class Controller
             }
 
             $stats[$name] = $pokemonStats;
+            $pokemonId[$name] =  str_pad($item['pokemon_id'], 3, '0', 0);
         }
 
         $megaPokemonTypeApi = Util::getMegaPokemons();
@@ -219,13 +221,10 @@ class Controller
                 'sta' => $item['stats']['base_stamina'],
             ];
             $pokemonType[$item['mega_name']] = $type;
+            $pokemonId[$item['mega_name']] =  str_pad($item['pokemon_id'], 3, '0', 0);
         }
 
         $pokemons = [];
-
-        $quickMoves = [];
-
-        $chargeMoves = [];
 
         foreach ($pokemonsCsv as $row => $line) {
 
@@ -245,6 +244,7 @@ class Controller
                 }
 
                 $newPokemon = [
+                    'id' => $pokemonId[$line[0]],
                     'type' => $type,
                     'stats' => $stats[$line[0]],
                     'moveset' => [
@@ -255,16 +255,8 @@ class Controller
                 $pokemons[$line[0]] = $newPokemon;
             }
 
-            if (!in_array($line[1], $quickMoves)) {
-                $quickMoves[] = $line[1];
-            }
-
             if (!in_array($line[1], $pokemons[$line[0]]['moveset']['quick'])) {
                 $pokemons[$line[0]]['moveset']['quick'][] = $line[1];
-            }
-
-            if (!in_array($line[2], $chargeMoves)) {
-                $chargeMoves[] = $line[2];
             }
 
             if (!in_array($line[2], $pokemons[$line[0]]['moveset']['charge'])) {
