@@ -24,6 +24,11 @@ SimpleRouter::get('/getPokemon/{name}', function($name) {
     $controller->getPokemon($name);
 });
 
+SimpleRouter::get('/getMove/{name}/{type}', function($name, $type) {
+    $controller = new MainController();
+    $controller->getMove($name, $type);
+});
+
 SimpleRouter::post('/pkmpve', function() {
     $reader = new PkmPveController();
     $reader->storePkmPve();
