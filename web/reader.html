@@ -8,7 +8,11 @@
         <link href="../includes/css/glyphicons.css" rel="stylesheet">
         <link href="../includes/css/navbar.css" rel="stylesheet">
         <link href="../includes/css/css.css" rel="stylesheet">
+
         <script src="../includes/js/jquery.js"></script>
+        <script src="../includes/js/misc.js"></script>
+        <script src="../includes/js/pve.js"></script>
+        <script src="../includes/js/pvp_team_manager.js"></script>
         <script>
             var colors = {
                 "Normal": "darkgrey",
@@ -31,103 +35,6 @@
                 "Fighting": "brown",
             }
 
-            function disableMove(value, target) {
-                $('#' + target + " option").each(function(){
-                    if ($(this).val() == value) {
-                        $(this).attr('disabled', 'disabled')
-                    } else {
-                        $(this).removeAttr('disabled')
-                    }
-                });
-            }
-
-            function clearLayout(slot) {
-                $('.resistant_to-' + slot).html('');
-                $('.vulnerable_to-' + slot).html('');
-                $('.defense_type_row-' + slot).html("<td class='defense_typeA-" + slot + "'>&nbsp;</td>");
-                $('#quick_move-' + slot).html("<option>-- Selecione  --</option>");
-                $('#charge1_move-' + slot).html("<option>-- Selecione  --</option>");
-                $('#charge2_move-' + slot).html("<option>-- Selecione  --</option>");
-            }
-
-            function getPokemonData(pokemon, slot) {
-                pokemon = pokemon.replaceAll(' ', '_');
-
-                slot = slot.split("_");
-                slot = slot[1];
-                $('#pokemonList_' + slot).attr('disabled', 'disabled');
-
-                $.ajax({
-                    type: "GET",
-                    url: "getPokemon/" + pokemon,
-                    success: function(data){
-                        clearLayout(slot);
-                        $('#pokemonList_' + slot).removeAttr('disabled');
-                        data = jQuery.parseJSON(data)
-                        pokemonTypeA =  data.type[0];
-                        $('.defense_typeA-' + slot)
-                            .attr('colspan', 2)
-                            .addClass('defense_one_type_style-' + slot)
-                            .css('background-color', colors[pokemonTypeA])
-                            .html(pokemonTypeA)
-                        if (data.type.length > 1) {
-                            $('.defense_typeA-' + slot)
-                                .removeAttr('colspan')
-                                .removeClass('defense_one_type_style-' + slot)
-                                .addClass('defense_typeA_style-' + slot);
-                            $('.defense_type_row-' + slot).append("<td class='defense_typeB-" + slot + "'>&nbsp;</td>");
-                            $('.defense_typeB-' + slot)
-                                .addClass('defense_typeB_style-' + slot)
-                                .css('background-color', colors[data.type[1]])
-                                .html(data.type[1]);
-                        }
-                        $('#atk-' + slot).html(data.stats.atk)
-                        $('#def-' + slot).html(data.stats.def)
-                        $('#sta-' + slot).html(data.stats.sta)
-                        imageSrc = "https://raw.githubusercontent.com/HybridShivam/Pokemon/master/assets/thumbnails-compressed/" + data.id + ".png";
-                        $('#pokemon_img-' + slot).attr('src', imageSrc)
-                        $.each(data.defense_data.resistant_to, function (index,value){
-                            $('.resistant_to-' + slot).append(index + " | " + value + "<br>")
-                        });
-                        $.each(data.defense_data.vulnerable_to, function (index,value){
-                            $('.vulnerable_to-' + slot).append(index + " | " + value + "<br>")
-                        });
-                        $.each(data.moveset.quick, function (index,value){
-                            $('#quick_move-' + slot).append("<option>" + value + "</option>")
-                        });
-                        $.each(data.moveset.charge, function (index,value){
-                            $('#charge1_move-' + slot).append("<option>" + value + "</option>")
-                            $('#charge2_move-' + slot).append("<option>" + value + "</option>")
-                        });
-                    }
-                });
-            }
-
-            function getPokemonMoves(pokemon) {
-                pokemon = pokemon.replace(' ', '_');
-
-                $.ajax({
-                    type: "GET",
-                    url: "getPokemon/" + pokemon,
-                    success: function(data){
-                        data = jQuery.parseJSON(data)
-                        $.each(data.moveset.quick, function (index,value){
-                            $('#quick_move-pkmpve').append("<option>" + value + "</option>")
-                        });
-                        $.each(data.moveset.charge, function (index,value){
-                            $('#charge1_move-pkmpve').append("<option>" + value + "</option>")
-                            $('#charge2_move-pkmpve').append("<option>" + value + "</option>")
-                        });
-                    }
-                });
-            }
-
-            $(document).on('click','.pkm-pve-row',function() {
-                $('.edit-btn').removeAttr('disabled');
-                $('.delete-btn').removeAttr('disabled');
-                $('#idpkmpvedel').val($(this).closest('tr').attr('id'));
-                $('#idpkmpveedt').val($(this).closest('tr').attr('id'));
-            });
 
             $(document).ready( function () {
                 var pokemonSelectSlot1 = $('#pokemonList_slot1');
@@ -159,112 +66,6 @@
                     getPokemonMoves(this.value);
                 });
 
-                $('#charge1_move-slot1').on('change', function() {
-                    disableMove(this.value, 'charge2_move-slot1');
-                });
-
-                $('#charge2_move-slot1').on('change', function() {
-                    disableMove(this.value, 'charge1_move-slot1');
-                });
-
-                $('#charge1_move-slot2').on('change', function() {
-                    disableMove(this.value, 'charge2_move-slot2');
-                });
-
-                $('#charge2_move-slot2').on('change', function() {
-                    disableMove(this.value, 'charge1_move-slot2');
-                });
-
-                $('#charge1_move-slot3').on('change', function() {
-                    disableMove(this.value, 'charge2_move-slot3');
-                });
-
-                $('#charge2_move-slot3').on('change', function() {
-                    disableMove(this.value, 'charge1_move-slot3');
-                });
-
-                $('.add-btn').on('click', function() {
-                    $('#modalPkmPveAdd').modal('show');
-                    $('#idpkmpve').val($('.store').attr('id'));
-                });
-
-                $('.delete-btn').on('click', function() {
-                    $('#modalPkmPveDel').modal('show');
-                });
-
-                $('.edit-btn').on('click', function() {
-                    $.ajax({
-                        type: 'GET',
-                        url: 'pkmpve/' + $("#idpkmpvedel").val(),
-                        complete: function (response) {
-                            response = jQuery.parseJSON(response.responseText)
-                            $("#name_edt").val(response.name);
-                            $("#cp_edt").val(response.cp);
-                            $("#lv_edt").val(response.lv);
-                            $("#atk_iv_edt").val(response.atk_iv);
-                            $("#def_iv_edt").val(response.def_iv);
-                            $("#sta_iv_edt").val(response.sta_iv);
-                            $("#percentage_iv_edt").val(response.iv_percentage);
-                            $("#role_edt").val(response.role);
-                        }
-                    });
-
-                    $('#modalPkmPveEdt').modal('show');
-                });
-
-                $('.save-btn').on('click', function() {
-                    /*$( "#idpkmpve-form input, #idpkmpve-form select" ).each(function(){
-                        console.log($(this).attr('id') + " " + $(this).attr('required') + " " + $(this).val());
-                    }); */
-
-                    $.ajax({
-                        type: 'POST',
-                        url: 'pkmpve',
-                        data: $("#idpkmpve-form").serialize(),
-                        complete: function (response) {
-                            response = jQuery.parseJSON(response.responseText)
-                            $(".store")
-                                .before(response.newRow)
-                                .attr('id', response.nextId);
-                            $("#idpkmpve").val(response.nextId);
-                        }
-                    });
-                });
-
-                $('.edt-btn').on('click', function() {
-                    $.ajax({
-                        type: 'POST',
-                        url: 'pkmpve/' + $("#idpkmpveedt").val(),
-                        data: $("#idpkmpveedt-form").serialize(),
-                        complete: function (response) {
-                            $('#pkm-pve-rows tr').each(function(){
-                                if ($(this).attr('id') == $("#idpkmpveedt").val()){
-                                    $(this)
-                                        .before(response.responseText)
-                                        .remove();
-                                }
-                            });
-                            $('#modalPkmPveEdt').modal('hide');
-                            $("#idpkmpveedt").val('');
-                        }
-                    });
-                });
-
-                $('.del-btn').on('click', function() {
-                    $.ajax({
-                        type: 'DELETE',
-                        url: 'pkmpve/' + $("#idpkmpvedel").val(),
-                        complete: function () {
-                            $('#modalPkmPveDel').modal('hide');
-                            $('#pkm-pve-rows tr').each(function(){
-                                if ($(this).attr('id') == $("#idpkmpvedel").val()){
-                                    $(this).remove();
-                                }
-                            });
-                            $("#idpkmpvedel").val('');
-                        }
-                    });
-                });
 
                 $('#modalPkmPveAdd').on('hidden.bs.modal', function () {
                     $(this).find('form').trigger('reset');
@@ -272,6 +73,7 @@
             });
         
         </script>
+
         <title>PGO Manager</title>
     </head>
     <body>
@@ -315,7 +117,7 @@
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="pvp-teambuilder" role="tabpanel" >
 
-                        <div class="card" style="width: 33%; float: left">
+                        <div class="card" style="width: 33%; float: left"> <!-- Slot 1 -->
                             <select id="pokemonList_slot1" name="pokemonList_slot1">
                                 <option>-- Selecione um pokemon --</option>
                                 {LISTA}
@@ -345,6 +147,12 @@
                                                 </select>
                                             </td>
                                         </tr>
+                                        <tr style="font-size: 0.7em;" >
+                                            <td id="quick_goodAgainst-slot1" colspan="2"></td>
+                                        </tr>
+                                        <tr style="font-size: 0.7em;" >
+                                            <td id="quick_weakAgainst-slot1" colspan="2"></td>
+                                        </tr>
                                         <tr>
                                             <td style="text-align:center">Charge Move I</td>
                                             <td>
@@ -353,6 +161,12 @@
                                                 </select>
                                             </td>
                                         </tr>
+                                        <tr style="font-size: 0.7em;" >
+                                            <td id="charge1_goodAgainst-slot1" colspan="2"></td>
+                                        </tr>
+                                        <tr style="font-size: 0.7em;" >
+                                            <td id="charge1_weakAgainst-slot1" colspan="2"></td>
+                                        </tr>
                                         <tr>
                                             <td style="text-align:center">Charge Move II</td>
                                             <td>
@@ -360,6 +174,12 @@
                                                     <option>-- Selecione  --</option>
                                                 </select>
                                             </td>
+                                        </tr>
+                                        <tr style="font-size: 0.7em;" >
+                                            <td id="charge2_goodAgainst-slot1" colspan="2"></td>
+                                        </tr>
+                                        <tr style="font-size: 0.7em;" >
+                                            <td id="charge2_weakAgainst-slot1" colspan="2"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -382,7 +202,7 @@
                             </div>
                         </div>
 
-                        <div class="card" style="width: 33%; float: left">
+                        <div class="card" style="width: 33%; float: left"> <!-- Slot 2 -->
                             <select id="pokemonList_slot2" name="pokemonList_slot2">
                                 <option>-- Selecione um pokemon --</option>
                                 {LISTA}
@@ -412,6 +232,12 @@
                                             </select>
                                         </td>
                                     </tr>
+                                    <tr style="font-size: 0.7em;" >
+                                        <td id="quick_goodAgainst-slot2" colspan="2"></td>
+                                    </tr>
+                                    <tr style="font-size: 0.7em;" >
+                                        <td id="quick_weakAgainst-slot2" colspan="2"></td>
+                                    </tr>
                                     <tr>
                                         <td style="text-align:center">Charge Move I</td>
                                         <td>
@@ -420,6 +246,12 @@
                                             </select>
                                         </td>
                                     </tr>
+                                    <tr style="font-size: 0.7em;" >
+                                        <td id="charge1_goodAgainst-slot2" colspan="2"></td>
+                                    </tr>
+                                    <tr style="font-size: 0.7em;" >
+                                        <td id="charge1_weakAgainst-slot2" colspan="2"></td>
+                                    </tr>
                                     <tr>
                                         <td style="text-align:center">Charge Move II</td>
                                         <td>
@@ -427,6 +259,12 @@
                                                 <option>-- Selecione  --</option>
                                             </select>
                                         </td>
+                                    </tr>
+                                    <tr style="font-size: 0.7em;" >
+                                        <td id="charge2_goodAgainst-slot2" colspan="2"></td>
+                                    </tr>
+                                    <tr style="font-size: 0.7em;" >
+                                        <td id="charge2_weakAgainst-slot2" colspan="2"></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -449,7 +287,7 @@
                             </div>
                         </div>
 
-                        <div class="card" style="width: 33%; ">
+                        <div class="card" style="width: 33%; "> <!-- Slot 3-->
                             <select id="pokemonList_slot3" name="pokemonList_slot3">
                                 <option>-- Selecione um pokemon --</option>
                                 {LISTA}
@@ -479,6 +317,12 @@
                                             </select>
                                         </td>
                                     </tr>
+                                    <tr style="font-size: 0.7em;" >
+                                        <td id="quick_goodAgainst-slot3" colspan="2"></td>
+                                    </tr>
+                                    <tr style="font-size: 0.7em;" >
+                                        <td id="quick_weakAgainst-slot3" colspan="2"></td>
+                                    </tr>
                                     <tr>
                                         <td style="text-align:center">Charge Move I</td>
                                         <td>
@@ -487,6 +331,12 @@
                                             </select>
                                         </td>
                                     </tr>
+                                    <tr style="font-size: 0.7em;" >
+                                        <td id="charge1_goodAgainst-slot3" colspan="2"></td>
+                                    </tr>
+                                    <tr style="font-size: 0.7em;" >
+                                        <td id="charge1_weakAgainst-slot3" colspan="2"></td>
+                                    </tr>
                                     <tr>
                                         <td style="text-align:center">Charge Move II</td>
                                         <td>
@@ -494,6 +344,12 @@
                                                 <option>-- Selecione  --</option>
                                             </select>
                                         </td>
+                                    </tr>
+                                    <tr style="font-size: 0.7em;" >
+                                        <td id="charge2_goodAgainst-slot3" colspan="2"></td>
+                                    </tr>
+                                    <tr style="font-size: 0.7em;" >
+                                        <td id="charge2_weakAgainst-slot3" colspan="2"></td>
                                     </tr>
                                     </tbody>
                                 </table>

@@ -1,0 +1,74 @@
+function clearLayout(slot) {
+    $('.resistant_to-' + slot).html('');
+    $('.vulnerable_to-' + slot).html('');
+    $('.defense_type_row-' + slot).html("<td class='defense_typeA-" + slot + "'>&nbsp;</td>");
+    $('#quick_move-' + slot).html("<option>-- Selecione  --</option>");
+    $('#charge1_move-' + slot).html("<option>-- Selecione  --</option>");
+    $('#charge2_move-' + slot).html("<option>-- Selecione  --</option>");
+    $('#quick_goodAgainst-' + slot).html("");
+    $('#quick_weakAgainst-' + slot).html("");
+    $('#charge1_goodAgainst-' + slot).html("");
+    $('#charge1_weakAgainst-' + slot).html("");
+    $('#charge2_goodAgainst-' + slot).html("");
+    $('#charge2_weakAgainst-' + slot).html("");
+}
+
+function getPokemonData(pokemon, slot) {
+    pokemon = pokemon.replaceAll(' ', '_');
+
+    slot = slot.split("_");
+    slot = slot[1];
+    $('#pokemonList_' + slot).attr('disabled', 'disabled');
+
+    $.ajax({
+        type: "GET",
+        url: "getPokemon/" + pokemon,
+        success: function(data){
+            clearLayout(slot);
+            $('#pokemonList_' + slot).removeAttr('disabled');
+            data = jQuery.parseJSON(data)
+            pokemonTypeA =  data.type[0];
+            $('.defense_typeA-' + slot)
+                .attr('colspan', 2)
+                .addClass('defense_one_type_style-' + slot)
+                .css('background-color', colors[pokemonTypeA])
+                .html(pokemonTypeA)
+            if (data.type.length > 1) {
+                $('.defense_typeA-' + slot)
+                    .removeAttr('colspan')
+                    .removeClass('defense_one_type_style-' + slot)
+                    .addClass('defense_typeA_style-' + slot);
+                $('.defense_type_row-' + slot).append("<td class='defense_typeB-" + slot + "'>&nbsp;</td>");
+                $('.defense_typeB-' + slot)
+                    .addClass('defense_typeB_style-' + slot)
+                    .css('background-color', colors[data.type[1]])
+                    .html(data.type[1]);
+            }
+            $('#atk-' + slot).html(data.stats.atk)
+            $('#def-' + slot).html(data.stats.def)
+            $('#sta-' + slot).html(data.stats.sta)
+
+            var id = data.id;
+            if (data.id.slice(0,1) == 0) {
+                id = data.id.slice(1,3);
+            }
+
+            imageSrc = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + id + ".png";
+            $('#pokemon_img-' + slot).attr('src', imageSrc)
+            $.each(data.defense_data.resistant_to, function (index,value){
+                $('.resistant_to-' + slot).append(index + " | " + value + "<br>")
+            });
+            $.each(data.defense_data.vulnerable_to, function (index,value){
+                $('.vulnerable_to-' + slot).append(index + " | " + value + "<br>")
+            });
+            $.each(data.moveset.quick, function (index,value){
+                $('#quick_move-' + slot).append("<option>" + value + "</option>")
+            });
+            $.each(data.moveset.charge, function (index,value){
+                $('#charge1_move-' + slot).append("<option>" + value + "</option>")
+                $('#charge2_move-' + slot).append("<option>" + value + "</option>")
+            });
+        }
+    });
+}
+
