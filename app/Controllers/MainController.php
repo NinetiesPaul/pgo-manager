@@ -32,6 +32,66 @@ class MainController
     }
 
     /*
+     * Retrieve move data to the front end
+     */
+    public function getMove($name, $type)
+    {
+        $name = str_replace('_', ' ', $name);
+
+        $types = JsonUtil::getTypeEffectiveness();
+
+        $goodAgainst = [];
+        $weakAgainst = [];
+
+        switch ($type) {
+            case 'quick':
+                $quickMovesApi = JsonUtil::getQuickMoves();
+
+                foreach ($quickMovesApi as $quickMove) {
+                    if ($quickMove['name'] === $name) {
+                        foreach ($types[$quickMove['type']] as $key => $value)
+                        {
+                            if ($value > 1) {
+                                $goodAgainst[] = $key;
+                            }
+                            if ($value < 1) {
+                                $weakAgainst[] = $key;
+                            }
+                        }
+                    }
+                }
+
+                break;
+
+            case 'charge1' || 'charge2':
+                $chargeMovesApi = JsonUtil::getChargeMoves();
+
+                foreach ($chargeMovesApi as $chargeMove) {
+                    if ($chargeMove['name'] === $name) {
+                        foreach ($types[$chargeMove['type']] as $key => $value)
+                        {
+                            if ($value > 1) {
+                                $goodAgainst[] = $key;
+                            }
+                            if ($value < 1) {
+                                $weakAgainst[] = $key;
+                            }
+                        }
+                    }
+                }
+
+                break;
+        }
+
+        $result = [
+            'weakAgainst' => $weakAgainst,
+            'goodAgainst' => $goodAgainst
+        ];
+
+        echo json_encode($result);
+    }
+
+    /*
      * Main loading method for the App
      */
     public function teamBuilder()
@@ -88,6 +148,8 @@ class MainController
         file_put_contents(JsonUtil::TYPES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_types.json"));
         file_put_contents(JsonUtil::STATS_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json"));
         file_put_contents(JsonUtil::CP_MULTIPLIER_JSON, file_get_contents("https://pogoapi.net/api/v1/cp_multiplier.json"));
+        file_put_contents(JsonUtil::QUICK_MOVES_JSON, file_get_contents("https://pogoapi.net/api/v1/fast_moves.json"));
+        file_put_contents(JsonUtil::CHARGE_MOVES_JSON, file_get_contents("https://pogoapi.net/api/v1/charged_moves.json"));
     }
 
     /*
