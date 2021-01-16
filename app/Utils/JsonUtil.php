@@ -19,6 +19,8 @@ class JsonUtil
     const TYPE_EFFECTIVENESS_JSON = 'includes/files/type_effectiveness.json';
     const STATS_JSON = 'includes/files/pokemon_stats.json';
     const CP_MULTIPLIER_JSON = 'includes/files/cp_multiplier.json';
+    const QUICK_MOVES_JSON = 'includes/files/fast_moves.json';
+    const CHARGE_MOVES_JSON = 'includes/files/charged_moves.json';
 
     public static function getShadowPokemons()
     {
@@ -97,6 +99,26 @@ class JsonUtil
         }
 
         $content = file_get_contents(self::STATS_JSON);
+        return json_decode($content, true);
+    }
+
+    public static function getQuickMoves()
+    {
+        if (!file_exists(self::QUICK_MOVES_JSON)) {
+            file_put_contents(self::QUICK_MOVES_JSON, file_get_contents("https://pogoapi.net/api/v1/fast_moves.json"));
+        }
+
+        $content = file_get_contents(self::QUICK_MOVES_JSON);
+        return json_decode($content, true);
+    }
+
+    public static function getChargeMoves()
+    {
+        if (!file_exists(self::CHARGE_MOVES_JSON)) {
+            file_put_contents(self::CHARGE_MOVES_JSON, file_get_contents("https://pogoapi.net/api/v1/charged_moves.json"));
+        }
+
+        $content = file_get_contents(self::CHARGE_MOVES_JSON);
         return json_decode($content, true);
     }
 
