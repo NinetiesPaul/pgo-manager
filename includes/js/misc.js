@@ -55,7 +55,6 @@ function getPokemonData(pokemon, slot) {
             if (data.id.slice(0,2) == 00) {
                 id = data.id.slice(2,3);
             }
-			console.log(id)
 
             form = '';
             if (data.name.includes('Alolan')) {
@@ -73,8 +72,6 @@ function getPokemonData(pokemon, slot) {
 					form += '-y'
 				}
             }
-			
-			console.log(form)
 
             imageSrc = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + id + form + ".png";
             $('#pokemon_img-' + slot).attr('src', imageSrc)
