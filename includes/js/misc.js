@@ -48,13 +48,37 @@ function getPokemonData(pokemon, slot) {
             $('#def-' + slot).html(data.stats.def)
             $('#sta-' + slot).html(data.stats.sta)
 
-            var id = data.id;
+            id = data.id;
             if (data.id.slice(0,1) == 0) {
                 id = data.id.slice(1,3);
             }
+            if (data.id.slice(0,2) == 00) {
+                id = data.id.slice(2,3);
+            }
+			console.log(id)
 
-            imageSrc = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + id + ".png";
+            form = '';
+            if (data.name.includes('Alolan')) {
+                form = '-alola';
+            }
+            if (data.name.includes('Galarian')) {
+                form = '-galar'
+            }
+            if (data.name.includes('Mega')) {
+                form = '-mega'
+				if (data.name.includes('X')) {
+					form += '-x'
+				}
+				if (data.name.includes('Y')) {
+					form += '-y'
+				}
+            }
+			
+			console.log(form)
+
+            imageSrc = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + id + form + ".png";
             $('#pokemon_img-' + slot).attr('src', imageSrc)
+
             $.each(data.defense_data.resistant_to, function (index,value){
                 $('.resistant_to-' + slot).append(index + " | " + value + "<br>")
             });
