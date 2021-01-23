@@ -15,26 +15,25 @@
         <script src="../includes/js/pvp_team_manager.js"></script>
         <script>
             var colors = {
-                "Normal": "darkgrey",
-                "Grass": "darkgreen",
-                "Water": "dodgerblue",
-                "Dark": "#303030",
-                "Rock": "saddlebrown",
-                "Poison": "mediumpurple",
-                "Ground": "sandybrown",
-                "Fairy": "lightpink",
-                "Psychic": "deeppink",
-                "Steel": "grey",
-                "Ghost": "darkslateblue",
-                "Bug": "limegreen",
-                "Fire": "orangered",
-                "Flying": "cornflowerblue",
-                "Dragon": "grey",
-                "Ice": "deepskyblue",
-                "Electric": "darkgoldenrod",
-                "Fighting": "brown",
+                "Normal": "#9BA0A0",
+                "Grass": "#5DBC66",
+                "Water": "#5FA9DC",
+                "Dark": "#6C7180",
+                "Rock": "#D3C891",
+                "Poison": "#B762CE",
+                "Ground": "#D68858",
+                "Fairy": "#EF9AE2",
+                "Psychic": "#FA8281",
+                "Steel": "#559DA5",
+                "Ghost": "#6A6EC4",
+                "Bug": "#A5C731",
+                "Fire": "#FFA74E",
+                "Flying": "#9AB4E4",
+                "Dragon": "#0780BD",
+                "Ice": "#84D6CC",
+                "Electric": "#F8DD64",
+                "Fighting": "#E04452",
             }
-
 
             $(document).ready( function () {
                 var pokemonSelectSlot1 = $('#pokemonList_slot1');
@@ -55,17 +54,18 @@
                     getPokemonData(this.value, this.id);
                 });
 
+                //PvE
+
                 var pkmPve = $('#pkmpve');
                 pkmPve.select2({
                     width: 'resolve'
                 });
                 pkmPve.on('change', function(){
-                    $('#quick_move-pkmpve').html("<option>Quick Move</option>");
-                    $('#charge1_move-pkmpve').html("<option>Charge Move 1</option>");
-                    $('#charge2_move-pkmpve').html("<option>Charge Move 2</option>");
+                    $('#quick_move-pkmpve').html("<option>Quick</option>");
+                    $('#charge1_move-pkmpve').html("<option>Charge 1</option>");
+                    $('#charge2_move-pkmpve').html("<option>Charge 2</option>");
                     getPokemonMoves(this.value);
                 });
-
 
                 $('#modalPkmPveAdd').on('hidden.bs.modal', function () {
                     $(this).find('form').trigger('reset');
@@ -140,46 +140,46 @@
                                 <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
                                     <tbody>
                                         <tr>
-                                            <td style="text-align:center">Quick Move</td>
+                                            <td style="text-align:center">Quick</td>
                                             <td>
-                                                <select id="quick_move-slot1" name="quick_move-slot1">
+                                                <select id="quick_move-slot1" name="quick_move-slot1" class="custom-select">
                                                     <option>-- Selecione  --</option>
                                                 </select>
                                             </td>
                                         </tr>
                                         <tr style="font-size: 0.7em;" >
-                                            <td id="quick_goodAgainst-slot1" colspan="2"></td>
+                                            <td id="quick_goodAgainst-slot1" class="goodAgainst" colspan="2"></td>
                                         </tr>
                                         <tr style="font-size: 0.7em;" >
-                                            <td id="quick_weakAgainst-slot1" colspan="2"></td>
+                                            <td id="quick_weakAgainst-slot1" class="weakAgainst" colspan="2"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align:center">Charge Move I</td>
+                                            <td style="text-align:center">Charge I</td>
                                             <td>
-                                                <select id="charge1_move-slot1" name="charge1_move-slot1">
+                                                <select id="charge1_move-slot1" name="charge1_move-slot1" class="custom-select">
                                                     <option>-- Selecione  --</option>
                                                 </select>
                                             </td>
                                         </tr>
                                         <tr style="font-size: 0.7em;" >
-                                            <td id="charge1_goodAgainst-slot1" colspan="2"></td>
+                                            <td id="charge1_goodAgainst-slot1" class="goodAgainst" colspan="2"></td>
                                         </tr>
                                         <tr style="font-size: 0.7em;" >
-                                            <td id="charge1_weakAgainst-slot1" colspan="2"></td>
+                                            <td id="charge1_weakAgainst-slot1" class="weakAgainst" colspan="2"></td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align:center">Charge Move II</td>
+                                            <td style="text-align:center">Charge II</td>
                                             <td>
-                                                <select id="charge2_move-slot1" name="charge2_move-slot1">
+                                                <select id="charge2_move-slot1" name="charge2_move-slot1" class="custom-select">
                                                     <option>-- Selecione  --</option>
                                                 </select>
                                             </td>
                                         </tr>
                                         <tr style="font-size: 0.7em;" >
-                                            <td id="charge2_goodAgainst-slot1" colspan="2"></td>
+                                            <td id="charge2_goodAgainst-slot1" class="goodAgainst" colspan="2"></td>
                                         </tr>
                                         <tr style="font-size: 0.7em;" >
-                                            <td id="charge2_weakAgainst-slot1" colspan="2"></td>
+                                            <td id="charge2_weakAgainst-slot1" class="weakAgainst" colspan="2"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -225,46 +225,46 @@
                                 <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
                                     <tbody>
                                     <tr>
-                                        <td style="text-align:center">Quick Move</td>
+                                        <td style="text-align:center">Quick</td>
                                         <td>
-                                            <select id="quick_move-slot2" name="quick_move-slot2">
+                                            <select id="quick_move-slot2" name="quick_move-slot2" class="custom-select">
                                                 <option>-- Selecione  --</option>
                                             </select>
                                         </td>
                                     </tr>
                                     <tr style="font-size: 0.7em;" >
-                                        <td id="quick_goodAgainst-slot2" colspan="2"></td>
+                                        <td id="quick_goodAgainst-slot2" class="goodAgainst" colspan="2"></td>
                                     </tr>
                                     <tr style="font-size: 0.7em;" >
-                                        <td id="quick_weakAgainst-slot2" colspan="2"></td>
+                                        <td id="quick_weakAgainst-slot2" class="weakAgainst" colspan="2"></td>
                                     </tr>
                                     <tr>
-                                        <td style="text-align:center">Charge Move I</td>
+                                        <td style="text-align:center">Charge I</td>
                                         <td>
-                                            <select id="charge1_move-slot2" name="charge1_move-slot2">
+                                            <select id="charge1_move-slot2" name="charge1_move-slot2" class="custom-select">
                                                 <option>-- Selecione  --</option>
                                             </select>
                                         </td>
                                     </tr>
                                     <tr style="font-size: 0.7em;" >
-                                        <td id="charge1_goodAgainst-slot2" colspan="2"></td>
+                                        <td id="charge1_goodAgainst-slot2" class="goodAgainst" colspan="2"></td>
                                     </tr>
                                     <tr style="font-size: 0.7em;" >
-                                        <td id="charge1_weakAgainst-slot2" colspan="2"></td>
+                                        <td id="charge1_weakAgainst-slot2" class="weakAgainst" colspan="2"></td>
                                     </tr>
                                     <tr>
-                                        <td style="text-align:center">Charge Move II</td>
+                                        <td style="text-align:center">Charge II</td>
                                         <td>
-                                            <select id="charge2_move-slot2" name="charge2_move-slot2">
+                                            <select id="charge2_move-slot2" name="charge2_move-slot2" class="custom-select">
                                                 <option>-- Selecione  --</option>
                                             </select>
                                         </td>
                                     </tr>
                                     <tr style="font-size: 0.7em;" >
-                                        <td id="charge2_goodAgainst-slot2" colspan="2"></td>
+                                        <td id="charge2_goodAgainst-slot2" class="goodAgainst" colspan="2"></td>
                                     </tr>
                                     <tr style="font-size: 0.7em;" >
-                                        <td id="charge2_weakAgainst-slot2" colspan="2"></td>
+                                        <td id="charge2_weakAgainst-slot2" class="weakAgainst" colspan="2"></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -310,46 +310,46 @@
                                 <table class="table-borderless" style="margin: 0 auto;width: 100%;text-align: center;">
                                     <tbody>
                                     <tr>
-                                        <td style="text-align:center">Quick Move</td>
+                                        <td style="text-align:center">Quick</td>
                                         <td>
-                                            <select id="quick_move-slot3" name="quick_move-slot3">
+                                            <select id="quick_move-slot3" name="quick_move-slot3" class="custom-select">
                                                 <option>-- Selecione  --</option>
                                             </select>
                                         </td>
                                     </tr>
                                     <tr style="font-size: 0.7em;" >
-                                        <td id="quick_goodAgainst-slot3" colspan="2"></td>
+                                        <td id="quick_goodAgainst-slot3" class="goodAgainst" colspan="2"></td>
                                     </tr>
                                     <tr style="font-size: 0.7em;" >
-                                        <td id="quick_weakAgainst-slot3" colspan="2"></td>
+                                        <td id="quick_weakAgainst-slot3" class="weakAgainst" colspan="2"></td>
                                     </tr>
                                     <tr>
-                                        <td style="text-align:center">Charge Move I</td>
+                                        <td style="text-align:center">Charge I</td>
                                         <td>
-                                            <select id="charge1_move-slot3" name="charge1_move-slot3">
+                                            <select id="charge1_move-slot3" name="charge1_move-slot3" class="custom-select">
                                                 <option>-- Selecione  --</option>
                                             </select>
                                         </td>
                                     </tr>
                                     <tr style="font-size: 0.7em;" >
-                                        <td id="charge1_goodAgainst-slot3" colspan="2"></td>
+                                        <td id="charge1_goodAgainst-slot3" class="goodAgainst" colspan="2"></td>
                                     </tr>
                                     <tr style="font-size: 0.7em;" >
-                                        <td id="charge1_weakAgainst-slot3" colspan="2"></td>
+                                        <td id="charge1_weakAgainst-slot3" class="weakAgainst" colspan="2"></td>
                                     </tr>
                                     <tr>
-                                        <td style="text-align:center">Charge Move II</td>
+                                        <td style="text-align:center">Charge II</td>
                                         <td>
-                                            <select id="charge2_move-slot3" name="charge2_move-slot3">
+                                            <select id="charge2_move-slot3" name="charge2_move-slot3" class="custom-select">
                                                 <option>-- Selecione  --</option>
                                             </select>
                                         </td>
                                     </tr>
                                     <tr style="font-size: 0.7em;" >
-                                        <td id="charge2_goodAgainst-slot3" colspan="2"></td>
+                                        <td id="charge2_goodAgainst-slot3" class="goodAgainst" colspan="2"></td>
                                     </tr>
                                     <tr style="font-size: 0.7em;" >
-                                        <td id="charge2_weakAgainst-slot3" colspan="2"></td>
+                                        <td id="charge2_weakAgainst-slot3" class="weakAgainst" colspan="2"></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -458,13 +458,13 @@
                     </div>
                     <div class="form-group row justify-content-center ">
                         <select id="quick_move-pkmpve" name="quick_move-pkmpve">
-                            <option value="">Quick Move</option>
+                            <option value="">Quick</option>
                         </select>
                         <select id="charge1_move-pkmpve" name="charge1_move-pkmpve">
-                            <option value="">Charge Move 1</option>
+                            <option value="">Charge 1</option>
                         </select>
                         <select id="charge2_move-pkmpve" name="charge2_move-pkmpve">
-                            <option value="">Charge Move 2</option>
+                            <option value="">Charge 2</option>
                         </select>
                     </div>
                     <div class="form-group row justify-content-center ">
