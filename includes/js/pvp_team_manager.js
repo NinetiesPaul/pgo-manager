@@ -19,9 +19,12 @@ function getMoveData(move, type, target) {
             data = jQuery.parseJSON(data)
 
             $('#' + type + '_goodAgainst-' + target).html('');
+            $('#' + type + '_goodAgainst-' + target).css('display', 'revert');
             $('#' + type + '_weakAgainst-' + target).html('');
+            $('#' + type + '_weakAgainst-' + target).css('display', 'revert');
 
             $.each(data.goodAgainst, function (index,value){
+
                 $('#' + type + '_goodAgainst-' + target).append(value);
 
                 if (index != data.goodAgainst.length - 1) {
