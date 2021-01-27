@@ -12,6 +12,24 @@ class MainController
     }
 
     /*
+     * This function force updates the local auxiliary json files
+     */
+    public function jsonUpdate()
+    {
+        file_put_contents(JsonUtil::SHADOW_JSON, file_get_contents("https://pogoapi.net/api/v1/shadow_pokemon.json"));
+        file_put_contents(JsonUtil::POKEMON_NAMES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_names.json"));
+        file_put_contents(JsonUtil::GALARIAN_JSON, file_get_contents("https://pogoapi.net/api/v1/galarian_pokemon.json"));
+        file_put_contents(JsonUtil::ALOLAN_JSON, file_get_contents("https://pogoapi.net/api/v1/alolan_pokemon.json"));
+        file_put_contents(JsonUtil::MEGA_JSON, file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json"));
+        file_put_contents(JsonUtil::TYPE_EFFECTIVENESS_JSON, file_get_contents("https://pogoapi.net/api/v1/type_effectiveness.json"));
+        file_put_contents(JsonUtil::TYPES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_types.json"));
+        file_put_contents(JsonUtil::STATS_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json"));
+        file_put_contents(JsonUtil::CP_MULTIPLIER_JSON, file_get_contents("https://pogoapi.net/api/v1/cp_multiplier.json"));
+        file_put_contents(JsonUtil::QUICK_MOVES_JSON, file_get_contents("https://pogoapi.net/api/v1/fast_moves.json"));
+        file_put_contents(JsonUtil::CHARGE_MOVES_JSON, file_get_contents("https://pogoapi.net/api/v1/charged_moves.json"));
+    }
+
+    /*
      * Retrieve complete Pokemon data to the front end
      */
     public function getPokemon($name)
@@ -132,24 +150,6 @@ class MainController
         ];
 
         new Templates('reader.html', $args);
-    }
-
-    /*
-     * This function force updates the local auxiliary json files
-     */
-    public function jsonUpdate()
-    {
-        file_put_contents(JsonUtil::SHADOW_JSON, file_get_contents("https://pogoapi.net/api/v1/shadow_pokemon.json"));
-        file_put_contents(JsonUtil::POKEMON_NAMES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_names.json"));
-        file_put_contents(JsonUtil::GALARIAN_JSON, file_get_contents("https://pogoapi.net/api/v1/galarian_pokemon.json"));
-        file_put_contents(JsonUtil::ALOLAN_JSON, file_get_contents("https://pogoapi.net/api/v1/alolan_pokemon.json"));
-        file_put_contents(JsonUtil::MEGA_JSON, file_get_contents("https://pogoapi.net/api/v1/mega_pokemon.json"));
-        file_put_contents(JsonUtil::TYPE_EFFECTIVENESS_JSON, file_get_contents("https://pogoapi.net/api/v1/type_effectiveness.json"));
-        file_put_contents(JsonUtil::TYPES_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_types.json"));
-        file_put_contents(JsonUtil::STATS_JSON, file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json"));
-        file_put_contents(JsonUtil::CP_MULTIPLIER_JSON, file_get_contents("https://pogoapi.net/api/v1/cp_multiplier.json"));
-        file_put_contents(JsonUtil::QUICK_MOVES_JSON, file_get_contents("https://pogoapi.net/api/v1/fast_moves.json"));
-        file_put_contents(JsonUtil::CHARGE_MOVES_JSON, file_get_contents("https://pogoapi.net/api/v1/charged_moves.json"));
     }
 
     /*
@@ -290,6 +290,89 @@ class MainController
     }
 
     /*
+     * Retrieve a list of released Pokemon
+     */
+    private function getPokemonsNameList()
+    {
+        $pokemonNameApi = JsonUtil::getPokemonsNames();
+        $pokemonName = [];
+        foreach ($pokemonNameApi as $item) {
+            $pokemonName[$item['name']] = $item['id'];
+        }
+
+        $galarianApi = JsonUtil::getGalarianPokemons();
+        foreach ($galarianApi as $item) {
+            $galarianName = "Galarian " . $item['name'];
+            $pokemonName[$galarianName] = $item['id'];
+        }
+
+        $alolanApi = JsonUtil::getAlolanPokemons();
+        foreach ($alolanApi as $item) {
+            $alolanName = "Alolan " . $item['name'];
+            $pokemonName[$alolanName] = $item['id'];
+        }
+
+        $shadowApi = JsonUtil::getShadowPokemons();
+        foreach ($shadowApi as $item) {
+            $shadowName = "Shadow " . $item['name'];
+            $pokemonName[$shadowName] = $item['id'];
+        }
+
+        $megaPokemonTypeApi = JsonUtil::getMegaPokemons();
+        foreach ($megaPokemonTypeApi as $item) {
+            $pokemonName[$item['mega_name']] = $item['pokemon_id'];
+        }
+
+        $names = $this->getPokemonsNamesFromCsv();
+        foreach ($names as $index => $name) {
+            if (!in_array($name, array_keys($pokemonName))) {
+                unset($names[$index]);
+                continue;
+            }
+            $names[$index] = str_pad($pokemonName[$name], 3, '0', 0) . " - " . $names[$index];
+        }
+
+        sort($names);
+
+        return $names;
+    }
+
+    /*
+     * Retrieve a list of Pokemon names from the CSV file
+     */
+    private function getPokemonsNamesFromCsv()
+    {
+        $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));
+
+        $pokemonsNameList = [];
+
+        foreach ($pokemonsCsv as $row => $line) {
+
+            if ($row === 0)
+                continue;
+
+            if (!in_array($line[0], $pokemonsNameList)) {
+                $pokemonsNameList[] = $line[0];
+            }
+        }
+
+        sort($pokemonsNameList);
+
+        return $pokemonsNameList;
+    }
+
+    /*
+     * This function retrieves a pokemon data from PokeDB json file
+     */
+    private function getPokemonData($getName)
+    {
+        $pokedb = file_get_contents('includes/files/pokedb.json');
+        $pokedb = json_decode($pokedb, true);
+
+        return $pokedb[$getName];
+    }
+
+    /*
      * This function retrieves vulnerable/resistant information based on types
      */
     private function getPokemonDefenseData($inTypes)
@@ -420,89 +503,6 @@ class MainController
             'vulnerable_to' => $finalVulnerableTo,
             'resistant_to' => $finalResistantTo
         ];
-    }
-
-    /*
-     * This function retrieves a pokemon data from PokeDB json file
-     */
-    private function getPokemonData($getName)
-    {
-        $pokedb = file_get_contents('includes/files/pokedb.json');
-        $pokedb = json_decode($pokedb, true);
-
-        return $pokedb[$getName];
-    }
-
-    /*
-     * Retrieve a list of released Pokemon
-     */
-    private function getPokemonsNameList()
-    {
-        $pokemonNameApi = JsonUtil::getPokemonsNames();
-        $pokemonName = [];
-        foreach ($pokemonNameApi as $item) {
-            $pokemonName[$item['name']] = $item['id'];
-        }
-
-        $galarianApi = JsonUtil::getGalarianPokemons();
-        foreach ($galarianApi as $item) {
-            $galarianName = "Galarian " . $item['name'];
-            $pokemonName[$galarianName] = $item['id'];
-        }
-
-        $alolanApi = JsonUtil::getAlolanPokemons();
-        foreach ($alolanApi as $item) {
-            $alolanName = "Alolan " . $item['name'];
-            $pokemonName[$alolanName] = $item['id'];
-        }
-
-        $shadowApi = JsonUtil::getShadowPokemons();
-        foreach ($shadowApi as $item) {
-            $shadowName = "Shadow " . $item['name'];
-            $pokemonName[$shadowName] = $item['id'];
-        }
-
-        $megaPokemonTypeApi = JsonUtil::getMegaPokemons();
-        foreach ($megaPokemonTypeApi as $item) {
-            $pokemonName[$item['mega_name']] = $item['pokemon_id'];
-        }
-
-        $names = $this->getPokemonsNamesFromCsv();
-        foreach ($names as $index => $name) {
-            if (!in_array($name, array_keys($pokemonName))) {
-                unset($names[$index]);
-                continue;
-            }
-            $names[$index] = str_pad($pokemonName[$name], 3, '0', 0) . " - " . $names[$index];
-        }
-
-        sort($names);
-
-        return $names;
-    }
-
-    /*
-     * Retrieve a list of Pokemon names from the CSV file
-     */
-    private function getPokemonsNamesFromCsv()
-    {
-        $pokemonsCsv = array_map('str_getcsv', file('includes/files/comprehensive_dps.csv'));
-
-        $pokemonsNameList = [];
-
-        foreach ($pokemonsCsv as $row => $line) {
-
-            if ($row === 0)
-                continue;
-
-            if (!in_array($line[0], $pokemonsNameList)) {
-                $pokemonsNameList[] = $line[0];
-            }
-        }
-
-        sort($pokemonsNameList);
-
-        return $pokemonsNameList;
     }
 
     private function formatValue($number, $decimal = 0) {
