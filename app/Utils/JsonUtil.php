@@ -19,7 +19,7 @@ class JsonUtil
     const CURRENT_PKM_MOVES_JSON = 'includes/files/current_pokemon_moves.json';
     
     const ALLOWED_FORMS = [
-        'Altered', 'Origin', 'Galarian', 'Shadow', 'Alola', 'Defense', 'Attack', 'Speed'
+        'Altered', 'Origin', 'Galarian', 'Shadow', 'Alola', 'Defense', 'Attack', 'Speed', 'A'
     ];
 
     public static function getMegaPokemons($force = false)
