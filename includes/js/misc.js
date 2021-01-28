@@ -69,7 +69,7 @@ function getPokemonData(pokemon, slot) {
             }
 
             form = '';
-            if (data.name.includes('Alolan')) {
+            if (data.name.includes('Alola')) {
                 form = '-alola';
             }
             if (data.name.includes('Galarian')) {
