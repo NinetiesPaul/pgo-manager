@@ -9,11 +9,6 @@ SimpleRouter::get('/', function() {
     $controller->teamBuilder();
 });
 
-SimpleRouter::get('/pokedb', function() {
-    $controller = new MainController();
-    $controller->pokeDB();
-});
-
 SimpleRouter::get('/json_update', function() {
     $controller = new MainController();
     $controller->jsonUpdate();
