@@ -75,6 +75,21 @@ function getPokemonData(pokemon, slot) {
             if (data.name.includes('Galarian')) {
                 form = '-galar'
             }
+            if (data.name.includes('Altered')) {
+                form = '-altered';
+            }
+            if (data.name.includes('Origin')) {
+                form = '-origin'
+            }
+            if (data.name.includes('Attack')) {
+                form = '-attack'
+            }
+            if (data.name.includes('Defense')) {
+                form = '-defense'
+            }
+            if (data.name.includes('Speed')) {
+                form = '-speed'
+            }
             if (data.name.includes('Mega')) {
                 form = '-mega'
 				if (data.name.includes('X')) {
