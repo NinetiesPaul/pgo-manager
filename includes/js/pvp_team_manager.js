@@ -9,7 +9,7 @@ function disableMove(value, target) {
 }
 
 function getMoveData(move, type, target) {
-    move = move.replace(' ', '_');
+    move = move.replaceAll(' ', '_');
 
     $.ajax({
         type: "GET",
@@ -17,6 +17,9 @@ function getMoveData(move, type, target) {
         success: function(data){
 
             data = jQuery.parseJSON(data)
+
+            imgSrc = 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Types/POKEMON_TYPE_' + data.type + '.png';
+            $('#' + type + '_move_type-' + target).html("<img src='" + imgSrc + "' height='25px' width='25px'/>");
 
             $('#' + type + '_goodAgainst-' + target).html('');
             $('#' + type + '_goodAgainst-' + target).css('display', 'revert');
