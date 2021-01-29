@@ -68,6 +68,7 @@ class MainController
 
         $goodAgainst = [];
         $weakAgainst = [];
+        $moveType = '';
 
         switch ($type) {
             case 'quick':
@@ -75,6 +76,7 @@ class MainController
 
                 foreach (array_keys($quickMovesJson) as $quickMove) {
                     if ($quickMove === $name) {
+                        $moveType = $quickMovesJson[$quickMove];
                         foreach ($types[$quickMovesJson[$quickMove]] as $key => $value)
                         {
                             if ($value > 1) {
@@ -94,6 +96,7 @@ class MainController
 
                 foreach (array_keys($chargeMovesJson) as $chargeMove) {
                     if ($chargeMove === $name) {
+                        $moveType = $chargeMovesJson[$chargeMove];
                         foreach ($types[$chargeMovesJson[$chargeMove]] as $key => $value)
                         {
                             if ($value > 1) {
@@ -109,12 +112,13 @@ class MainController
                 break;
         }
 
-        $result = [
+        $response = [
+            'type' => strtoupper($moveType),
             'weakAgainst' => $weakAgainst,
             'goodAgainst' => $goodAgainst
         ];
 
-        echo json_encode($result);
+        echo json_encode($response);
     }
 
     /*
