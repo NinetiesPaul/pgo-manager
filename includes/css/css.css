@@ -86,3 +86,7 @@ p {
   background-color: #bd6363;
   border-radius: 0px 0px 5px 5px;
 }
+
+.move_type_image_icon{
+  width: 20%;
+}
