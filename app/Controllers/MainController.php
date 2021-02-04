@@ -164,6 +164,35 @@ class MainController
         new Templates('reader.html', $args);
     }
 
+    public function jsBuilder()
+    {
+        $stats = JsonUtil::getStats();
+        $types = JsonUtil::getType();
+        $currentMoves = JsonUtil::getCurrentPkmMoves();
+
+        $jsDB = "var pokeDB = {\n";
+
+        foreach ($stats as $name => $pkm) {
+            $pokeData = $pkm;
+            $pokeData['type'] = $types[$name];
+            $pokeData['quick_moves'] = $currentMoves[$name]['quick'];
+            $pokeData['charge_moves'] = $currentMoves[$name]['charge'];
+
+            $pokemonType = explode("/", $types[$name]);
+
+            $defense_data = $this->getPokemonDefenseData($pokemonType);
+
+            $pokeData['vulnerable_to'] = $defense_data['vulnerable_to'];
+            $pokeData['resistant_to'] = $defense_data['resistant_to'];
+            $jsDB .= "\"$name\": " . json_encode($pokeData, JSON_PRETTY_PRINT) . ",\n";
+        }
+
+        $jsDB .= "}";
+
+        file_put_contents('includes/files/pkdb.js', $jsDB);
+
+    }
+
     /*
      * Retrieve a list of released Pokemon
      */

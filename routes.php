@@ -43,3 +43,8 @@ SimpleRouter::get('/pkmpve/{idPkm}', function($idPkm) {
     $reader = new PkmPveController();
     $reader->getPkmPve($idPkm);
 });
+
+SimpleRouter::get('/jsBuilder', function() {
+    $reader = new MainController();
+    $reader->jsBuilder();
+});
