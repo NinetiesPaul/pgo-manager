@@ -119,6 +119,8 @@ class MainController
         ];
 
         echo json_encode($response);
+
+        return $response;
     }
 
     /*
@@ -173,23 +175,59 @@ class MainController
         $jsDB = "var pokeDB = {\n";
 
         foreach ($stats as $name => $pkm) {
-            $pokeData = $pkm;
-            $pokeData['type'] = $types[$name];
-            $pokeData['quick_moves'] = $currentMoves[$name]['quick'];
-            $pokeData['charge_moves'] = $currentMoves[$name]['charge'];
-
+            $pokeData['id'] = str_pad($pkm['id'], 3, '0', 0);
+            unset($pkm['id']);
             $pokemonType = explode("/", $types[$name]);
+            $pokeData['stats'] = $pkm;
+            $pokeData['type'] = $pokemonType;
+            $pokeData['name'] = $name;
+            $pokeData['moveset']['quick'] = $currentMoves[$name]['quick'];
+            $pokeData['moveset']['charge'] = $currentMoves[$name]['charge'];
 
             $defense_data = $this->getPokemonDefenseData($pokemonType);
 
-            $pokeData['vulnerable_to'] = $defense_data['vulnerable_to'];
-            $pokeData['resistant_to'] = $defense_data['resistant_to'];
+            $pokeData['defense_data'] = $defense_data;
             $jsDB .= "\"$name\": " . json_encode($pokeData, JSON_PRETTY_PRINT) . ",\n";
         }
 
         $jsDB .= "}";
 
-        file_put_contents('includes/files/pkdb.js', $jsDB);
+        file_put_contents('includes/files/db_pokedata.js', $jsDB);
+
+        $quickMoves = JsonUtil::getQuickMoves();
+
+        $jsDB = "var quickMoveDB = {\n";
+
+        foreach ($quickMoves as $name => $quickMove) {
+            $getMove = $this->getMove($name, 'quick');
+
+            $moveData['type'] = $getMove['type'];;
+            $moveData['weakAgainst'] = $getMove['weakAgainst'];
+            $moveData['goodAgainst'] = $getMove['goodAgainst'];
+
+            $jsDB .= "\"$name\": " . json_encode($moveData, JSON_PRETTY_PRINT) . ",\n";
+        }
+
+        $jsDB .= "}";
+
+        file_put_contents('includes/files/db_quick.js', $jsDB);
+
+        $chargeMoves = JsonUtil::getChargeMoves();
+
+        $jsDB = "var chargeMoveDB = {\n";
+
+        foreach ($chargeMoves as $name => $chargeMove) {
+            $getMove = $this->getMove($name, 'charge1');
+
+            $moveData['type'] = $getMove['type'];;
+            $moveData['weakAgainst'] = $getMove['weakAgainst'];
+            $moveData['goodAgainst'] = $getMove['goodAgainst'];
+
+            $jsDB .= "\"$name\": " . json_encode($moveData, JSON_PRETTY_PRINT) . ",\n";        }
+
+        $jsDB .= "}";
+
+        file_put_contents('includes/files/db_charge.js', $jsDB);
 
     }
 
