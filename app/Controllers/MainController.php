@@ -53,7 +53,8 @@ class MainController
             'moveset' => [
                 'quick' => $jsonCurrentMoves[$pokemonName]['quick'],
                 'charge' => $jsonCurrentMoves[$pokemonName]['charge']
-            ]
+            ],
+            'imgurl' => $this->formatImgUrl($jsonStats[$pokemonName]['id'], $pokemonName)
         ]);
     }
 
@@ -166,6 +167,9 @@ class MainController
         new Templates('reader.html', $args);
     }
 
+    /*
+     * This function is responsible for generating the pokemon database files for the pure front end version of this app
+     */
     public function jsBuilder()
     {
         $stats = JsonUtil::getStats();
@@ -176,6 +180,7 @@ class MainController
 
         foreach ($stats as $name => $pkm) {
             $pokeData['id'] = str_pad($pkm['id'], 3, '0', 0);
+            $pokeData['imgurl'] = $this->formatImgUrl($pkm['id'], $name);
             unset($pkm['id']);
             $pokemonType = explode("/", $types[$name]);
             $pokeData['stats'] = $pkm;
@@ -183,10 +188,8 @@ class MainController
             $pokeData['name'] = $name;
             $pokeData['moveset']['quick'] = $currentMoves[$name]['quick'];
             $pokeData['moveset']['charge'] = $currentMoves[$name]['charge'];
+            $pokeData['defense_data'] = $this->getPokemonDefenseData($pokemonType);
 
-            $defense_data = $this->getPokemonDefenseData($pokemonType);
-
-            $pokeData['defense_data'] = $defense_data;
             $jsDB .= "\"$name\": " . json_encode($pokeData, JSON_PRETTY_PRINT) . ",\n";
         }
 
@@ -194,7 +197,7 @@ class MainController
 
         file_put_contents('includes/files/db_pokedata.js', $jsDB);
 
-        $quickMoves = JsonUtil::getQuickMoves();
+        /*$quickMoves = JsonUtil::getQuickMoves();
 
         $jsDB = "var quickMoveDB = {\n";
 
@@ -227,7 +230,7 @@ class MainController
 
         $jsDB .= "}";
 
-        file_put_contents('includes/files/db_charge.js', $jsDB);
+        file_put_contents('includes/files/db_charge.js', $jsDB);*/
 
     }
 
@@ -377,6 +380,45 @@ class MainController
             'vulnerable_to' => $finalVulnerableTo,
             'resistant_to' => $finalResistantTo
         ];
+    }
+
+    private function formatImgUrl($id, $name)
+    {
+        $imgUrl = $id;
+
+        if (is_numeric(strpos($name, "Galarian"))) {
+            $formattedName = strtolower(explode(" ", $name)[1]) . '-galar';
+            $pkm = JsonUtil::getPokeApiJson($formattedName);
+            $imgUrl = is_numeric($pkm['id']) ? $pkm['id'] : '';
+        }
+
+        if (is_numeric(strpos($name, "Alola"))) {
+            $formattedName = strtolower(explode(" ", $name)[1]) . '-alola';
+            $pkm = JsonUtil::getPokeApiJson($formattedName);
+            $imgUrl = is_numeric($pkm['id']) ? $pkm['id'] : '';
+        }
+
+        if (is_numeric(strpos($name, "Altered"))) {
+            $imgUrl = $id . '-altered';
+        }
+
+        if (is_numeric(strpos($name, "Origin"))) {
+            $imgUrl = $id . '-origin';
+        }
+
+        if (is_numeric(strpos($name, "Attack"))) {
+            $imgUrl = $id . '-attack';
+        }
+
+        if (is_numeric(strpos($name, "Defense"))) {
+            $imgUrl = $id . '-defense';
+        }
+
+        if (is_numeric(strpos($name, "Speed"))) {
+            $imgUrl = $id . '-speed';
+        }
+
+        return $imgUrl;
     }
 
     private function formatValue($number, $decimal = 0) {
