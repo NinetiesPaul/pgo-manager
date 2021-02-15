@@ -177,4 +177,10 @@ class JsonUtil
         $content = file_get_contents(self::CURRENT_PKM_MOVES_JSON);
         return json_decode($content, true);
     }
+
+    public static function getPokeApiJson($pokemon)
+    {
+        $read = file_get_contents("https://pokeapi.co/api/v2/pokemon/" . $pokemon);
+        return json_decode($read, true);
+    }
 }
