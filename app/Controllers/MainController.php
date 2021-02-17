@@ -197,7 +197,7 @@ class MainController
 
         file_put_contents('includes/files/db_pokedata.js', $jsDB);
 
-        /*$quickMoves = JsonUtil::getQuickMoves();
+        $quickMoves = JsonUtil::getQuickMoves();
 
         $jsDB = "var quickMoveDB = {\n";
 
@@ -230,7 +230,7 @@ class MainController
 
         $jsDB .= "}";
 
-        file_put_contents('includes/files/db_charge.js', $jsDB);*/
+        file_put_contents('includes/files/db_charge.js', $jsDB);
 
     }
 
