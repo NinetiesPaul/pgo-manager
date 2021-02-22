@@ -17,7 +17,7 @@ class JsonUtil
     const QUICK_MOVES_JSON = 'includes/files/fast_moves.json';
     const CHARGE_MOVES_JSON = 'includes/files/charged_moves.json';
     const CURRENT_PKM_MOVES_JSON = 'includes/files/current_pokemon_moves.json';
-    
+
     const ALLOWED_FORMS = [
         'Altered', 'Origin', 'Galarian', 'Shadow', 'Alola', 'Defense', 'Attack', 'Speed', 'A'
     ];
@@ -167,8 +167,28 @@ class JsonUtil
                     $name = $item['form'] . " " . $item['pokemon_name'];
                 }
 
-                $toWrite[$name]['quick'] = array_merge($item['fast_moves'], $item['elite_fast_moves']);
-                $toWrite[$name]['charge'] = array_merge($item['charged_moves'], $item['elite_charged_moves']);
+                $toWrite[$name]['quick'] = array_merge(
+                    $item['fast_moves'],
+                    array_map(
+                        function ($move)
+                        {
+                            return $move . "*";
+                        }
+                        ,
+                        $item['elite_fast_moves']
+                    )
+                );
+
+                $toWrite[$name]['charge'] = array_merge(
+                    $item['charged_moves'],
+                    array_map(
+                        function ($move)
+                        {
+                            return $move . "*";
+                        }
+                        , $item['elite_charged_moves']
+                    )
+                );
             }
 
             file_put_contents(self::CURRENT_PKM_MOVES_JSON, json_encode($toWrite, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -182,5 +202,10 @@ class JsonUtil
     {
         $read = file_get_contents("https://pokeapi.co/api/v2/pokemon/" . $pokemon);
         return json_decode($read, true);
+    }
+
+    function eliteFormatter($move)
+    {
+        return $move . "*";
     }
 }

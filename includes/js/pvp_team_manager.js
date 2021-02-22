@@ -10,6 +10,7 @@ function disableMove(value, target) {
 
 function getMoveData(move, type, target) {
     move = move.replaceAll(' ', '_');
+    move = move.replaceAll('*', '');
 
     $.ajax({
         type: "GET",
