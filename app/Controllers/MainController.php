@@ -418,6 +418,14 @@ class MainController
             $imgUrl = $id . '-speed';
         }
 
+        if (is_numeric(strpos($name, "Incarnate"))) {
+            $imgUrl = $id . '-incarnate';
+        }
+
+        if (is_numeric(strpos($name, "Therian"))) {
+            $imgUrl = $id . '-therian';
+        }
+
         return $imgUrl;
     }
 
