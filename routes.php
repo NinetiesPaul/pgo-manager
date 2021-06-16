@@ -9,7 +9,7 @@ SimpleRouter::get('/', function() {
     $controller->teamBuilder();
 });
 
-SimpleRouter::get('/json_update', function() {
+SimpleRouter::get('/jsonUpdate', function() {
     $controller = new MainController();
     $controller->jsonUpdate();
 });
