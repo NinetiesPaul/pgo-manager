@@ -118,6 +118,27 @@ class MainController
             'weakAgainst' => $weakAgainst,
             'goodAgainst' => $goodAgainst
         ];
+        
+        $url = "https://pokemongo.fandom.com/wiki/" . str_replace(' ', '_', $name);
+        
+        $file = file_get_contents($url);
+
+		$file = strip_tags($file);
+
+		$file = explode("Type effectiveness", $file);
+
+		$file = explode("Trainer Battles", $file[0]);
+
+		$moveData = trim($file[1]);
+
+		$moveData = preg_replace("/\s+/", " ", $moveData);
+		
+		$moveData = explode(" ", $moveData);
+		
+		$moveData = ($type == 'quick') ?  [ $moveData[3], $moveData[4] ] : [ $moveData[2], $moveData[3] ] ;
+        
+        $response['power'] = $moveData[0];
+        $response['energy'] = $moveData[1];
 
         echo json_encode($response);
 
@@ -170,7 +191,7 @@ class MainController
     /*
      * This function is responsible for generating the pokemon database files for the pure front end version of this app
      */
-    public function jsBuilder()
+    public function jsBuilderPokeData()
     {
         $stats = JsonUtil::getStats();
         $types = JsonUtil::getType();
@@ -197,6 +218,14 @@ class MainController
 
         file_put_contents('includes/files/db_pokedata.js', $jsDB);
 
+    }
+
+    /*
+     * This function is responsible for generating the pokemon database files for the pure front end version of this app
+     */
+    public function jsBuilderQuick()
+    {
+
         $quickMoves = JsonUtil::getQuickMoves();
 
         $jsDB = "var quickMoveDB = {\n";
@@ -204,9 +233,11 @@ class MainController
         foreach ($quickMoves as $name => $quickMove) {
             $getMove = $this->getMove($name, 'quick');
 
-            $moveData['type'] = $getMove['type'];;
+            $moveData['type'] = $getMove['type'];
             $moveData['weakAgainst'] = $getMove['weakAgainst'];
             $moveData['goodAgainst'] = $getMove['goodAgainst'];
+            $moveData['power'] = $getMove['power'];
+            $moveData['energy'] = $getMove['energy'];
 
             $jsDB .= "\"$name\": " . json_encode($moveData, JSON_PRETTY_PRINT) . ",\n";
         }
@@ -215,6 +246,14 @@ class MainController
 
         file_put_contents('includes/files/db_quick.js', $jsDB);
 
+    }
+
+    /*
+     * This function is responsible for generating the pokemon database files for the pure front end version of this app
+     */
+    public function jsBuilderCharge()
+    {
+
         $chargeMoves = JsonUtil::getChargeMoves();
 
         $jsDB = "var chargeMoveDB = {\n";
@@ -222,9 +261,11 @@ class MainController
         foreach ($chargeMoves as $name => $chargeMove) {
             $getMove = $this->getMove($name, 'charge1');
 
-            $moveData['type'] = $getMove['type'];;
+            $moveData['type'] = $getMove['type'];
             $moveData['weakAgainst'] = $getMove['weakAgainst'];
             $moveData['goodAgainst'] = $getMove['goodAgainst'];
+            $moveData['power'] = $getMove['power'];
+            $moveData['energy'] = $getMove['energy'];
 
             $jsDB .= "\"$name\": " . json_encode($moveData, JSON_PRETTY_PRINT) . ",\n";        }
 
