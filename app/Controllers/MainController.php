@@ -270,7 +270,8 @@ class MainController
             $moveData['power'] = $getMove['power'];
             $moveData['energy'] = $getMove['energy'];
 
-            $jsDB .= "\"$name\": " . json_encode($moveData, JSON_PRETTY_PRINT) . ",\n";        }
+            $jsDB .= "\"$name\": " . json_encode($moveData, JSON_PRETTY_PRINT) . ",\n";
+        }
 
         $jsDB .= "}";
 
@@ -452,7 +453,7 @@ class MainController
                 $imgUrl = is_numeric($pkm['id']) ? $pkm['id'] : '';
                 break;
 
-            case "Purified" || "Shadow":
+            case "Shadow":
                 break;
 
             default:
