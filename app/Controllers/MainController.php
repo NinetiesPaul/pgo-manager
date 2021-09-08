@@ -7,8 +7,11 @@ use App\Utils\JsonUtil;
 
 class MainController
 {
+    protected $jsonUtil;
+
     public function __construct()
     {
+        $this->jsonUtil = new JsonUtil();
     }
 
     /*
@@ -16,13 +19,13 @@ class MainController
      */
     public function jsonUpdate()
     {
-        JsonUtil::getTypeEffectiveness(true);
-        JsonUtil::getMegaPokemons(true);
-        JsonUtil::getType(true);
-        JsonUtil::getStats(true);
-        JsonUtil::getQuickMoves(true);
-        JsonUtil::getChargeMoves(true);
-        JsonUtil::getCurrentPkmMoves(true);
+        $this->jsonUtil->getTypeEffectiveness(true);
+        $this->jsonUtil->getMegaPokemons(true);
+        $this->jsonUtil->getType(true);
+        $this->jsonUtil->getStats(true);
+        $this->jsonUtil->getQuickMoves(true);
+        $this->jsonUtil->getChargeMoves(true);
+        $this->jsonUtil->getCurrentPkmMoves(true);
     }
 
     /*
@@ -30,9 +33,9 @@ class MainController
      */
     public function getPokemon($name)
     {
-        $jsonType = JsonUtil::getType();
-        $jsonStats = JsonUtil::getStats();
-        $jsonCurrentMoves = JsonUtil::getCurrentPkmMoves();
+        $jsonType = $this->jsonUtil->getType();
+        $jsonStats = $this->jsonUtil->getStats();
+        $jsonCurrentMoves = $this->jsonUtil->getCurrentPkmMoves();
 
         $pokemonName = str_replace("_", " ", $name);
 
@@ -65,7 +68,7 @@ class MainController
     {
         $name = str_replace('_', ' ', $name);
 
-        $types = JsonUtil::getTypeEffectiveness();
+        $types = $this->jsonUtil->getTypeEffectiveness();
 
         $goodAgainst = [];
         $weakAgainst = [];
@@ -73,7 +76,7 @@ class MainController
 
         switch ($type) {
             case 'quick':
-                $quickMovesJson = JsonUtil::getQuickMoves();
+                $quickMovesJson = $this->jsonUtil->getQuickMoves();
 
                 foreach (array_keys($quickMovesJson) as $quickMove) {
                     if ($quickMove === $name) {
@@ -93,7 +96,7 @@ class MainController
                 break;
 
             case 'charge1' || 'charge2':
-                $chargeMovesJson = JsonUtil::getChargeMoves();
+                $chargeMovesJson = $this->jsonUtil->getChargeMoves();
 
                 foreach (array_keys($chargeMovesJson) as $chargeMove) {
                     if ($chargeMove === $name) {
@@ -193,9 +196,9 @@ class MainController
      */
     public function jsBuilderPokeData()
     {
-        $stats = JsonUtil::getStats();
-        $types = JsonUtil::getType();
-        $currentMoves = JsonUtil::getCurrentPkmMoves();
+        $stats = $this->jsonUtil->getStats();
+        $types = $this->jsonUtil->getType();
+        $currentMoves = $this->jsonUtil->getCurrentPkmMoves();
 
         $jsDB = "var pokeDB = {\n";
 
@@ -226,7 +229,7 @@ class MainController
     public function jsBuilderQuick()
     {
 
-        $quickMoves = JsonUtil::getQuickMoves();
+        $quickMoves = $this->jsonUtil->getQuickMoves();
 
         $jsDB = "var quickMoveDB = {\n";
 
@@ -254,7 +257,7 @@ class MainController
     public function jsBuilderCharge()
     {
 
-        $chargeMoves = JsonUtil::getChargeMoves();
+        $chargeMoves = $this->jsonUtil->getChargeMoves();
 
         $jsDB = "var chargeMoveDB = {\n";
 
@@ -280,8 +283,8 @@ class MainController
      */
     private function getPokemonsNameList()
     {
-        $pokemonType = JsonUtil::getType();
-        $megaPokemonType = JsonUtil::getMegaPokemons();
+        $pokemonType = $this->jsonUtil->getType();
+        $megaPokemonType = $this->jsonUtil->getMegaPokemons();
 
         $names = array_merge(array_keys($pokemonType), array_keys($megaPokemonType));
 
@@ -295,7 +298,7 @@ class MainController
      */
     private function getPokemonDefenseData($inTypes)
     {
-        $types = JsonUtil::getTypeEffectiveness();
+        $types = $this->jsonUtil->getTypeEffectiveness();
 
         $getTypeA = $inTypes[0];
         $getTypeB = false;
@@ -427,44 +430,33 @@ class MainController
     {
         $imgUrl = $id;
 
-        if (is_numeric(strpos($name, "Galarian"))) {
-            $formattedName = strtolower(explode(" ", $name)[1]) . '-galar';
-            $pkm = JsonUtil::getPokeApiJson($formattedName);
-            $imgUrl = is_numeric($pkm['id']) ? $pkm['id'] : '';
+        $name = explode(" ", $name);
+
+        if (sizeof($name) == 1) {
+            return $imgUrl;
         }
 
-        if (is_numeric(strpos($name, "Alola"))) {
-            $formattedName = strtolower(explode(" ", $name)[1]) . '-alola';
-            $pkm = JsonUtil::getPokeApiJson($formattedName);
-            $imgUrl = is_numeric($pkm['id']) ? $pkm['id'] : '';
-        }
+        $form = $name[0];
 
-        if (is_numeric(strpos($name, "Altered"))) {
-            $imgUrl = $id . '-altered';
-        }
+        switch ($form)
+        {
+            case "Galarian":
+                $formattedName = strtolower($name[1]) . '-galar';
+                $pkm = $this->jsonUtil->getPokeApiJson($formattedName);
+                $imgUrl = is_numeric($pkm['id']) ? $pkm['id'] : '';
+                break;
 
-        if (is_numeric(strpos($name, "Origin"))) {
-            $imgUrl = $id . '-origin';
-        }
+            case "Alola":
+                $formattedName = strtolower($name[1]) . '-alola';
+                $pkm = $this->jsonUtil->getPokeApiJson($formattedName);
+                $imgUrl = is_numeric($pkm['id']) ? $pkm['id'] : '';
+                break;
 
-        if (is_numeric(strpos($name, "Attack"))) {
-            $imgUrl = $id . '-attack';
-        }
+            case "Purified" || "Shadow":
+                break;
 
-        if (is_numeric(strpos($name, "Defense"))) {
-            $imgUrl = $id . '-defense';
-        }
-
-        if (is_numeric(strpos($name, "Speed"))) {
-            $imgUrl = $id . '-speed';
-        }
-
-        if (is_numeric(strpos($name, "Incarnate"))) {
-            $imgUrl = $id . '-incarnate';
-        }
-
-        if (is_numeric(strpos($name, "Therian"))) {
-            $imgUrl = $id . '-therian';
+            default:
+                $imgUrl = $id . '-' . strtolower($form);
         }
 
         return $imgUrl;
