@@ -18,6 +18,4 @@ Before running the project:
 * Install Composer 
 
 Configuring the project:
-* Install the project dependencies using Composer (https://getcomposer.org/):
-* Click 'Export to CSV' and download CSV file on https://gamepress.gg/pokemongo/comprehensive-dps-spreadsheet
-* Access local address depending on your hosting configuration. The project is ready to use!
+* TBD
