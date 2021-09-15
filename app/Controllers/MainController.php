@@ -279,6 +279,51 @@ class MainController
 
     }
 
+    public function teamAssembler()
+    {
+
+        $list = explode(",", $_POST['pkm-list']);
+
+        $teams = [];
+        foreach ($list as $itemA) {
+            foreach ($list as $itemB) {
+                foreach ($list as $itemC) {
+                    if ($itemA != $itemB && $itemA != $itemC && $itemB != $itemC) {
+                        $team = [$itemA, $itemB, $itemC];
+                        sort($team);
+                        $teams[] = implode(",", $team);
+                    }
+                }
+            }
+        }
+
+        $finalTeams = [];
+
+        foreach (array_count_values($teams) as $key => $team) {
+            $team = explode(",", $key);
+            $innerTeam = [];
+            $innerTeamResistances = 0;
+            $innerTeamWeaknesses = 0;
+            foreach ($team as $pkm) {
+                $getData = $this->getPokemonAsReturn($pkm);
+                $pokeData['name'] = $getData['name'];
+                $pokeData['resistant_to'] = $getData['defense_data']['resistant_to'];
+                $pokeData['vulnerable_to'] = $getData['defense_data']['vulnerable_to'];
+                $innerTeamResistances += count($getData['defense_data']['resistant_to']);
+                $innerTeamWeaknesses += count($getData['defense_data']['vulnerable_to']);
+                $innerTeam['members'][] = $pokeData;
+            }
+            $innerTeam['name'] = $key;
+            $innerTeam['resistances'] = $innerTeamResistances;
+            $innerTeam['weaknesses'] = $innerTeamWeaknesses;
+            $finalTeams[] = $innerTeam;
+        }
+
+        echo json_encode($finalTeams);
+
+        //array_multisort(array_column($finalTeams, 'resistances'), SORT_ASC, $finalTeams);
+    }
+
     /*
      * Retrieve a list of released Pokemon
      */
@@ -465,5 +510,42 @@ class MainController
 
     private function formatValue($number, $decimal = 0) {
         return number_format($number * 100, $decimal) . "%";
+    }
+
+
+
+    /*
+     * Private function similar to getPokemon only is used by the teamAssembler method
+     */
+    private function getPokemonAsReturn($name)
+    {
+        $jsonType = $this->jsonUtil->getType();
+        $jsonStats = $this->jsonUtil->getStats();
+        $jsonCurrentMoves = $this->jsonUtil->getCurrentPkmMoves();
+
+        $pokemonName = str_replace("_", " ", $name);
+
+        $pokemonType = explode("/", $jsonType[$pokemonName]);
+
+        $defense_data = $this->getPokemonDefenseData($pokemonType);
+
+        $result = [
+            'id' => str_pad($jsonStats[$pokemonName]['id'], 3, '0', 0),
+            'type' => $pokemonType,
+            'defense_data' => $defense_data,
+            'name' => $pokemonName,
+            'stats' => [
+                'atk' => $jsonStats[$pokemonName]['atk'],
+                'def' => $jsonStats[$pokemonName]['def'],
+                'sta' => $jsonStats[$pokemonName]['sta'],
+            ],
+            'moveset' => [
+                'quick' => $jsonCurrentMoves[$pokemonName]['quick'],
+                'charge' => $jsonCurrentMoves[$pokemonName]['charge']
+            ],
+            'imgurl' => $this->formatImgUrl($jsonStats[$pokemonName]['id'], $pokemonName)
+        ];
+
+        return $result;
     }
 }

@@ -88,3 +88,37 @@ $(document).on('change', '#charge2_move-slot3', function() {
     disableMove(this.value, 'charge1_move-slot3');
     getMoveData(this.value, 'charge2', 'slot3');
 });
+
+$(document).on('click', '.pkm-list-btn', function() {
+    $.ajax({
+        type: "POST",
+        url: "teamBuilder",
+        data: { 'pkm-list' : $(".pkm-list").val() },
+        success: function(response){
+
+            $(".teamassembler-table").html("<thead class='thead-dark'><tr><th>Slot 1</th><th>Slot 2</th><th>Slot 3</th><th>Resistances</th><th>Vulnerabilities</th></tr></thead>");
+
+            response = jQuery.parseJSON(response);
+
+            var rowText = '<tbody>';
+
+            $.each(response, function (index,value){
+
+                rowText += '<tr>';
+
+                $.each(value.members, function (index,value){
+                    rowText += '<td>' + value.name + '</td>';
+                });
+
+                rowText += '<td>' + value.resistances + '</td><td>' + value.weaknesses + '</td></tr>';
+
+            });
+
+            rowText += '</tbody>';
+
+            $(".teamassembler-table").append(rowText);
+
+        }
+    });
+});
+

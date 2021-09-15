@@ -106,6 +106,10 @@
                            aria-selected="true">PVP Team Builder</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" id="pvp-teamassembler-tab" data-toggle="tab" href="#pvp-teamassembler" role="tab" aria-controls="home"
+                           aria-selected="false">PVP Team Assembler</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" id="pkm-pvp-tab" data-toggle="tab" href="#pkm-pvp" role="tab" aria-controls="home"
                            aria-selected="false">Meus Pokemons - PVP</a>
                     </li>
@@ -392,6 +396,29 @@
                                 </table>
                             </div>
                         </div>
+
+                    </div>
+
+                    <div class="tab-pane fade show" id="pvp-teamassembler" role="tabpanel" >
+
+                        <textarea class="pkm-list"></textarea>
+
+                        <p><br><button type="button" class="btn btn-sm btn-primary pkm-list-btn">Create Teams</button></p>
+
+                        <table class='teamassembler-table table table-sm table-striped'>
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Slot 1</th>
+                                    <th>Slot 2</th>
+                                    <th>Slot 3</th>
+                                    <th>Resistances</th>
+                                    <th>Vulnerabilities</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+
 
                     </div>
 

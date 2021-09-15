@@ -58,3 +58,8 @@ SimpleRouter::get('/jsBuilderPokeData', function() {
     $reader = new MainController();
     $reader->jsBuilderPokeData();
 });
+
+SimpleRouter::post('/teamBuilder', function() {
+    $reader = new MainController();
+    $reader->teamAssembler();
+});
