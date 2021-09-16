@@ -299,6 +299,7 @@ class MainController
 
         $finalTeams = [];
 
+        set_time_limit(300);
         foreach (array_count_values($teams) as $key => $team) {
             $team = explode(",", $key);
             $innerTeam = [];
@@ -319,9 +320,9 @@ class MainController
             $finalTeams[] = $innerTeam;
         }
 
-        echo json_encode($finalTeams);
+        array_multisort(array_column($finalTeams, 'weaknesses'), SORT_ASC, $finalTeams);
 
-        //array_multisort(array_column($finalTeams, 'resistances'), SORT_ASC, $finalTeams);
+        echo json_encode($finalTeams);
     }
 
     /*
@@ -512,8 +513,6 @@ class MainController
         return number_format($number * 100, $decimal) . "%";
     }
 
-
-
     /*
      * Private function similar to getPokemon only is used by the teamAssembler method
      */
@@ -521,7 +520,6 @@ class MainController
     {
         $jsonType = $this->jsonUtil->getType();
         $jsonStats = $this->jsonUtil->getStats();
-        $jsonCurrentMoves = $this->jsonUtil->getCurrentPkmMoves();
 
         $pokemonName = str_replace("_", " ", $name);
 
@@ -530,19 +528,9 @@ class MainController
         $defense_data = $this->getPokemonDefenseData($pokemonType);
 
         $result = [
-            'id' => str_pad($jsonStats[$pokemonName]['id'], 3, '0', 0),
             'type' => $pokemonType,
             'defense_data' => $defense_data,
             'name' => $pokemonName,
-            'stats' => [
-                'atk' => $jsonStats[$pokemonName]['atk'],
-                'def' => $jsonStats[$pokemonName]['def'],
-                'sta' => $jsonStats[$pokemonName]['sta'],
-            ],
-            'moveset' => [
-                'quick' => $jsonCurrentMoves[$pokemonName]['quick'],
-                'charge' => $jsonCurrentMoves[$pokemonName]['charge']
-            ],
             'imgurl' => $this->formatImgUrl($jsonStats[$pokemonName]['id'], $pokemonName)
         ];
 

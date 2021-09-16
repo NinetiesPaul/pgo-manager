@@ -17,21 +17,29 @@ class JsonUtil
     const QUICK_MOVES_JSON = 'includes/files/fast_moves.json';
     const CHARGE_MOVES_JSON = 'includes/files/charged_moves.json';
     const CURRENT_PKM_MOVES_JSON = 'includes/files/current_pokemon_moves.json';
+    const FORMS_JSON = 'includes/files/pokemon_forms.json';
 
     protected $pkmForms = [];
 
     public function __construct()
     {
-        $read = file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json");
+        if (!file_exists(self::FORMS_JSON)) {
+            $read = file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json");
 
-        $pkms = json_decode($read, true);
+            $pkms = json_decode($read, true);
 
-        foreach ($pkms as $pkm) {
-            $form = $pkm['form'];
-            if (!strpos($form, "_") && !is_numeric($form) && $form !== "Normal" && $form !== "Purified")
-                if (!in_array($pkm['form'], $this->pkmForms))
-                    $this->pkmForms[] = $pkm['form'];
+            $forms = [];
+            foreach ($pkms as $pkm) {
+                $form = $pkm['form'];
+                if (!strpos($form, "_") && !is_numeric($form) && $form !== "Normal" && $form !== "Purified")
+                    if (!in_array($pkm['form'], $forms))
+                        $forms[] = $pkm['form'];
+            }
+
+            file_put_contents(self::FORMS_JSON, json_encode($forms, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         }
+
+        $this->pkmForms = file_get_contents(self::FORMS_JSON);
     }
 
     public function getMegaPokemons($force = false)
