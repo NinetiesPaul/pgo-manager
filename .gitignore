@@ -12,4 +12,5 @@ phinx.yml
 /includes/files/*.sql
 /includes/files/*.txt
 /includes/files/*.json
+/includes/files/*.js
 /includes/files/pokedb/*.json
