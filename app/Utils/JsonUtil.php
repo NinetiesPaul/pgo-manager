@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Utils;
-
 
 class JsonUtil
 {
@@ -146,13 +144,31 @@ class JsonUtil
 
     public function getQuickMoves($force = false)
     {
+        $types = $this->getTypeEffectiveness();
+
         if (!file_exists(self::QUICK_MOVES_JSON) || $force) {
             $read = file_get_contents("https://pogoapi.net/api/v1/fast_moves.json");
             $read = json_decode($read, true);
 
             $toWrite = [];
             foreach ($read as $item) {
-                $toWrite[$item['name']] = $item['type'];
+
+                $goodAgainst = [];
+                $weakAgainst = [];
+
+                foreach ($types[$item['type']] as $key => $value)
+                {
+                    if ($value > 1) {
+                        $goodAgainst[] = $key;
+                    }
+                    if ($value < 1) {
+                        $weakAgainst[] = $key;
+                    }
+                }
+
+                $toWrite[$item['name']]['type'] = $item['type'];
+                $toWrite[$item['name']]['weakAgainst'] = $weakAgainst;
+                $toWrite[$item['name']]['goodAgainst'] = $goodAgainst;
             }
 
             file_put_contents(self::QUICK_MOVES_JSON, json_encode($toWrite, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -164,13 +180,31 @@ class JsonUtil
 
     public function getChargeMoves($force = false)
     {
+        $types = $this->getTypeEffectiveness();
+
         if (!file_exists(self::CHARGE_MOVES_JSON) || $force) {
             $read = file_get_contents("https://pogoapi.net/api/v1/charged_moves.json");
             $read = json_decode($read, true);
 
             $toWrite = [];
             foreach ($read as $item) {
-                $toWrite[$item['name']] = $item['type'];
+
+                $goodAgainst = [];
+                $weakAgainst = [];
+
+                foreach ($types[$item['type']] as $key => $value)
+                {
+                    if ($value > 1) {
+                        $goodAgainst[] = $key;
+                    }
+                    if ($value < 1) {
+                        $weakAgainst[] = $key;
+                    }
+                }
+
+                $toWrite[$item['name']]['type'] = $item['type'];
+                $toWrite[$item['name']]['weakAgainst'] = $weakAgainst;
+                $toWrite[$item['name']]['goodAgainst'] = $goodAgainst;
             }
 
             file_put_contents(self::CHARGE_MOVES_JSON, json_encode($toWrite, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
