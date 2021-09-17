@@ -2,6 +2,7 @@
 
 use Pecee\SimpleRouter\SimpleRouter;
 use App\Controllers\MainController;
+use App\Controllers\JsBuilderController;
 use App\Controllers\PkmPveController;
 
 SimpleRouter::get('/', function() {
@@ -45,17 +46,17 @@ SimpleRouter::get('/pkmpve/{idPkm}', function($idPkm) {
 });
 
 SimpleRouter::get('/jsBuilderQuick', function() {
-    $reader = new MainController();
+    $reader = new JsBuilderController();
     $reader->jsBuilderQuick();
 });
 
 SimpleRouter::get('/jsBuilderCharge', function() {
-    $reader = new MainController();
+    $reader = new JsBuilderController();
     $reader->jsBuilderCharge();
 });
 
 SimpleRouter::get('/jsBuilderPokeData', function() {
-    $reader = new MainController();
+    $reader = new JsBuilderController();
     $reader->jsBuilderPokeData();
 });
 
