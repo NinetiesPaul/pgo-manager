@@ -39,7 +39,7 @@ class JsonUtil
             file_put_contents(self::FORMS_JSON, json_encode($forms, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         }
 
-        $this->pkmForms = file_get_contents(self::FORMS_JSON);
+        $this->pkmForms = json_decode(file_get_contents(self::FORMS_JSON), true);
     }
 
     public function getMegaPokemons($force = false)
