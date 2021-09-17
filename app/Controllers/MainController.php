@@ -39,9 +39,10 @@ class MainController
 
         $pokemonName = str_replace("_", " ", $name);
 
-        $pokemonType = explode("/", $jsonType[$pokemonName]);
+        $pokemonType = $jsonType[$pokemonName]['type'];
 
-        $defense_data = $this->getPokemonDefenseData($pokemonType);
+        $defense_data['vulnerable_to'] = $jsonType[$pokemonName]['vulnerable_to'];
+        $defense_data['resistant_to'] = $jsonType[$pokemonName]['resistant_to'];
 
         echo json_encode([
             'id' => str_pad($jsonStats[$pokemonName]['id'], 3, '0', 0),
@@ -203,6 +204,9 @@ class MainController
         $jsDB = "var pokeDB = {\n";
 
         foreach ($stats as $name => $pkm) {
+            $defense_data['vulnerable_to'] = $currentMoves[$name]['vulnerable_to'];
+            $defense_data['resistant_to'] = $currentMoves[$name]['resistant_to'];
+
             $pokeData['id'] = str_pad($pkm['id'], 3, '0', 0);
             $pokeData['imgurl'] = $this->formatImgUrl($pkm['id'], $name);
             unset($pkm['id']);
@@ -212,7 +216,7 @@ class MainController
             $pokeData['name'] = $name;
             $pokeData['moveset']['quick'] = $currentMoves[$name]['quick'];
             $pokeData['moveset']['charge'] = $currentMoves[$name]['charge'];
-            $pokeData['defense_data'] = $this->getPokemonDefenseData($pokemonType);
+            $pokeData['defense_data'] = $defense_data;
 
             $jsDB .= "\"$name\": " . json_encode($pokeData, JSON_PRETTY_PRINT) . ",\n";
         }
@@ -281,6 +285,8 @@ class MainController
 
     public function teamAssembler()
     {
+        $types = $this->jsonUtil->getType();
+        $stats = $this->jsonUtil->getStats();
 
         $list = explode(",", $_POST['pkm-list']);
 
@@ -306,12 +312,11 @@ class MainController
             $innerTeamResistances = 0;
             $innerTeamWeaknesses = 0;
             foreach ($team as $pkm) {
-                $getData = $this->getPokemonAsReturn($pkm);
-                $pokeData['name'] = $getData['name'];
-                $pokeData['resistant_to'] = $getData['defense_data']['resistant_to'];
-                $pokeData['vulnerable_to'] = $getData['defense_data']['vulnerable_to'];
-                $innerTeamResistances += count($getData['defense_data']['resistant_to']);
-                $innerTeamWeaknesses += count($getData['defense_data']['vulnerable_to']);
+                $pokeData['name'] = $pkm;
+                $pokeData['resistant_to'] = $types[$pkm]['resistant_to'];
+                $pokeData['vulnerable_to'] = $types[$pkm]['vulnerable_to'];
+                $innerTeamResistances += count($types[$pkm]['resistant_to']);
+                $innerTeamWeaknesses += count($types[$pkm]['vulnerable_to']);
                 $innerTeam['members'][] = $pokeData;
             }
             $innerTeam['name'] = $key;
@@ -339,139 +344,7 @@ class MainController
 
         return $names;
     }
-
-    /*
-     * This function retrieves vulnerable/resistant information based on types
-     */
-    private function getPokemonDefenseData($inTypes)
-    {
-        $types = $this->jsonUtil->getTypeEffectiveness();
-
-        $getTypeA = $inTypes[0];
-        $getTypeB = false;
-        $resistantToA = [];
-        $vulnerableToA = [];
-
-        if (count($inTypes)>1) {
-            $getTypeB = $inTypes[1];
-            $resistantToB = [];
-            $vulnerableToB = [];
-        }
-
-        foreach ($types as $key => $type) {
-            if ($type[$getTypeA] > 1) {
-                $vulnerableToA[$key] = $type[$getTypeA];
-            }
-
-            if ($type[$getTypeA] < 1) {
-                $resistantToA[$key] = $type[$getTypeA];
-            }
-
-            if ($getTypeB) {
-                if ($type[$getTypeB] < 1) {
-                    $resistantToB[$key] = $type[$getTypeB];
-                }
-
-                if ($type[$getTypeB] > 1) {
-                    $vulnerableToB[$key] = $type[$getTypeB];
-                }
-            }
-        }
-
-        $finalVulnerableTo = [];
-        $finalResistantTo = [];
-
-        if (!$getTypeB) {
-            $finalVulnerableTo = $vulnerableToA;
-            $finalResistantTo = $resistantToA;
-
-            foreach ($finalVulnerableTo as $key => $item) {
-                $finalVulnerableTo[$key] = $this->formatValue($item);
-            }
-
-            foreach ($finalResistantTo as $key => $item) {
-                $finalResistantTo[$key] = $this->formatValue($item, 1);
-            }
-
-            ksort($finalVulnerableTo, SORT_NATURAL | SORT_FLAG_CASE);
-            ksort($finalResistantTo, SORT_NATURAL | SORT_FLAG_CASE);
-
-            return [
-                'vulnerable_to' => $finalVulnerableTo,
-                'resistant_to' => $finalResistantTo
-            ];
-        }
-
-        foreach ($vulnerableToA as $keyA => $item) {
-            $finalVulnerableTo[$keyA] = $item;
-            if (in_array($keyA, array_keys($vulnerableToB))) {
-                $finalVulnerableTo[$keyA] *= $finalVulnerableTo[$keyA];
-                unset($vulnerableToB[$keyA]);
-            }
-            if (in_array($keyA, array_keys($resistantToB))) {
-                if ($resistantToB[$keyA] == 0.625) {
-                    unset($finalVulnerableTo[$keyA]);
-                } else {
-                    unset($vulnerableToA[$keyA]);
-                    unset($finalVulnerableTo[$keyA]);
-                    $resistantToB[$keyA] = 0.625;
-                }
-            }
-        }
-
-        foreach ($resistantToA as $keyA => $item) {
-            $finalResistantTo[$keyA] = $item;
-            if (in_array($keyA, array_keys($resistantToB))) {
-                $finalResistantTo[$keyA] *= $resistantToB[$keyA];
-                unset($resistantToB[$keyA]);
-            }
-            if (in_array($keyA, array_keys($vulnerableToB))) {
-                if ($vulnerableToB[$keyA] == 1.6) {
-                    unset($finalResistantTo[$keyA]);
-                }
-            }
-        }
-
-        foreach ($vulnerableToB as $keyB => $item) {
-            $finalVulnerableTo[$keyB] = $item;
-            if (in_array($keyB, array_keys($resistantToA))) {
-                if ($resistantToA[$keyB] == 0.625) {
-                    unset($finalVulnerableTo[$keyB]);
-                } else {
-                    unset($finalVulnerableTo[$keyB]);
-                    $finalResistantTo[$keyB] = 0.625;
-                }
-            }
-        }
-
-        foreach ($resistantToB as $keyB => $item) {
-            $finalResistantTo[$keyB] = $item;
-            if (in_array($keyB, array_keys($vulnerableToA))) {
-                if ($vulnerableToA[$keyB] == 1.6) {
-                    unset($finalResistantTo[$keyB]);
-                }
-            }
-            if (in_array($keyB, array_keys($resistantToA))) {
-                $finalResistantTo[$keyB] *= $resistantToA[$keyB];
-            }
-        }
-
-        foreach ($finalVulnerableTo as $key => $item) {
-            $finalVulnerableTo[$key] = $this->formatValue($item);
-        }
-
-        foreach ($finalResistantTo as $key => $item) {
-            $finalResistantTo[$key] = $this->formatValue($item, 1);
-        }
-
-        ksort($finalVulnerableTo, SORT_NATURAL | SORT_FLAG_CASE);
-        ksort($finalResistantTo, SORT_NATURAL | SORT_FLAG_CASE);
-
-        return [
-            'vulnerable_to' => $finalVulnerableTo,
-            'resistant_to' => $finalResistantTo
-        ];
-    }
+    
 
     private function formatImgUrl($id, $name)
     {
@@ -507,33 +380,5 @@ class MainController
         }
 
         return $imgUrl;
-    }
-
-    private function formatValue($number, $decimal = 0) {
-        return number_format($number * 100, $decimal) . "%";
-    }
-
-    /*
-     * Private function similar to getPokemon only is used by the teamAssembler method
-     */
-    private function getPokemonAsReturn($name)
-    {
-        $jsonType = $this->jsonUtil->getType();
-        $jsonStats = $this->jsonUtil->getStats();
-
-        $pokemonName = str_replace("_", " ", $name);
-
-        $pokemonType = explode("/", $jsonType[$pokemonName]);
-
-        $defense_data = $this->getPokemonDefenseData($pokemonType);
-
-        $result = [
-            'type' => $pokemonType,
-            'defense_data' => $defense_data,
-            'name' => $pokemonName,
-            'imgurl' => $this->formatImgUrl($jsonStats[$pokemonName]['id'], $pokemonName)
-        ];
-
-        return $result;
     }
 }
