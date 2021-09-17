@@ -96,7 +96,15 @@ class JsonUtil
                     $name = $item['form'] . " " . $item['pokemon_name'];
                 }
 
-                $toWrite[$name] = (count($item['type']) > 1) ? implode("/", $item['type']) : $item['type'][0];
+                $type = $item['type'];
+
+                $defense_data = $this->getPokemonDefenseData($type);
+
+                $toWrite[$name]['type'] = $type;
+
+                $toWrite[$name]['vulnerable_to'] = $defense_data['vulnerable_to'];
+
+                $toWrite[$name]['resistant_to'] = $defense_data['resistant_to'];
             }
 
             file_put_contents(self::TYPES_JSON, json_encode($toWrite, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -224,9 +232,143 @@ class JsonUtil
         return json_decode($read, true);
     }
 
-    function eliteFormatter($move)
+    /*function eliteFormatter($move)
     {
         return $move . "*";
+    }*/
+
+    private function formatValue($number, $decimal = 0) {
+        return number_format($number * 100, $decimal) . "%";
+    }
+
+    private function getPokemonDefenseData($inTypes)
+    {
+        $types = $this->getTypeEffectiveness();
+
+        $getTypeA = $inTypes[0];
+        $getTypeB = false;
+        $resistantToA = [];
+        $vulnerableToA = [];
+
+        if (count($inTypes)>1) {
+            $getTypeB = $inTypes[1];
+            $resistantToB = [];
+            $vulnerableToB = [];
+        }
+
+        foreach ($types as $key => $type) {
+            if ($type[$getTypeA] > 1) {
+                $vulnerableToA[$key] = $type[$getTypeA];
+            }
+
+            if ($type[$getTypeA] < 1) {
+                $resistantToA[$key] = $type[$getTypeA];
+            }
+
+            if ($getTypeB) {
+                if ($type[$getTypeB] < 1) {
+                    $resistantToB[$key] = $type[$getTypeB];
+                }
+
+                if ($type[$getTypeB] > 1) {
+                    $vulnerableToB[$key] = $type[$getTypeB];
+                }
+            }
+        }
+
+        $finalVulnerableTo = [];
+        $finalResistantTo = [];
+
+        if (!$getTypeB) {
+            $finalVulnerableTo = $vulnerableToA;
+            $finalResistantTo = $resistantToA;
+
+            foreach ($finalVulnerableTo as $key => $item) {
+                $finalVulnerableTo[$key] = $this->formatValue($item);
+            }
+
+            foreach ($finalResistantTo as $key => $item) {
+                $finalResistantTo[$key] = $this->formatValue($item, 1);
+            }
+
+            ksort($finalVulnerableTo, SORT_NATURAL | SORT_FLAG_CASE);
+            ksort($finalResistantTo, SORT_NATURAL | SORT_FLAG_CASE);
+
+            return [
+                'vulnerable_to' => $finalVulnerableTo,
+                'resistant_to' => $finalResistantTo
+            ];
+        }
+
+        foreach ($vulnerableToA as $keyA => $item) {
+            $finalVulnerableTo[$keyA] = $item;
+            if (in_array($keyA, array_keys($vulnerableToB))) {
+                $finalVulnerableTo[$keyA] *= $finalVulnerableTo[$keyA];
+                unset($vulnerableToB[$keyA]);
+            }
+            if (in_array($keyA, array_keys($resistantToB))) {
+                if ($resistantToB[$keyA] == 0.625) {
+                    unset($finalVulnerableTo[$keyA]);
+                } else {
+                    unset($vulnerableToA[$keyA]);
+                    unset($finalVulnerableTo[$keyA]);
+                    $resistantToB[$keyA] = 0.625;
+                }
+            }
+        }
+
+        foreach ($resistantToA as $keyA => $item) {
+            $finalResistantTo[$keyA] = $item;
+            if (in_array($keyA, array_keys($resistantToB))) {
+                $finalResistantTo[$keyA] *= $resistantToB[$keyA];
+                unset($resistantToB[$keyA]);
+            }
+            if (in_array($keyA, array_keys($vulnerableToB))) {
+                if ($vulnerableToB[$keyA] == 1.6) {
+                    unset($finalResistantTo[$keyA]);
+                }
+            }
+        }
+
+        foreach ($vulnerableToB as $keyB => $item) {
+            $finalVulnerableTo[$keyB] = $item;
+            if (in_array($keyB, array_keys($resistantToA))) {
+                if ($resistantToA[$keyB] == 0.625) {
+                    unset($finalVulnerableTo[$keyB]);
+                } else {
+                    unset($finalVulnerableTo[$keyB]);
+                    $finalResistantTo[$keyB] = 0.625;
+                }
+            }
+        }
+
+        foreach ($resistantToB as $keyB => $item) {
+            $finalResistantTo[$keyB] = $item;
+            if (in_array($keyB, array_keys($vulnerableToA))) {
+                if ($vulnerableToA[$keyB] == 1.6) {
+                    unset($finalResistantTo[$keyB]);
+                }
+            }
+            if (in_array($keyB, array_keys($resistantToA))) {
+                $finalResistantTo[$keyB] *= $resistantToA[$keyB];
+            }
+        }
+
+        foreach ($finalVulnerableTo as $key => $item) {
+            $finalVulnerableTo[$key] = $this->formatValue($item);
+        }
+
+        foreach ($finalResistantTo as $key => $item) {
+            $finalResistantTo[$key] = $this->formatValue($item, 1);
+        }
+
+        ksort($finalVulnerableTo, SORT_NATURAL | SORT_FLAG_CASE);
+        ksort($finalResistantTo, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return [
+            'vulnerable_to' => $finalVulnerableTo,
+            'resistant_to' => $finalResistantTo
+        ];
     }
 }
 
