@@ -20,13 +20,13 @@ class GeneralUtils {
         {
             case "Galarian":
                 $formattedName = strtolower($name[1]) . '-galar';
-                $pkm = $this->jsonUtil->getPokeApiJson($formattedName);
+                $pkm = $this->getPokeApiJson($formattedName);
                 $imgUrl = is_numeric($pkm['id']) ? $pkm['id'] : '';
                 break;
 
             case "Alola":
                 $formattedName = strtolower($name[1]) . '-alola';
-                $pkm = $this->jsonUtil->getPokeApiJson($formattedName);
+                $pkm = $this->getPokeApiJson($formattedName);
                 $imgUrl = is_numeric($pkm['id']) ? $pkm['id'] : '';
                 break;
 
@@ -38,5 +38,11 @@ class GeneralUtils {
         }
 
         return $imgUrl;
+    }
+
+    private function getPokeApiJson($pokemon)
+    {
+        $read = file_get_contents("https://pokeapi.co/api/v2/pokemon/" . $pokemon);
+        return json_decode($read, true);
     }
 }
