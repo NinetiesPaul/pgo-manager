@@ -14,3 +14,4 @@ phinx.yml
 /includes/files/*.json
 /includes/files/*.js
 /includes/files/pokedb/*.json
+composer.phar
