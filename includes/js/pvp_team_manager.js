@@ -96,7 +96,7 @@ $(document).on('click', '.pkm-list-btn', function() {
         data: { 'pkm-list' : $(".pkm-list").val() },
         success: function(response){
 
-            $(".teamassembler-table").html("<thead class='thead-dark'><tr><th>Slot 1</th><th>Slot 2</th><th>Slot 3</th><th>Resistances</th><th>Vulnerabilities</th></tr></thead>");
+            $(".teamassembler-table").html("<thead class='thead-dark'><tr><th>#</th><th>Slot 1</th><th>Slot 2</th><th>Slot 3</th><th>Resistances</th><th>Vulnerabilities</th></tr></thead>");
 
             response = jQuery.parseJSON(response);
 
@@ -104,7 +104,7 @@ $(document).on('click', '.pkm-list-btn', function() {
 
             $.each(response, function (index,value){
 
-                rowText += '<tr>';
+                rowText += '<tr><td>' + (parseInt(index) + 1) + '</td>';
 
                 $.each(value.members, function (index,value){
                     rowText += '<td>' + value.name + '</td>';
