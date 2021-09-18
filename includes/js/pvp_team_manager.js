@@ -104,7 +104,7 @@ $(document).on('click', '.pkm-list-btn', function() {
 
             $.each(response, function (index,value){
 
-                rowText += '<tr><td>' + (parseInt(index) + 1) + '</td>';
+                rowText += '<tr id=\''+value.name+'\'><td class=\'row_id\'>' + (parseInt(index) + 1) + '</td>';
 
                 $.each(value.members, function (index,value){
                     imgTag = '';
@@ -113,7 +113,7 @@ $(document).on('click', '.pkm-list-btn', function() {
                     imgTag = "<img src='" + imageSrc + "\' heigth='25%' width='25%' />";
                     */
 
-                    rowText += '<td>'+imgTag+'<b>' + value.name + '</b><br><small>' + value.type.join('/') + '</small></td>';
+                    rowText += '<td class=\'row_pkm_' + (parseInt(index) + 1) + '\'>' + imgTag + '<b>' + value.name + '</b><br><small>' + value.type.join('/') + '</small></td>';
                 });
 
                 rowText += '<td>' + value.resistances + '</td><td>' + value.weaknesses + '</td></tr>';
@@ -127,4 +127,20 @@ $(document).on('click', '.pkm-list-btn', function() {
         }
     });
 });
+
+/*
+
+$.each($(".teamassembler-table tbody tr"),function(index,value){
+    var rowId = $(this).attr("id")
+    if (rowId.indexOf('Quagsire') > -1){
+        $(this).remove()
+    }
+})
+
+
+$.each($(".teamassembler-table tbody tr"),function(index,value){
+       $(this).find(".row_id").html(index + 1)
+})
+
+*/
 
