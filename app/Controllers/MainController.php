@@ -119,7 +119,14 @@ class MainController
             $pokemonList .= "<option>$name</option>";
         }
 
-        $pkmsPve = file_get_contents('includes/files/pkm_pve.json');
+        $pkmsPve = '';
+
+        if (file_exists(JsonUtil::PKM_PVE_JSON)) {
+            $pkmsPve = file_get_contents(JsonUtil::PKM_PVE_JSON);
+        } else {
+            file_put_contents(JsonUtil::PKM_PVE_JSON, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            $pkmsPve = file_get_contents(JsonUtil::PKM_PVE_JSON);
+        }
         $pkmsPve = json_decode($pkmsPve, true);
 
         $pkmPveRows = '';
@@ -140,7 +147,9 @@ class MainController
                 </tr>";
         }
 
-        $pkmPveRows .= "<tr id='" . (max(array_keys($pkmsPve)) + 1) . "' class='store'><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
+        $id = (count($pkmsPve) > 0) ? max(array_keys($pkmsPve)) + 1 : 0;
+
+        $pkmPveRows .= "<tr id='" . $id . "' class='store'><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>";
 
         $args = [
             'LISTA' => $pokemonList,

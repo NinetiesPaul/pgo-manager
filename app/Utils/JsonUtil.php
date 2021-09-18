@@ -16,6 +16,7 @@ class JsonUtil
     const CHARGE_MOVES_JSON = 'includes/files/charged_moves.json';
     const CURRENT_PKM_MOVES_JSON = 'includes/files/current_pokemon_moves.json';
     const FORMS_JSON = 'includes/files/pokemon_forms.json';
+    const PKM_PVE_JSON = 'includes/files/pkm_pve.json';
 
     protected $pkmForms = [];
 
