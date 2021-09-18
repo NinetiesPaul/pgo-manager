@@ -192,6 +192,7 @@ class MainController
                 $pokeData['type'] = $types[$pkm]['type'];
                 $pokeData['resistant_to'] = $types[$pkm]['resistant_to'];
                 $pokeData['vulnerable_to'] = $types[$pkm]['vulnerable_to'];
+                //$pokeData['imgUrl'] = $this->generalUtil->formatImgUrl($stats[$pkm]['id'], $pkm);
                 $innerTeamResistances += count($types[$pkm]['resistant_to']);
                 $innerTeamWeaknesses += count($types[$pkm]['vulnerable_to']);
                 $innerTeam['members'][] = $pokeData;
