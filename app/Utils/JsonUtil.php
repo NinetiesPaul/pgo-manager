@@ -261,17 +261,6 @@ class JsonUtil
         return json_decode($content, true);
     }
 
-    public function getPokeApiJson($pokemon)
-    {
-        $read = file_get_contents("https://pokeapi.co/api/v2/pokemon/" . $pokemon);
-        return json_decode($read, true);
-    }
-
-    /*function eliteFormatter($move)
-    {
-        return $move . "*";
-    }*/
-
     private function formatValue($number, $decimal = 0) {
         return number_format($number * 100, $decimal) . "%";
     }
