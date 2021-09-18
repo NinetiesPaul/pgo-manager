@@ -107,7 +107,13 @@ $(document).on('click', '.pkm-list-btn', function() {
                 rowText += '<tr><td>' + (parseInt(index) + 1) + '</td>';
 
                 $.each(value.members, function (index,value){
-                    rowText += '<td>' + value.name + '<br>' + value.type.join('/') + '</td>';
+                    imgTag = '';
+                    /*
+                    imageSrc = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + value.imgUrl + ".png";
+                    imgTag = "<img src='" + imageSrc + "\' heigth='25%' width='25%' />";
+                    */
+
+                    rowText += '<td>'+imgTag+'<b>' + value.name + '</b><br><small>' + value.type.join('/') + '</small></td>';
                 });
 
                 rowText += '<td>' + value.resistances + '</td><td>' + value.weaknesses + '</td></tr>';

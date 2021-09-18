@@ -90,3 +90,8 @@ p {
 .move_type_image_icon{
   width: 20%;
 }
+
+.teamassembler-table th, .teamassembler-table td {
+  vertical-align: middle;
+  text-align: center;
+}
