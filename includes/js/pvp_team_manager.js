@@ -107,7 +107,7 @@ $(document).on('click', '.pkm-list-btn', function() {
                 rowText += '<tr><td>' + (parseInt(index) + 1) + '</td>';
 
                 $.each(value.members, function (index,value){
-                    rowText += '<td>' + value.name + '</td>';
+                    rowText += '<td>' + value.name + '<br>' + value.type.join('/') + '</td>';
                 });
 
                 rowText += '<td>' + value.resistances + '</td><td>' + value.weaknesses + '</td></tr>';

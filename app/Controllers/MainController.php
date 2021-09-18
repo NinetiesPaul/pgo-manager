@@ -189,6 +189,7 @@ class MainController
             $innerTeamWeaknesses = 0;
             foreach ($team as $pkm) {
                 $pokeData['name'] = $pkm;
+                $pokeData['type'] = $types[$pkm]['type'];
                 $pokeData['resistant_to'] = $types[$pkm]['resistant_to'];
                 $pokeData['vulnerable_to'] = $types[$pkm]['vulnerable_to'];
                 $innerTeamResistances += count($types[$pkm]['resistant_to']);
