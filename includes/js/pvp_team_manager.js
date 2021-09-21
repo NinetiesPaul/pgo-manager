@@ -104,7 +104,7 @@ $(document).on('click', '.pkm-list-btn', function() {
 
             $.each(response, function (index,value){
 
-                rowText += '<tr id=\''+value.name+'\'><td class=\'row_id\'>' + (parseInt(index) + 1) + '</td>';
+                rowText += '<tr poke-id=\''+value.name+'\'><td class=\'row_id\'>' + (parseInt(index) + 1) + '</td>';
 
                 $.each(value.members, function (index,value){
                     imgTag = '';
@@ -128,15 +128,32 @@ $(document).on('click', '.pkm-list-btn', function() {
     });
 });
 
+$(document).on('click', '.filter-pkm-list-btn' , function(){
+    $('.filter-pkm-list-btn').attr('disabled', true);
+    pokemon = $('#filter-pvp-team').val();
+
+    $.each($(".teamassembler-table tbody tr"),function(index,value){
+        var rowId = $(this).attr("poke-id");
+        if (pokemon.length > 0){
+            if (rowId.indexOf(pokemon) == -1){
+                $(this).addClass('hide');
+                //$(this).remove();
+            } else {
+                if ($(this).hasClass('hide')) {
+                    $(this).removeClass('hide');
+                }
+            }
+        } else {
+            if ($(this).hasClass('hide')) {
+                $(this).removeClass('hide');
+            }
+        }
+    })
+    $('.filter-pkm-list-btn').attr('disabled', false);
+
+});
+
 /*
-
-$.each($(".teamassembler-table tbody tr"),function(index,value){
-    var rowId = $(this).attr("id")
-    if (rowId.indexOf('Quagsire') > -1){
-        $(this).remove()
-    }
-})
-
 
 $.each($(".teamassembler-table tbody tr"),function(index,value){
        $(this).find(".row_id").html(index + 1)

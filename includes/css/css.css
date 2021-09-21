@@ -95,3 +95,7 @@ p {
   vertical-align: middle;
   text-align: center;
 }
+
+.hide{
+  display: none;
+}
