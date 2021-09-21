@@ -179,10 +179,12 @@ class MainController
             }
         }
 
+        $teams = array_unique($teams);
+
         $finalTeams = [];
 
         set_time_limit(300);
-        foreach (array_count_values($teams) as $key => $team) {
+        foreach ($teams as $key) {
             $team = explode(",", $key);
             $innerTeam = [];
             $innerTeamResistances = 0;
