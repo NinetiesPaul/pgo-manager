@@ -145,9 +145,10 @@ class JsonUtil
 
     public function getQuickMoves($force = false)
     {
-        $types = $this->getTypeEffectiveness();
-
         if (!file_exists(self::QUICK_MOVES_JSON) || $force) {
+            $types = $this->getTypeEffectiveness();
+            $pvpStats = $this->getQuickMovesPvpStats();
+            
             $read = file_get_contents("https://pogoapi.net/api/v1/fast_moves.json");
             $read = json_decode($read, true);
 
@@ -170,6 +171,8 @@ class JsonUtil
                 $toWrite[$item['name']]['type'] = $item['type'];
                 $toWrite[$item['name']]['weakAgainst'] = $weakAgainst;
                 $toWrite[$item['name']]['goodAgainst'] = $goodAgainst;
+                $toWrite[$item['name']]['dpt'] = $pvpStats[$item['name']]['DPT'];
+                $toWrite[$item['name']]['ept'] = $pvpStats[$item['name']]['EPT'];
             }
 
             file_put_contents(self::QUICK_MOVES_JSON, json_encode($toWrite, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -177,6 +180,51 @@ class JsonUtil
 
         $content = file_get_contents(self::QUICK_MOVES_JSON);
         return json_decode($content, true);
+    }
+
+    private function getQuickMovesPvpStats($force = false)
+    {
+        $file = file_get_contents('https://gamepress.gg/pokemongo/pvp-fast-moves');
+        $file = strip_tags($file);
+        $file = explode("EPT", $file);
+        $file = explode("if(detectWidth()", $file[2]);
+
+        $moves = trim($file[0]);
+        $moves = preg_replace("/\s+/", " ", $moves);
+        $moves = explode(" ", $moves);
+
+        $keys = [];
+        foreach ($moves as $key => &$str) {
+            if (!is_numeric($str)) {
+                $name = $str;
+                unset($moves[$key]);
+                if (!is_numeric($moves[$key+1])) {
+                    $name = $name . " " . $moves[$key+1];
+                    unset($moves[$key+1]);
+                    if (!is_numeric($moves[$key+2])) {
+                        $name = $name . " " . $moves[$key+2];
+                        unset($moves[$key+2]);
+                    }
+                }
+                $keys[] = $name;
+            }
+        }
+
+        $chunks = array_chunk($moves, 6);
+
+        $chunks = array_map(function($chunk) {
+            return array(
+                //'PWR' => $chunk[0],
+                //'T' => $chunk[1],
+                //'E' => $chunk[2],
+                //'CD' => $chunk[3],
+                'DPT' => $chunk[4],
+                'EPT' => $chunk[5],
+            );
+        }, $chunks);
+
+        return array_combine($keys, $chunks);
+            
     }
 
     public function getChargeMoves($force = false)

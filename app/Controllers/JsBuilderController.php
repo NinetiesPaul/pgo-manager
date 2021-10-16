@@ -66,6 +66,8 @@ class JsBuilderController
             $moveData['type'] = $data['type'];
             $moveData['weakAgainst'] = $data['weakAgainst'];
             $moveData['goodAgainst'] = $data['goodAgainst'];
+            $moveData['ept'] = $data['ept'];
+            $moveData['dpt'] = $data['dpt'];
 
             $jsDB .= "\"$quickMove\": " . json_encode($moveData, JSON_PRETTY_PRINT) . ",\n";
         }
