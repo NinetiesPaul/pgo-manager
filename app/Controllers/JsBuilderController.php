@@ -29,15 +29,14 @@ class JsBuilderController
         $jsDB = "var pokeDB = {\n";
 
         foreach ($stats as $name => $pkm) {
-            $defense_data['vulnerable_to'] = $currentMoves[$name]['vulnerable_to'];
-            $defense_data['resistant_to'] = $currentMoves[$name]['resistant_to'];
+            $defense_data['vulnerable_to'] = $types[$name]['vulnerable_to'];
+            $defense_data['resistant_to'] = $types[$name]['resistant_to'];
 
             $pokeData['id'] = str_pad($pkm['id'], 3, '0', 0);
             $pokeData['imgurl'] = $this->generalUtil->formatImgUrl($pkm['id'], $name);
             unset($pkm['id']);
-            $pokemonType = explode("/", $types[$name]);
             $pokeData['stats'] = $pkm;
-            $pokeData['type'] = $pokemonType;
+            $pokeData['type'] = $types[$name]['type'];
             $pokeData['name'] = $name;
             $pokeData['moveset']['quick'] = $currentMoves[$name]['quick'];
             $pokeData['moveset']['charge'] = $currentMoves[$name]['charge'];
@@ -92,6 +91,9 @@ class JsBuilderController
             $moveData['type'] = $data['type'];
             $moveData['weakAgainst'] = $data['weakAgainst'];
             $moveData['goodAgainst'] = $data['goodAgainst'];
+            $moveData['energy'] = $data['energy'];
+            $moveData['power'] = $data['power'];
+            $moveData['dpe'] = $data['dpe'];
 
             $jsDB .= "\"$chargeMove\": " . json_encode($moveData, JSON_PRETTY_PRINT) . ",\n";
         }

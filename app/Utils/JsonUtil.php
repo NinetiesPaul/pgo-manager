@@ -12,6 +12,7 @@ class JsonUtil
     const TYPES_JSON = 'includes/files/pokemon_types.json';
     const TYPE_EFFECTIVENESS_JSON = 'includes/files/type_effectiveness.json';
     const STATS_JSON = 'includes/files/pokemon_stats.json';
+    const SHADOW_JSON = 'includes/files/pokemon_shadow.json';
     const QUICK_MOVES_JSON = 'includes/files/fast_moves.json';
     const CHARGE_MOVES_JSON = 'includes/files/charged_moves.json';
     const CURRENT_PKM_MOVES_JSON = 'includes/files/current_pokemon_moves.json';
@@ -83,6 +84,10 @@ class JsonUtil
     public function getType($force = false)
     {
         if (!file_exists(self::TYPES_JSON) || $force) {
+            $readShadow = file_get_contents("https://pogoapi.net/api/v1/shadow_pokemon.json");
+            $readShadow = json_decode($readShadow, true);
+            $shadowPkms = array_column($readShadow, 'name');
+
             $read = file_get_contents("https://pogoapi.net/api/v1/pokemon_types.json");
             $read = json_decode($read, true);
 
@@ -99,11 +104,22 @@ class JsonUtil
 
                 $defense_data = $this->getPokemonDefenseData($type);
 
-                $toWrite[$name]['type'] = $type;
+                $toWrite[$name] = [
+                    'type' => $type,
+                    'vulnerable_to' => $defense_data['vulnerable_to'],
+                    'resistant_to' => $defense_data['resistant_to'],
+                ];
 
-                $toWrite[$name]['vulnerable_to'] = $defense_data['vulnerable_to'];
+                if (in_array($item['pokemon_name'], $shadowPkms)) {
 
-                $toWrite[$name]['resistant_to'] = $defense_data['resistant_to'];
+                    $name = "Shadow " . $item['pokemon_name'];
+
+                    $toWrite[$name] = [
+                        'type' => $type,
+                        'vulnerable_to' => $defense_data['vulnerable_to'],
+                        'resistant_to' => $defense_data['resistant_to'],
+                    ];
+                }
             }
 
             file_put_contents(self::TYPES_JSON, json_encode($toWrite, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -116,12 +132,15 @@ class JsonUtil
     public function getStats($force = false)
     {
         if (!file_exists(self::STATS_JSON) || $force) {
+            $readShadow = file_get_contents("https://pogoapi.net/api/v1/shadow_pokemon.json");
+            $readShadow = json_decode($readShadow, true);
+            $shadowPkms = array_column($readShadow, 'name');
+
             $read = file_get_contents("https://pogoapi.net/api/v1/pokemon_stats.json");
             $read = json_decode($read, true);
 
             $toWrite = [];
             foreach ($read as $item) {
-
                 $name = $item['pokemon_name'];
 
                 if (in_array($item['form'], $this->pkmForms)) {
@@ -134,7 +153,21 @@ class JsonUtil
                     'sta' => $item['base_stamina'],
                     'id' => $item['pokemon_id']
                 ];
+
+                if (in_array($item['pokemon_name'], $shadowPkms)) {
+
+                    $name = "Shadow " . $item['pokemon_name'];
+
+                    $toWrite[$name] = [
+                        'atk' => $item['base_attack'],
+                        'def' => $item['base_defense'],
+                        'sta' => $item['base_stamina'],
+                        'id' => $item['pokemon_id']
+                    ];
+                }
             }
+
+            //print_r("<pre>" . json_encode($toWrite, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "</pre>");
 
             file_put_contents(self::STATS_JSON, json_encode($toWrite, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         }
@@ -168,11 +201,13 @@ class JsonUtil
                     }
                 }
 
-                $toWrite[$item['name']]['type'] = $item['type'];
-                $toWrite[$item['name']]['weakAgainst'] = $weakAgainst;
-                $toWrite[$item['name']]['goodAgainst'] = $goodAgainst;
-                $toWrite[$item['name']]['dpt'] = $pvpStats[$item['name']]['DPT'];
-                $toWrite[$item['name']]['ept'] = $pvpStats[$item['name']]['EPT'];
+                $toWrite[$item['name']] = [
+                    'type' => $item['type'],
+                    'weakAgainst' => $weakAgainst,
+                    'goodAgainst' => $goodAgainst,
+                    'dpt' => $pvpStats[$item['name']]['DPT'],
+                    'ept' => $pvpStats[$item['name']]['EPT'],
+                ];
             }
 
             file_put_contents(self::QUICK_MOVES_JSON, json_encode($toWrite, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -234,6 +269,7 @@ class JsonUtil
         if (!file_exists(self::CHARGE_MOVES_JSON) || $force) {
             $read = file_get_contents("https://pogoapi.net/api/v1/charged_moves.json");
             $read = json_decode($read, true);
+            $pvpStats = $this->getChargeMovesPvpStats();
 
             $toWrite = [];
             foreach ($read as $item) {
@@ -254,6 +290,9 @@ class JsonUtil
                 $toWrite[$item['name']]['type'] = $item['type'];
                 $toWrite[$item['name']]['weakAgainst'] = $weakAgainst;
                 $toWrite[$item['name']]['goodAgainst'] = $goodAgainst;
+                $toWrite[$item['name']]['power'] = $pvpStats[$item['name']]['pwr'];
+                $toWrite[$item['name']]['energy'] = $pvpStats[$item['name']]['eng'];
+                $toWrite[$item['name']]['dpe'] = $pvpStats[$item['name']]['dpe'];
             }
 
             file_put_contents(self::CHARGE_MOVES_JSON, json_encode($toWrite, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -266,6 +305,10 @@ class JsonUtil
     public function getCurrentPkmMoves($force = false)
     {
         if (!file_exists(self::CURRENT_PKM_MOVES_JSON) || $force) {
+            $readShadow = file_get_contents("https://pogoapi.net/api/v1/shadow_pokemon.json");
+            $readShadow = json_decode($readShadow, true);
+            $shadowPkms = array_column($readShadow, 'name');
+
             $read = file_get_contents("https://pogoapi.net/api/v1/current_pokemon_moves.json");
             $read = json_decode($read, true);
 
@@ -300,6 +343,34 @@ class JsonUtil
                         , $item['elite_charged_moves']
                     )
                 );
+
+                if (in_array($item['pokemon_name'], $shadowPkms)) {
+
+                    $name = "Shadow " . $item['pokemon_name'];
+
+                    $toWrite[$name]['quick'] = array_merge(
+                        $item['fast_moves'],
+                        array_map(
+                            function ($move)
+                            {
+                                return $move . "*";
+                            }
+                            ,
+                            $item['elite_fast_moves']
+                        )
+                    );
+
+                    $toWrite[$name]['charge'] = array_merge(
+                        $item['charged_moves'],
+                        array_map(
+                            function ($move)
+                            {
+                                return $move . "*";
+                            }
+                            , $item['elite_charged_moves']
+                        )
+                    );
+                }
             }
 
             file_put_contents(self::CURRENT_PKM_MOVES_JSON, json_encode($toWrite, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -441,6 +512,54 @@ class JsonUtil
             'vulnerable_to' => $finalVulnerableTo,
             'resistant_to' => $finalResistantTo
         ];
+    }
+
+    private function getChargeMovesPvpStats()
+    {
+        $file = file_get_contents('https://gamepress.gg/pokemongo/pvp-charge-moves');
+        $file = strip_tags($file);
+        $file = trim($file);
+        $file = explode("DPE", $file)[1];
+        $file = explode("if(detectWidth()", $file)[0];
+        $moves = preg_replace("/\s+/", " ", $file);
+        $moves = explode(" ", $moves);
+
+        $names = [];
+        $data = [];
+
+        foreach ($moves as $key => &$str) {
+            if (!is_numeric($str)) {
+                $name = $str;
+                unset($moves[$key]);
+                if (!is_numeric($moves[$key+1])) {
+                    $name = $name . " " . $moves[$key+1];
+                    unset($moves[$key+1]);
+                    if (!is_numeric($moves[$key+2])) {
+                        $name = $name . " " . $moves[$key+2];
+                        unset($moves[$key+2]);
+                    }
+                }
+                $name = trim($name);
+                if (empty($name)) {
+                    continue;
+                }
+                $names[] = $name;
+            } else {
+                $data[] = $str;
+            }
+        }
+
+        $data = array_chunk($data, 3);
+
+        $data = array_map(function($data) {
+            return array(
+                'pwr' => $data[0],
+                'eng' => $data[1],
+                "dpe" => $data[2]
+            );
+        }, $data);
+
+        return array_combine($names, $data);
     }
 }
 
