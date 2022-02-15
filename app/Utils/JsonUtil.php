@@ -241,6 +241,11 @@ class JsonUtil
                         unset($moves[$key+2]);
                     }
                 }
+
+                if ($name == "Lock-On")
+                {
+        	        $name = "Lock On";
+                }
                 $keys[] = $name;
             }
         }
@@ -259,7 +264,6 @@ class JsonUtil
         }, $chunks);
 
         return array_combine($keys, $chunks);
-            
     }
 
     public function getChargeMoves($force = false)
@@ -543,6 +547,72 @@ class JsonUtil
                 if (empty($name)) {
                     continue;
                 }
+
+                if ($name == "Future Sight")
+                {
+        	        $name = "Futuresight";
+                }
+
+                if ($name == "Superpower")
+                {
+                    $name = "Super Power";
+                }
+
+                if ($name == "Power-Up Punch")
+                {
+                    $name = "Power Up Punch";
+                }
+
+                if ($name == "Vise Grip")
+                {
+                    $name = "Vice Grip";
+                }
+
+                if ($name == "X-Scissor")
+                {
+                    $name = "X Scissor";
+                }
+
+                if ($name == "Techno Blast (Normal)")
+                {
+                    $name = "Techno Blast Normal";
+                }
+
+                if ($name == "Techno Blast (Burn)")
+                {
+                    $name = "Techno Blast Burn";
+                }
+
+                if ($name == "Techno Blast (Chill)")
+                {
+                    $name = "Techno Blast Chill";
+                }
+
+                if ($name == "Techno Blast (Douse)")
+                {
+                    $name = "Techno Blast Douse";
+                }
+
+                if ($name == "Techno Blast (Shock)")
+                {
+                    $name = "Techno Blast Shock";
+                }
+
+                if ($name == "V-create")
+                {
+                    $name = "V Create";
+                }
+
+                if ($name == "Tri-Attack")
+                {
+                    $name = "Tri Attack";
+                }
+
+                if ($name == "Weather Ball")
+                {
+                    $name = "Weather Ball Normal";
+                }
+
                 $names[] = $name;
             } else {
                 $data[] = $str;
