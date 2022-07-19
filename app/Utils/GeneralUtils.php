@@ -45,4 +45,57 @@ class GeneralUtils {
         $read = file_get_contents("https://pokeapi.co/api/v2/pokemon/" . $pokemon);
         return json_decode($read, true);
     }
+    
+    public function formatNameForJsBuilder($name)
+    {
+        if ($name == 'Galarian Sirfetch’d') {
+            return "Sirfetch’d";
+        }
+        if ($name == 'Galarian Obstagoon') {
+            return "Obstagoon";
+        }
+        if ($name == 'Galarian Perrserker') {
+            return "Perrserker";
+        }
+        if ($name == 'Galarian Mr. Rime') {
+            return "Mr. Rime";
+        }
+    }
+    
+    public function formatImgurlForJsBuilder($name)
+    {
+        if ($name == "Galarian Sirfetch’d") {
+            return 865;
+        }
+        if ($name == "Galarian Obstagoon") {
+            return 862;
+        }
+        if ($name == "Galarian Perrserker") {
+            return 863;
+        }
+        if ($name == "Galarian Runerigus") {
+            return 867;
+        }
+        if ($name == "Galarian Mr. Rime") {
+            return 866;
+        }
+        if ($name == "Baile Oricorio") {
+            return 741;
+        }
+        if ($name == "Sensu Oricorio") {
+            return 10125;
+        }
+        if ($name == "Pau Oricorio") {
+            return 10124;
+        }
+        if ($name == "Pompom Oricorio") {
+            return 10123;
+        }
+        if ($name == "Midday Lycanroc") {
+            return 745;
+        }
+        if ($name == "Midnight Lycanroc") {
+            return 10126;
+        }
+    }
 }

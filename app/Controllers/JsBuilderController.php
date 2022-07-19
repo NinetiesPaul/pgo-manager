@@ -11,6 +11,28 @@ class JsBuilderController
 
     protected $generalUtil;
 
+    protected $forceImgUrl = [
+        "Galarian Sirfetch’d",
+        "Galarian Runerigus",
+        "Galarian Obstagoon",
+        "Galarian Perrserker",
+        "Galarian Mr. Rime",
+        "Baile Oricorio",
+        "Sensu Oricorio",
+        "Pompom Oricorio",
+        "Pau Oricorio",
+        "Midday Lycanroc",
+        "Midnight Lycanroc",
+    ];
+
+    protected $forceName = [
+        "Galarian Sirfetch’d",
+        "Galarian Runerigus",
+        "Galarian Obstagoon",
+        "Galarian Perrserker",
+        "Galarian Mr. Rime",
+    ];
+
     public function __construct()
     {
         $this->jsonUtil = new JsonUtil();
@@ -33,7 +55,9 @@ class JsBuilderController
             $defense_data['resistant_to'] = $types[$name]['resistant_to'];
 
             $pokeData['id'] = str_pad($pkm['id'], 3, '0', 0);
-            $pokeData['imgurl'] = $this->generalUtil->formatImgUrl($pkm['id'], $name);
+            $pokeData['imgurl'] = (in_array($name, $this->forceImgUrl))
+                ? $this->generalUtil->formatImgurlForJsBuilder($name)
+                : $this->generalUtil->formatImgUrl($pkm['id'], $name);
             unset($pkm['id']);
             $pokeData['stats'] = $pkm;
             $pokeData['type'] = $types[$name]['type'];
@@ -41,6 +65,11 @@ class JsBuilderController
             $pokeData['moveset']['quick'] = $currentMoves[$name]['quick'];
             $pokeData['moveset']['charge'] = $currentMoves[$name]['charge'];
             $pokeData['defense_data'] = $defense_data;
+
+            if (in_array($name, $this->forceName)) {
+                $name = $this->generalUtil->formatNameForJsBuilder($name);
+                $pokeData['name'] = $name;
+            }
 
             $jsDB .= "\"$name\": " . json_encode($pokeData, JSON_PRETTY_PRINT) . ",\n";
         }
