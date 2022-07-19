@@ -60,6 +60,9 @@ class GeneralUtils {
         if ($name == 'Galarian Mr. Rime') {
             return "Mr. Rime";
         }
+        if ($name == "Galarian Runerigus") {
+            return "Runerigus";
+        }
     }
     
     public function formatImgurlForJsBuilder($name)
