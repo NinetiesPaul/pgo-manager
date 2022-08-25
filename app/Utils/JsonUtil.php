@@ -613,7 +613,9 @@ class JsonUtil
                     $name = "Weather Ball Normal";
                 }
 
-                $names[] = $name;
+                if (!strpos($name, "nan")) {
+                    $names[] = $name;
+                }
             } else {
                 $data[] = $str;
             }
