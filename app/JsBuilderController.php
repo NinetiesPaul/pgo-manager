@@ -1,9 +1,6 @@
 <?php
 
-namespace App\Controllers;
-
-use App\Utils\JsonUtil;
-use App\Utils\GeneralUtils;
+namespace Classes;
 
 class JsBuilderController
 {

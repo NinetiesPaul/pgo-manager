@@ -1,21 +1,12 @@
-##PGO-Manager
+# PGO Manager
 
+Companion backend app for generating data files for front ended app for Pokemon GO's PVP battle system.
 
-Simple web system for Pokemon PVP Team management
+## About
 
-Project running on:
-* ```PHP 7.2```
-* ```MySQL 5.2```
+This application run on vanilla PHP
 
-Composer packages used:
-* ```Phinx```
-* ```PHP-Cs-Fixer```
-* ```Simple-PHP-Router```
-* ```VLUCAS's PHPDOTENV```
+This application also uses Composer to handle dependencies and namespacing. So, to run this application you must have installed on your environment:
 
-Before running the project:
-* Install PHP 7.0 or higher
-* Install Composer 
-
-Configuring the project:
-* TBD
+* PHP (_https://www.php.net/manual/en/install.php_)
+* Composer (_https://getcomposer.org/download/_)
