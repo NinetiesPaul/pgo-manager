@@ -20,6 +20,12 @@ class JsBuilderController
         "Pau Oricorio",
         "Midday Lycanroc",
         "Midnight Lycanroc",
+        "Hisuian Arcanine",
+        "Hisuian Electrode",
+        "Hisuian Qwilfish",
+        "Hisuian Sneasel",
+        "Hisuian Braviary",
+        "Hisuian Aqualung"
     ];
 
     protected $forceName = [

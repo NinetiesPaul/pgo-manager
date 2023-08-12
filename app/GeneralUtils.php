@@ -100,5 +100,23 @@ class GeneralUtils {
         if ($name == "Midnight Lycanroc") {
             return 10126;
         }
+        if ($name == "Hisuian Arcanine") {
+            return 10230;
+        }
+        if ($name == "Hisuian Electrode") {
+            return 10232;
+        }
+        if ($name == "Hisuian Qwilfish") {
+            return 10234;
+        }
+        if ($name == "Hisuian Sneasel") {
+            return 10235;
+        }
+        if ($name == "Hisuian Braviary") {
+            return 10240;
+        }
+        if ($name == "Hisuian Aqualung") {
+            return 10243;
+        }
     }
 }
