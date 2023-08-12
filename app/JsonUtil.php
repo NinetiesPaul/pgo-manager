@@ -623,6 +623,11 @@ class JsonUtil
                     $name = "Weather Ball Normal";
                 }
 
+                if ($name == "Mystical Fire")
+                {
+                    $name = "Myst Fire";
+                }
+
                 if (!strpos($name, "nan")) {
                     $names[] = $name;
                 }
