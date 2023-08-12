@@ -32,24 +32,3 @@ switch ($argv[1]) {
         echo "Unknown option '$argv[1]'";
         break;
 }
-
-
-/*if ( == 'quick') {
-    $reader = new JsBuilderController();
-    $reader->jsBuilderQuick();
-}*/
-
-/*
-    $reader = new JsBuilderController();
-    $reader->jsBuilderQuick();
-
-    $reader = new JsBuilderController();
-    $reader->jsBuilderCharge();
-
-    $reader = new JsBuilderController();
-    $reader->jsBuilderPokeData();
-
-    $reader = new MainController();
-    $reader->teamAssembler();
-
-    */
