@@ -4,7 +4,25 @@ namespace Classes;
 
 class GeneralUtils {
 
-	public function formatImgUrl($id, $name)
+    public function getCsv()
+    {
+        $data = file_get_contents('https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon.csv');
+
+        $data = explode("\n", $data);
+        
+        $arrayResult = [];
+        
+        foreach ($data as $n => $row) {
+            if ($row !== "" && $n > 0){
+                $explodedRow = explode(",", $row);
+                $arrayResult[$explodedRow[1]] = $explodedRow[0];
+            }
+        }
+
+        return $arrayResult;
+    }
+
+	public function formatImgUrl($id, $name, $csv)
     {
         $imgUrl = $id;
 
@@ -20,14 +38,17 @@ class GeneralUtils {
         {
             case "Galarian":
                 $formattedName = strtolower($name[1]) . '-galar';
-                $pkm = $this->getPokeApiJson($formattedName);
-                $imgUrl = is_numeric($pkm['id']) ? $pkm['id'] : '';
+                $imgUrl = $csv[$formattedName];
                 break;
 
             case "Alola":
                 $formattedName = strtolower($name[1]) . '-alola';
-                $pkm = $this->getPokeApiJson($formattedName);
-                $imgUrl = is_numeric($pkm['id']) ? $pkm['id'] : '';
+                $imgUrl = $csv[$formattedName];
+                break;
+
+            case "Hisuian":
+                $formattedName = strtolower($name[1]) . '-hisui';
+                $imgUrl = $csv[$formattedName];
                 break;
 
             case "Shadow":
@@ -38,12 +59,6 @@ class GeneralUtils {
         }
 
         return $imgUrl;
-    }
-
-    private function getPokeApiJson($pokemon)
-    {
-        $read = file_get_contents("https://pokeapi.co/api/v2/pokemon/" . $pokemon);
-        return json_decode($read, true);
     }
     
     public function formatNameForJsBuilder($name)
@@ -99,24 +114,6 @@ class GeneralUtils {
         }
         if ($name == "Midnight Lycanroc") {
             return 10126;
-        }
-        if ($name == "Hisuian Arcanine") {
-            return 10230;
-        }
-        if ($name == "Hisuian Electrode") {
-            return 10232;
-        }
-        if ($name == "Hisuian Qwilfish") {
-            return 10234;
-        }
-        if ($name == "Hisuian Sneasel") {
-            return 10235;
-        }
-        if ($name == "Hisuian Braviary") {
-            return 10240;
-        }
-        if ($name == "Hisuian Aqualung") {
-            return 10243;
         }
     }
 }

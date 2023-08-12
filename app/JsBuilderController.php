@@ -20,12 +20,6 @@ class JsBuilderController
         "Pau Oricorio",
         "Midday Lycanroc",
         "Midnight Lycanroc",
-        "Hisuian Arcanine",
-        "Hisuian Electrode",
-        "Hisuian Qwilfish",
-        "Hisuian Sneasel",
-        "Hisuian Braviary",
-        "Hisuian Aqualung"
     ];
 
     protected $forceName = [
@@ -50,17 +44,19 @@ class JsBuilderController
         $stats = $this->jsonUtil->getStats();
         $types = $this->jsonUtil->getType();
         $currentMoves = $this->jsonUtil->getCurrentPkmMoves();
+        $csv = $this->generalUtil->getCsv();
 
         $jsDB = "var pokeDB = {\n";
 
         foreach ($stats as $name => $pkm) {
+            echo "\n Processing $name";
             $defense_data['vulnerable_to'] = $types[$name]['vulnerable_to'];
             $defense_data['resistant_to'] = $types[$name]['resistant_to'];
 
             $pokeData['id'] = str_pad($pkm['id'], 3, '0', 0);
             $pokeData['imgurl'] = (in_array($name, $this->forceImgUrl))
                 ? $this->generalUtil->formatImgurlForJsBuilder($name)
-                : $this->generalUtil->formatImgUrl($pkm['id'], $name);
+                : $this->generalUtil->formatImgUrl($pkm['id'], $name, $csv);
             unset($pkm['id']);
             $pokeData['stats'] = $pkm;
             $pokeData['type'] = $types[$name]['type'];
@@ -75,6 +71,7 @@ class JsBuilderController
             }
 
             $jsDB .= "\"$name\": " . json_encode($pokeData, JSON_PRETTY_PRINT) . ",\n";
+            echo "\n Finished processing $name";
         }
 
         $jsDB .= "}";
