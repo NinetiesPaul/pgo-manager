@@ -8,6 +8,7 @@ includes/php/conn.php
 phinx.yml
 .env
 /.idea
+/includes/files/db/
 /includes/files/*.csv
 /includes/files/*.sql
 /includes/files/*.txt
