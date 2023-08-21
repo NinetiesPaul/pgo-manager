@@ -76,7 +76,7 @@ class JsBuilderController
 
         $jsDB .= "}";
 
-        file_put_contents('includes/files/db_pokedata.js', $jsDB);
+        file_put_contents('includes/files/db/pokedata.js', $jsDB);
 
     }
 
@@ -102,7 +102,7 @@ class JsBuilderController
 
         $jsDB .= "}";
 
-        file_put_contents('includes/files/db_quick.js', $jsDB);
+        file_put_contents('includes/files/db/quick.js', $jsDB);
 
     }
 
@@ -129,7 +129,7 @@ class JsBuilderController
 
         $jsDB .= "}";
 
-        file_put_contents('includes/files/db_charge.js', $jsDB);
+        file_put_contents('includes/files/db/charge.js', $jsDB);
 
     }
 }

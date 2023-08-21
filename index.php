@@ -28,6 +28,16 @@ switch ($argv[1]) {
         $class->massUpdate();
         break;
 
+    case 'update_jsquick':
+        $class = new JsonUtil();
+        $class->getQuickMoves(true);
+        break;
+
+    case 'update_jscharge':
+        $class = new JsonUtil();
+        $class->getChargeMoves(true);
+        break;
+
     default:
         echo "Unknown option '$argv[1]'";
         break;
