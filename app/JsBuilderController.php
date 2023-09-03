@@ -30,6 +30,24 @@ class JsBuilderController
         "Galarian Mr. Rime",
     ];
 
+    protected $forceMoves = [
+        "Poliwrath" => [
+            'quick' => [
+                '*Counter'
+            ]
+        ],
+        "Politoed" => [
+            'charge' => [
+                '*Ice Beam'
+            ]
+        ],
+        "Greninja" => [
+            'charge' => [
+                '*Hydro Cannon'
+            ]
+        ],
+    ];
+
     public function __construct()
     {
         $this->jsonUtil = new JsonUtil();
@@ -61,8 +79,8 @@ class JsBuilderController
             $pokeData['stats'] = $pkm;
             $pokeData['type'] = $types[$name]['type'];
             $pokeData['name'] = $name;
-            $pokeData['moveset']['quick'] = $currentMoves[$name]['quick'];
-            $pokeData['moveset']['charge'] = $currentMoves[$name]['charge'];
+            $pokeData['moveset']['quick'] = array_merge($currentMoves[$name]['quick'],  isset($this->forceMoves[$name]['quick']) ? $this->forceMoves[$name]['quick'] : []);
+            $pokeData['moveset']['charge'] = array_merge($currentMoves[$name]['charge'], isset($this->forceMoves[$name]['charge']) ? $this->forceMoves[$name]['charge'] : []);
             $pokeData['defense_data'] = $defense_data;
 
             if (in_array($name, $this->forceName)) {
