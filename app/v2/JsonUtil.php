@@ -7,9 +7,12 @@ class JsonUtil {
     protected $quickMovesDB = [];
     protected $chargeMovesDB = [];
     protected $pkmDB = [];
+    protected $asJson = false;
 
-    public function run()
+    public function run($asJson = false)
     {
+        $this->asJson = $asJson;
+
         $pokedex = file_get_contents("https://pokemon-go-api.github.io/pokemon-go-api/api/pokedex.json");
         $pokemons = json_decode($pokedex);
 
@@ -79,15 +82,30 @@ class JsonUtil {
 
     private function writePokeData()
     {
-        $jsDB = "var pokeDB = {\n";
+        if ($this->asJson) {
+            //file_put_contents('includes/files/db/v2/pokedata_as_json.js', json_encode($this->pkmDB));
 
-        foreach ($this->pkmDB as $key => $pkmData) {    
-            $jsDB .= "\"" . $pkmData['name'] . "\": " . json_encode($pkmData, JSON_PRETTY_PRINT) . ",\n";
+            $toWrite = [];
+
+            foreach ($this->pkmDB as $pokemon) {
+                $toWrite[$pokemon['name']] = [
+                    'quick' => $pokemon['moveset']['quick'],
+                    'charge' => $pokemon['moveset']['charge'],
+                ];
+            }
+
+            file_put_contents('includes/files/db/v2/pokedata_as_json.json', json_encode($toWrite, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        } else {
+            $jsDB = "var pokeDB = {\n";
+
+            foreach ($this->pkmDB as $key => $pkmData) {    
+                $jsDB .= "\"" . $pkmData['name'] . "\": " . json_encode($pkmData, JSON_PRETTY_PRINT) . ",\n";
+            }
+
+            $jsDB .= "}";
+
+            file_put_contents('includes/files/db/v2/pokedata.js', $jsDB);
         }
-
-        $jsDB .= "}";
-
-        file_put_contents('includes/files/db/v2/pokedata.js', $jsDB);
     }
 
     private function format_types($pokemon)
@@ -114,7 +132,7 @@ class JsonUtil {
         }
 
         foreach($pokemon->eliteQuickMoves as $quickMove) {
-            $quickMoves[] = "*" . $quickMove->names->English;
+            $quickMoves[] = $quickMove->names->English . "*";
             if (!in_array($quickMove->names->English, array_keys($this->quickMovesDB))) {
                 $this->insertIntoQuickMoveDb($quickMove);
             }
@@ -134,7 +152,7 @@ class JsonUtil {
             }
         }
         foreach($pokemon->eliteCinematicMoves as $chargedMove) {
-            $chargedMoves[] = "*" . $chargedMove->names->English;
+            $chargedMoves[] = $chargedMove->names->English . "*";
             if (!in_array($chargedMove->names->English, array_keys($this->chargeMovesDB))) {
                 $this->insertIntoChargeMoveDb($chargedMove);
             }

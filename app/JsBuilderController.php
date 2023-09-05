@@ -30,20 +30,79 @@ class JsBuilderController
         "Galarian Mr. Rime",
     ];
 
+    protected $addNewChargeMoves = [
+        "Scorching Sands" => [
+            "type" => "Ground",
+            "weakAgainst" => [
+                "Bug",
+                "Flying",
+                "Grass"
+            ],
+            "goodAgainst" => [
+                "Electric",
+                "Fire",
+                "Poison",
+                "Rock",
+                "Steel"
+            ],
+            "energy" => "-50",
+            "power" => "80",
+            "dpe" => "1.66"
+        ],
+        "Trailblaze" => [
+            "type" => "Grass",
+            "weakAgainst" => [
+                "Bug",
+                "Dragon",
+                "Fire",
+                "Flying",
+                "Grass",
+                "Poison",
+                "Steel"
+            ],
+            "goodAgainst" => [
+                "Ground",
+                "Rock",
+                "Water"
+            ],
+            "energy" => "-50",
+            "power" => "65",
+            "dpe" => "1.3"
+        ],
+        "Triple Axel" => [
+            "type" => "Ice",
+            "weakAgainst" => [
+                "Fire",
+                "Ice",
+                "Steel",
+                "Water"
+            ],
+            "goodAgainst" => [
+                "Dragon",
+                "Flying",
+                "Grass",
+                "Ground"
+            ],
+            "energy" => "-45",
+            "power" => "60",
+            "dpe" => "1.33"
+        ],
+    ];
+
     protected $forceMoves = [
-        "Poliwrath" => [
-            'quick' => [
-                '*Counter'
+        "charge" => [
+            'Scorching Sands' => [
+                "Sandslash", "Ninetales", "Arcanine", "Rapidash", "Entei", "Trapinch", "Vibrava", "Flygon", "Claydol", "Hippowdon", "Magmar", "Magmortar", "Diggersby", "Excadrill", "Sandygast", "Palossand"
             ]
         ],
-        "Politoed" => [
-            'charge' => [
-                '*Ice Beam'
+        "charge" => [
+            'Trailblaze' => [
+                "Tauros", "Sudowoodo", "Mareep", "Flaaffy", "Ampharos", "Scyther", "Scizor", "Kleavor", "Teddiursa", "Ursaring", "Ursaluna", "Deerling", "Sawsbuck", "Rockruff", "Lycanroc", "Fomantis", "Lurantis", "Skwovet", "Stunky", "Skuntank", "Galarian Meowth", "Perrserker", "Girafarig", "Phanpy"
             ]
         ],
-        "Greninja" => [
-            'charge' => [
-                '*Hydro Cannon'
+        "charge" => [
+            'Triple Axel' => [
+                "Galarian Mr. Mime", "Sneasel", "Weavile", "Hitmontop", "Kirlia", "Gardevoir", "Lopunny", "Mr. Rime", "Steenee", "Tsareena"
             ]
         ],
     ];
@@ -57,12 +116,17 @@ class JsBuilderController
     /*
      * This function is responsible for generating the pokemon database files for the pure front end version of this app
      */
-    public function jsBuilderPokeData()
+    public function jsBuilderPokeData($mergeSources = false)
     {
         $stats = $this->jsonUtil->getStats();
         $types = $this->jsonUtil->getType();
         $currentMoves = $this->jsonUtil->getCurrentPkmMoves();
         $csv = $this->generalUtil->getCsv();
+
+        if ($mergeSources) {
+            $secondSource = file_get_contents("includes/files/db/v2/pokedata_as_json.json");
+            $secondSource = json_decode($secondSource, true);
+        }
 
         $jsDB = "var pokeDB = {\n";
 
@@ -79,8 +143,8 @@ class JsBuilderController
             $pokeData['stats'] = $pkm;
             $pokeData['type'] = $types[$name]['type'];
             $pokeData['name'] = $name;
-            $pokeData['moveset']['quick'] = array_merge($currentMoves[$name]['quick'],  isset($this->forceMoves[$name]['quick']) ? $this->forceMoves[$name]['quick'] : []);
-            $pokeData['moveset']['charge'] = array_merge($currentMoves[$name]['charge'], isset($this->forceMoves[$name]['charge']) ? $this->forceMoves[$name]['charge'] : []);
+            $pokeData['moveset']['quick'] = ($mergeSources && isset($secondSource[$name]['quick'])) ? array_values(array_unique(array_merge($currentMoves[$name]['quick'], $secondSource[$name]['quick']))) : $currentMoves[$name]['quick']; //array_merge($currentMoves[$name]['quick'],  isset($this->forceMoves[$name]['quick']) ? $this->forceMoves[$name]['quick'] : []);
+            $pokeData['moveset']['charge'] = ($mergeSources && isset($secondSource[$name]['charge'])) ? array_values(array_unique(array_merge($currentMoves[$name]['charge'], $secondSource[$name]['charge']))) : $currentMoves[$name]['charge']; //array_merge($currentMoves[$name]['charge'], isset($this->forceMoves[$name]['charge']) ? $this->forceMoves[$name]['charge'] : []);
             $pokeData['defense_data'] = $defense_data;
 
             if (in_array($name, $this->forceName)) {
@@ -103,7 +167,6 @@ class JsBuilderController
      */
     public function jsBuilderQuick()
     {
-
         $quickMoves = $this->jsonUtil->getQuickMoves();
 
         $jsDB = "var quickMoveDB = {\n";
@@ -129,8 +192,9 @@ class JsBuilderController
      */
     public function jsBuilderCharge()
     {
-
         $chargeMoves = $this->jsonUtil->getChargeMoves();
+
+        $chargeMoves = array_merge($chargeMoves, $this->addNewChargeMoves);
 
         $jsDB = "var chargeMoveDB = {\n";
 

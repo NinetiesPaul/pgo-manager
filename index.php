@@ -44,6 +44,14 @@ switch ($argv[1]) {
         $class->run();
         break;
 
+    case 'combine_sources_db':
+        $class = new JsonV2();
+        $class->run(true);
+
+        $class = new JsBuilderController();
+        $class->jsBuilderPokeData(true);
+        break;
+
     default:
         echo "Unknown option '$argv[1]'";
         break;
