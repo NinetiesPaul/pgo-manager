@@ -88,7 +88,7 @@ class JsonUtil {
                     continue;
                 }
                 
-                $pokemonQuickMoves = array_merge($pokemon->quickMoves, isset($pokemon->eliteQuickMove) ? $pokemon->eliteQuickMove : []);
+                $pokemonQuickMoves = array_merge($pokemon->quickMoves, isset($pokemon->eliteQuickMove) ? array_map(function($innerMove) { return $innerMove . "*"; }, $pokemon->eliteQuickMove) : []);
                 foreach($pokemonQuickMoves as $key => $value) {
                     if (in_array($value, array_keys($this->moveIds))) {
                         $pokemonQuickMoves[] = $this->moveIds[$value];
@@ -97,7 +97,7 @@ class JsonUtil {
                     }
                 }
                 
-                $pokemonChargeMoves = array_merge($pokemon->cinematicMoves, isset($pokemon->eliteCinematicMove) ? $pokemon->eliteCinematicMove : []);
+                $pokemonChargeMoves = array_merge($pokemon->cinematicMoves, isset($pokemon->eliteCinematicMove) ? array_map(function($innerMove) { return $innerMove . "*"; }, $pokemon->eliteCinematicMove) : []);
                 foreach($pokemonChargeMoves as $key => $value) {
                     if (in_array($value, array_keys($this->moveIds))) {
                         $pokemonChargeMoves[] = $this->moveIds[$value];
@@ -225,21 +225,12 @@ class JsonUtil {
         $this->writeQuickData();
         $this->writeChargeData();
     }
-
-    private function formatSpacedName($spacedName) {
-        $names = explode("_", $spacedName);
-    
-        foreach($names as &$name) {
-            $name = ucfirst(strtolower($name));
-        }
-        return implode(" ", $names);
-    }
     
     private function formatQuickMoves($quickMoves){
         $formatting = [];
     
         foreach($quickMoves as $quickMove) {
-            $formatting[] = $this->formatSpacedName(explode("_FAST", $quickMove)[0]);
+            $formatting[] = $this->formatSpacedName(explode("_FAST", $quickMove)[0] . (str_contains($quickMove, "*") ?  "*" : ''));
         }
         return $formatting;
     }
@@ -251,6 +242,15 @@ class JsonUtil {
             $formatting[] = $this->formatSpacedName($chargeMove);
         }
         return $formatting;
+    }
+
+    private function formatSpacedName($spacedName) {
+        $names = explode("_", $spacedName);
+    
+        foreach($names as &$name) {
+            $name = ucfirst(strtolower($name));
+        }
+        return implode(" ", $names);
     }
     
     private function formatType($rawType) {
