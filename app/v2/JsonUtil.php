@@ -4,143 +4,401 @@ namespace Classes\v2;
 
 class JsonUtil {
     
-    protected $quickMovesDB = [];
-    protected $chargeMovesDB = [];
-    protected $pkmDB = [];
+    protected $pokeDatabase = [];
+    protected $quickMoves = [];
+    protected $chargeMoves = [];
+
+    protected $formattedPokeDatabase = [];
+    protected $formattedQuickMoves = [];
+    protected $formattedChargeMoves = [];
+
+    protected $moveIds = [
+        387 => 'GEOMANCY',
+        389 => 'OBLIVION_WING',
+        391 => 'TRIPLE_AXEL',
+        392 => 'TRAILBLAZE',
+        393 => 'SCORCHING_SANDS'
+    ];
+
+    protected $fixQuickMoveTurnValues = [
+        'FURY_CUTTER' => [
+            'turns' => 0
+        ],
+        'BUG_BITE' => [
+            'turns' => 0
+        ],
+        'BITE' => [
+            'turns' => 0
+        ],
+        'DRAGON_BREATH' => [
+            'turns' => 0
+        ],
+        'LICK' => [
+            'turns' => 0
+        ],
+        'SCRATCH' => [
+            'turns' => 0
+        ],
+        'TACKLE' => [
+            'turns' => 0
+        ],
+        'CUT' => [
+            'turns' => 0
+        ],
+        'LOCK_ON' => [
+            'turns' => 0
+        ],
+        'WATER_GUN' => [
+            'turns' => 0
+        ],
+    ];
+
+    protected $csv = [];
+
+    public function __construct()
+    {
+        if (!file_exists("includes/files/v2/latest.json")) {
+            file_put_contents("includes/files/v2/latest.json", file_get_contents("https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json"));
+        }
+        if (!file_exists("includes/files/v2/pokemon.csv")) {
+            file_put_contents("includes/files/v2/pokemon.csv", file_get_contents("https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon.csv"));
+        }
+
+        $this->csv = $this->getCsv();
+    }
 
     public function run()
     {
-        $pokedex = file_get_contents("https://pokemon-go-api.github.io/pokemon-go-api/api/pokedex.json");
-        $pokemons = json_decode($pokedex);
+        $content = file_get_contents("includes/files/v2/latest.json");
+        $content = json_decode($content);
 
-        $regionForms = [];
-        
-        foreach ($pokemons as $pokemon) {
-            $types = $this->format_types($pokemon);
+        foreach ($content as $entry) {
+            $entryName = explode("_", $entry->templateId);
+            if (preg_match("/(V)([0-9]{1,4})/", $entryName[0]) && isset($entry->data->pokemonSettings->stats->baseAttack) ) {
+                $pokemon = $entry->data->pokemonSettings;
+            
+                $name = (isset($pokemon->form)) ? $pokemon->form : $pokemon->pokemonId;
+                
+                if (preg_match("/(_NORMAL)/", $name) ||
+                    preg_match("/(_2019)/", $name)) {
+                    continue;
+                }
+                
+                if (!isset($pokemon->quickMoves)) {
+                    continue;
+                }
+                
+                $pokemonQuickMoves = array_merge($pokemon->quickMoves, isset($pokemon->eliteQuickMove) ? $pokemon->eliteQuickMove : []);
+                foreach($pokemonQuickMoves as $key => $value) {
+                    if (in_array($value, array_keys($this->moveIds))) {
+                        $pokemonQuickMoves[] = $this->moveIds[$value];
+                        unset($pokemonQuickMoves[$key]); 
+                        $pokemonQuickMoves = array_values($pokemonQuickMoves);
+                    }
+                }
+                
+                $pokemonChargeMoves = array_merge($pokemon->cinematicMoves, isset($pokemon->eliteCinematicMove) ? $pokemon->eliteCinematicMove : []);
+                foreach($pokemonChargeMoves as $key => $value) {
+                    if (in_array($value, array_keys($this->moveIds))) {
+                        $pokemonChargeMoves[] = $this->moveIds[$value];
+                        unset($pokemonChargeMoves[$key]); 
+                        $pokemonChargeMoves = array_values($pokemonChargeMoves);
+                    }
+                }
+                
+                $name = str_replace("_", "-", $name);
+                $name = $this->formatPokemonName($name);
 
-            $stats = [
-                "atk" => $pokemon->stats->attack,
-                "def" => $pokemon->stats->defense,
-                "sta" => $pokemon->stats->stamina,
-            ];
-
-            $new_pokemon = 
-                [
-                    "id" => str_pad($pokemon->dexNr, 3, '0', 0),
-                    "stats" => $stats,
-                    "type" => $types,
-                    "name" => $pokemon->names->English,
-                    "moveset" => [
-                        "quick" => $this->format_quick_moves($pokemon),
-                        "charge" => $this->format_charge_moves($pokemon),
+                $types = isset($pokemon->type2) ? [ $this->formatType($pokemon->type), $this->formatType($pokemon->type2) ] : [ $this->formatType($pokemon->type) ];
+                
+                $this->pokeDatabase[$name] = [
+                    'id' => substr($entryName[0], 1),
+                    'stats' => [
+                        'atk' => $entry->data->pokemonSettings->stats->baseAttack,
+                        'def' => $entry->data->pokemonSettings->stats->baseDefense,
+                        'sta' => $entry->data->pokemonSettings->stats->baseStamina
                     ],
-                    "defense_data" =>$this->getPokemonDefenseData($types),
+                    'type' => $types,
+                    'imgurl' => $this->getPokemonImgUrl(strtolower($name)),//strtolower($name),
+                    'name' => $name,
+                    'moveset' => [
+                        'quick' => $this->formatQuickMoves($pokemonQuickMoves),
+                        'charge' => $this->formatChargeMoves($pokemonChargeMoves)
+                    ],
+                    "defense_data" => $this->getPokemonDefenseData($types),
+                    //'templateId' => $entry->templateId
                 ];
-            $this->pkmDB[] = $new_pokemon;
+            }
+            
+            if (preg_match("/COMBAT_V/", $entry->templateId)) {
+                if ($entry->templateId == "COMBAT_V0242_MOVE_TRANSFORM_FAST"){
+                    continue;
+                }
 
-            if (isset($pokemon->regionForms) && $pokemon->regionForms != "null"){
-                foreach ($pokemon->regionForms as $regionForm) {
-                   $regionForms[] = $regionForm;
+                $typeEffectiveness = $this->typeEffectiveness();
+        
+                $uniqueId = explode("_", $entry->templateId);
+                $uniqueId = explode("V", $uniqueId[1]);
+        
+                $move = $entry->data->combatMove;
+                if ($move->energyDelta < 0) {
+                    $this->chargeMoves[$entry->templateId] = $move;
+        
+                    $formattedName = explode("_MOVE_", $entry->templateId);
+
+                    $goodAgainst = [];
+                    $weakAgainst = [];
+            
+                    foreach ($typeEffectiveness[$this->formatType($move->type)] as $key => $value)
+                    {
+                        if ($value > 1) {
+                            $goodAgainst[] = $key;
+                        }
+                        if ($value < 1) {
+                            $weakAgainst[] = $key;
+                        }
+                    }
+        
+                    $this->formattedChargeMoves[$this->formatSpacedName($formattedName[1])] = [
+                        'uniqueId' => $uniqueId[1],
+                        'name' => $this->formatSpacedName($formattedName[1]),
+                        'type' => $this->formatType($move->type),
+                        'goodAgainst' => $goodAgainst,
+                        'weakAgainst' => $weakAgainst,
+                        'energy' => $move->energyDelta,
+                        'power' => isset($move->power) ? $move->power : 0,
+                        'dpe' => number_format( (isset($move->power) ? $move->power : 0) / $move->energyDelta, 2),
+                    ];
+
+                    ksort($this->formattedChargeMoves );
+                } else {
+                    $this->quickMoves[$entry->templateId] = $move;
+                    
+                    $formattedName = explode("_MOVE_", $entry->templateId);
+                    $formattedName = explode("_FAST", $formattedName[1]);
+                    
+                    $moveTurns = isset($move->durationTurns) ? $move->durationTurns : $this->fixQuickMoveTurnValues[$formattedName[0]]['turns'];
+                    $moveTurns++;
+                    $movePower = isset($move->power) ? $move->power : 0;
+                    
+                    if ($moveTurns == 0){
+                        echo "$formattedName[0] SKIP FILHO DA PUTA \n\n";die();
+                        continue;
+                    }
+
+                    $goodAgainst = [];
+                    $weakAgainst = [];
+            
+                    foreach ($typeEffectiveness[$this->formatType($move->type)] as $key => $value)
+                    {
+                        if ($value > 1) {
+                            $goodAgainst[] = $key;
+                        }
+                        if ($value < 1) {
+                            $weakAgainst[] = $key;
+                        }
+                    }
+                    
+                    $this->formattedQuickMoves[$this->formatSpacedName($formattedName[0])] = [
+                        'uniqueId' => $uniqueId[1],
+                        'name' => $this->formatSpacedName($formattedName[0]),
+                        'type' => $this->formatType($move->type),
+                        'power' => $movePower,
+                        'energy' => $move->energyDelta,
+                        'turns' => $moveTurns,
+                        'goodAgainst' => $goodAgainst,
+                        'weakAgainst' => $weakAgainst,
+                        'dpt' => number_format($movePower / ($moveTurns), 2),
+                        'ept' => number_format($move->energyDelta / ($moveTurns), 2),
+                    ];
+
+                    ksort($this->formattedQuickMoves);
                 }
             }
         }
+        
+        file_put_contents("includes/files/v2/raw_pokemonDatabase.json", json_encode($this->pokeDatabase, JSON_PRETTY_PRINT));
+        file_put_contents("includes/files/v2/raw_quickMoves.json", json_encode($this->quickMoves, JSON_PRETTY_PRINT));
+        file_put_contents("includes/files/v2/raw_chargeMoves.json", json_encode($this->chargeMoves, JSON_PRETTY_PRINT));
+        
+        $this->writePokeData();
+        $this->writeQuickData();
+        $this->writeChargeData();
+    }
 
-        foreach ($regionForms as $regionForm) {
-            $region = ucfirst(strtolower(explode("_", $regionForm->formId)[1]));
-            $regionFormName = (in_array($region, [ "Alola", "Galarian" ])) ? $regionForm->names->English : $region . " " . $regionForm->names->English;
-
-            $types = $this->format_types($regionForm);
-
-            $stats = [
-                "atk" => $regionForm->stats->attack,
-                "def" => $regionForm->stats->defense,
-                "sta" => $regionForm->stats->stamina,
-            ];
-
-            $new_pokemon = [
-                    "id" => str_pad($regionForm->dexNr, 3, '0', 0),
-                    "stats" => $stats,
-                    "type" => $types,
-                    "name" => $regionFormName,
-                    "moveset" => [
-                        "quick" => $this->format_quick_moves($regionForm),
-                        "charge" => $this->format_charge_moves($regionForm),
-                    ],
-                    "defense_data" =>$this->getPokemonDefenseData($types),
-            ];
-            $this->pkmDB[] = $new_pokemon;
+    private function formatSpacedName($spacedName) {
+        $names = explode("_", $spacedName);
+    
+        foreach($names as &$name) {
+            $name = ucfirst(strtolower($name));
+        }
+        return implode(" ", $names);
+    }
+    
+    private function formatQuickMoves($quickMoves){
+        $formatting = [];
+    
+        foreach($quickMoves as $quickMove) {
+            $formatting[] = $this->formatSpacedName(explode("_FAST", $quickMove)[0]);
+        }
+        return $formatting;
+    }
+    
+    private function formatChargeMoves($chargeMoves){
+        $formatting = [];
+    
+        foreach($chargeMoves as $chargeMove) {
+            $formatting[] = $this->formatSpacedName($chargeMove);
+        }
+        return $formatting;
+    }
+    
+    private function formatType($rawType) {
+        return ucfirst(strtolower(explode("_", $rawType)[2]));
+    }
+    
+    private function formatPokemonName($name) {
+        $names = explode("-", $name);
+        
+        foreach($names as &$name) {
+            $name = ucfirst(strtolower($name));
         }
 
-        $this->writePokedata();
-        //file_put_contents('includes/files/db/v2/quick.js', json_encode($this->quickMovesDB, JSON_PRETTY_PRINT));
-        //file_put_contents('includes/files/db/v2/charge.js', json_encode($this->chargeMovesDB, JSON_PRETTY_PRINT));
-        //file_put_contents('includes/files/db/v2/pokedata.js', json_encode($this->pkmDB, JSON_PRETTY_PRINT));
+        if (implode(" ", $names) == "Ho Oh") {
+            return str_replace(" ", "-", implode(" ", $names));
+        }
+
+        if (preg_match("/Lycanroc/", implode(" ", $names))) {
+            if (preg_match("/Midday/", implode(" ", $names))) {
+                $names = array_reverse($names);
+            }
+
+            if (preg_match("/Midnight/", implode(" ", $names))) {
+                $names = array_reverse($names);
+            }
+
+            if (preg_match("/Dusk/", implode(" ", $names))) {
+                $names = array_reverse($names);
+            }
+        }
+
+        if(in_array("Hisuian", $names) || in_array("Galarian", $names) || in_array("Alola", $names) || in_array("Deoxys", $names)) {
+            $names = array_reverse($names);
+        }
+
+        if(in_array("Florges", $names)) {
+            $names = array_reverse($names);
+        }
+
+        if(in_array("Gourgeist", $names)) {
+            $names = array_reverse($names);
+        }
+
+        return implode(" ", $names);
+    }
+
+    private function getPokemonImgUrl($pkm)
+    {
+        $pkmName = $pkm;
+        
+        if(preg_match("/(florges)/", $pkmName) && preg_match("/( )/", $pkmName)) {
+            return "671-" . explode(" ", $pkmName)[1];
+        }
+        
+        if(preg_match("/(gourgeist)/", $pkmName) && preg_match("/( )/", $pkmName)) {
+            $pkmName = str_replace(" ", "-", $pkmName);
+            return $pkmName;
+        }
+
+        if(str_contains($pkm, "hisuian")) {
+            $pkmName = explode(" ", $pkmName)[1] . "-hisui";
+        }
+        
+        if(str_contains($pkm, "galarian")) {
+            $pkmName = explode(" ", $pkmName)[1] . "-galar";
+        }
+        
+        if(str_contains($pkm, "alola")) {
+            $pkmName = explode(" ", $pkmName)[1] . "-alola";
+        }
+        
+        if(preg_match("/(lycanroc)/", $pkmName) && preg_match("/(midday)/", $pkmName)) {
+            $pkmName = "lycanroc-midday";
+        }
+        
+        if(preg_match("/(lycanroc)/", $pkmName) && preg_match("/(dusk)/", $pkmName)) {
+            $pkmName = "lycanroc-dusk";
+        }
+        
+        if(preg_match("/(lycanroc)/", $pkmName) && preg_match("/(midnight)/", $pkmName)) {
+            $pkmName = "lycanroc-midnight";
+        }
+        
+        if(preg_match("/(mime)/", $pkmName)) {
+            $pkmName = str_replace(" ", "-", $pkmName);
+        }
+        
+        if(preg_match("/(mime)/", $pkmName) && preg_match("/(galar)/", $pkmName)) {
+            $pkmName = "mr-mime-galar";
+        }
+        
+        if(preg_match("/(mr rime)/", $pkmName)) {
+            $pkmName = str_replace(" ", "-", $pkmName);
+        }
+
+        return $this->csv[$pkmName];
     }
 
     private function writePokeData()
     {
         $jsDB = "var pokeDB = {\n";
 
-        foreach ($this->pkmDB as $key => $pkmData) {    
+        foreach ($this->pokeDatabase as $key => $pkmData) {    
             $jsDB .= "\"" . $pkmData['name'] . "\": " . json_encode($pkmData, JSON_PRETTY_PRINT) . ",\n";
         }
 
         $jsDB .= "}";
 
-        file_put_contents('includes/files/db/v2/pokedata.js', $jsDB);
+        file_put_contents('includes/files/v2/db/pokedata.js', $jsDB);
     }
 
-    private function format_types($pokemon)
+    private function writeQuickData()
     {
-        $pokemonType = [ $pokemon->primaryType->names->English ];
-        
-        if (isset($pokemon->secondaryType->names->English) && $pokemon->secondaryType->names->English != "null") {
-            $pokemonType[] = $pokemon->secondaryType->names->English;
+        $jsDB = "var quickMoveDB = {\n";
+
+        foreach ($this->formattedQuickMoves as $quickMove => $data) {
+            $moveData['type'] = $data['type'];
+            $moveData['weakAgainst'] = $data['weakAgainst'];
+            $moveData['goodAgainst'] = $data['goodAgainst'];
+            $moveData['ept'] = $data['ept'];
+            $moveData['dpt'] = $data['dpt'];
+
+            $jsDB .= "\"$quickMove\": " . json_encode($moveData, JSON_PRETTY_PRINT) . ",\n";
         }
-        
-        return $pokemonType;
+
+        $jsDB .= "}";
+
+        file_put_contents('includes/files/v2/db/quick.js', $jsDB);
     }
 
-    private function format_quick_moves($pokemon)
+    private function writeChargeData()
     {
-        $quickMoves = [];
+        $jsDB = "var chargeMoveDB = {\n";
 
-        foreach($pokemon->quickMoves as $quickMove) {
-            $quickMoves[] = $quickMove->names->English;
+        foreach ($this->formattedChargeMoves as $chargeMove => $data) {
+            $moveData['type'] = $data['type'];
+            $moveData['weakAgainst'] = $data['weakAgainst'];
+            $moveData['goodAgainst'] = $data['goodAgainst'];
+            $moveData['energy'] = $data['energy'];
+            $moveData['power'] = $data['power'];
+            $moveData['dpe'] = $data['dpe'];
 
-            if (!in_array($quickMove->names->English, array_keys($this->quickMovesDB))) {
-                $this->insertIntoQuickMoveDb($quickMove);
-            }
+            $jsDB .= "\"$chargeMove\": " . json_encode($moveData, JSON_PRETTY_PRINT) . ",\n";
         }
 
-        foreach($pokemon->eliteQuickMoves as $quickMove) {
-            $quickMoves[] = "*" . $quickMove->names->English;
-            if (!in_array($quickMove->names->English, array_keys($this->quickMovesDB))) {
-                $this->insertIntoQuickMoveDb($quickMove);
-            }
-        }
-        
-        return $quickMoves;
-    }
+        $jsDB .= "}";
 
-    private function format_charge_moves($pokemon)
-    {
-        $chargedMoves = [];
-
-        foreach($pokemon->cinematicMoves as $chargedMove) {
-            $chargedMoves[] = $chargedMove->names->English;
-            if (!in_array($chargedMove->names->English, array_keys($this->chargeMovesDB))) {
-                $this->insertIntoChargeMoveDb($chargedMove);
-            }
-        }
-        foreach($pokemon->eliteCinematicMoves as $chargedMove) {
-            $chargedMoves[] = "*" . $chargedMove->names->English;
-            if (!in_array($chargedMove->names->English, array_keys($this->chargeMovesDB))) {
-                $this->insertIntoChargeMoveDb($chargedMove);
-            }
-        }
-        
-        return $chargedMoves;
+        file_put_contents('includes/files/v2/db/charge.js', $jsDB);
     }
 
     private function getPokemonDefenseData($inTypes)
@@ -287,55 +545,21 @@ class JsonUtil {
         return json_decode($content, true);
     }
 
-    private function insertIntoQuickMoveDb($quickMove)
+    private function getCsv()
     {
-        $types = $this->typeEffectiveness();
+        $data = file_get_contents('includes/files/v2/pokemon.csv');
 
-        $goodAgainst = [];
-        $weakAgainst = [];
-
-        foreach ($types[$quickMove->type->names->English] as $key => $value)
-        {
-            if ($value > 1) {
-                $goodAgainst[] = $key;
-            }
-            if ($value < 1) {
-                $weakAgainst[] = $key;
+        $data = explode("\n", $data);
+        
+        $arrayResult = [];
+        
+        foreach ($data as $n => $row) {
+            if ($row !== "" && $n > 0){
+                $explodedRow = explode(",", $row);
+                $arrayResult[$explodedRow[1]] = $explodedRow[0];
             }
         }
 
-        $this->quickMovesDB[$quickMove->names->English] = [
-            "type" => $quickMove->type->names->English,
-            'weakAgainst' => $weakAgainst,
-            'goodAgainst' => $goodAgainst,
-            "ept" => number_format((int) $quickMove->combat->energy / (int)  $quickMove->combat->turns, 2),
-            "dpt" => number_format((int)  $quickMove->combat->power / (int)  $quickMove->combat->turns, 2),
-        ];
-    }
-
-    private function insertIntoChargeMoveDb($chargedMove)
-    {
-        $types = $this->typeEffectiveness();
-
-        $goodAgainst = [];
-        $weakAgainst = [];
-
-        foreach ($types[$chargedMove->type->names->English] as $key => $value)
-        {
-            if ($value > 1) {
-                $goodAgainst[] = $key;
-            }
-            if ($value < 1) {
-                $weakAgainst[] = $key;
-            }
-        }
-
-        $this->chargeMovesDB[$chargedMove->names->English] = [
-            "type" => $chargedMove->type->names->English,
-            'weakAgainst' => $weakAgainst,
-            'goodAgainst' => $goodAgainst,
-            "energy" => $chargedMove->combat->energy,
-            "dpe" => number_format((int)  $chargedMove->combat->power / (int)  $chargedMove->combat->energy, 2) * -1,
-        ];
+        return $arrayResult;
     }
 }
