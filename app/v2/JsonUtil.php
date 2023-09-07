@@ -126,6 +126,7 @@ class JsonUtil {
                         'charge' => $this->formatChargeMoves($pokemonChargeMoves)
                     ],
                     "defense_data" => $this->getPokemonDefenseData($types),
+                    "is_shadow" => isset($pokemon->shadow) ? true : false,
                     //'templateId' => $entry->templateId
                 ];
             }
