@@ -199,11 +199,6 @@ class JsonUtil {
                     $moveTurns = isset($move->durationTurns) ? $move->durationTurns : $this->fixQuickMoveTurnValues[$formattedName[0]]['turns'];
                     $moveTurns++;
                     $movePower = isset($move->power) ? $move->power : 0;
-                    
-                    if ($moveTurns == 0){
-                        echo "$formattedName[0] SKIP FILHO DA PUTA \n\n";die();
-                        continue;
-                    }
 
                     $goodAgainst = [];
                     $weakAgainst = [];
@@ -307,53 +302,43 @@ class JsonUtil {
             in_array("Alola", $names) ||
             in_array("Deoxys", $names) ||
             in_array("Florges", $names) ||
-            in_array("Average", $names)) {
+            in_array("Average", $names) ||
+            in_array("Gourgeist", $names)) {
             $names = array_reverse($names);
         }
 
         return implode(" ", $names);
     }
 
-    private function getPokemonImgUrl($pkm)
+    private function getPokemonImgUrl($pkmName)
     {
-        $pkmName = $pkm;
-
-        if (preg_match("/oricorio/", $pkm) ||
-            preg_match("/(gourgeist)/", $pkmName) ||
+        if (preg_match("/oricorio/", $pkmName) ||
             preg_match("/(mime)/", $pkmName) ||
             preg_match("/(mr rime)/", $pkmName)) {
             $pkmName = str_replace(" ", "-", $pkmName);
+        }
+
+        if (preg_match("/(gourgeist)/", $pkmName) || preg_match("/(lycanroc)/", $pkmName)) {
+            $pkmName = implode("-", array_reverse(explode(" ", $pkmName)));
         }
         
         if(preg_match("/(florges)/", $pkmName) && preg_match("/( )/", $pkmName)) {
             return "671-" . explode(" ", $pkmName)[1];
         }
         
-        if(preg_match("/(lycanroc)/", $pkmName) && preg_match("/(midday)/", $pkmName)) {
-            $pkmName = "lycanroc-midday";
-        }
-        
-        if(preg_match("/(lycanroc)/", $pkmName) && preg_match("/(dusk)/", $pkmName)) {
-            $pkmName = "lycanroc-dusk";
-        }
-        
-        if(preg_match("/(lycanroc)/", $pkmName) && preg_match("/(midnight)/", $pkmName)) {
-            $pkmName = "lycanroc-midnight";
-        }
-        
         if(preg_match("/(mime)/", $pkmName) && preg_match("/(galar)/", $pkmName)) {
             $pkmName = "mr-mime-galar";
         }
 
-        if(str_contains($pkm, "hisuian")) {
+        if(str_contains($pkmName, "hisuian")) {
             $pkmName = explode(" ", $pkmName)[1] . "-hisui";
         }
         
-        if(str_contains($pkm, "galarian")) {
+        if(str_contains($pkmName, "galarian")) {
             $pkmName = explode(" ", $pkmName)[1] . "-galar";
         }
         
-        if(str_contains($pkm, "alola")) {
+        if(str_contains($pkmName, "alola")) {
             $pkmName = explode(" ", $pkmName)[1] . "-alola";
         }
 
