@@ -77,10 +77,22 @@ class JsonUtil {
             if (preg_match("/(V)([0-9]{1,4})/", $entryName[0]) && isset($entry->data->pokemonSettings->stats->baseAttack) ) {
                 $pokemon = $entry->data->pokemonSettings;
             
-                $name = (isset($pokemon->form)) ? $pokemon->form : $pokemon->pokemonId;
-                
-                if (preg_match("/(_NORMAL)/", $name) ||
-                    preg_match("/(_2019)/", $name)) {
+                if (preg_match("/(_NORMAL)/", $entry->templateId) ||
+                    preg_match("/(_2019)/", $entry->templateId) ||
+                    preg_match("/(_2020)/", $entry->templateId) ||
+                    preg_match("/(_2021)/", $entry->templateId) ||
+                    preg_match("/(_2022)/", $entry->templateId) ||
+                    preg_match("/(_HO_OH_S)/", $entry->templateId) ||
+                    preg_match("/(_LUGIA_S)/", $entry->templateId) ||
+                    preg_match("/(_LATIOS_S)/", $entry->templateId) ||
+                    preg_match("/(_LATIAS_S)/", $entry->templateId) ||
+                    preg_match("/(_RAIKOU_S)/", $entry->templateId) ||
+                    preg_match("/(_ENTEI_S)/", $entry->templateId) ||
+                    preg_match("/(_SUICUNE_S)/", $entry->templateId) ||
+                    preg_match("/(_PIKACHU_)/", $entry->templateId) ||
+                    preg_match("/(SUMMER)/", $entry->templateId) ||
+                    preg_match("/(WINTER)/", $entry->templateId) ||
+                    preg_match("/(COSTUME)/", $entry->templateId)) {
                     continue;
                 }
                 
@@ -106,11 +118,17 @@ class JsonUtil {
                     }
                 }
                 
-                $name = str_replace("_", "-", $name);
+                $name = (isset($pokemon->form)) ? $pokemon->form : $pokemon->pokemonId;
                 $name = $this->formatPokemonName($name);
 
+                if ($name == "Lycanroc" ||
+                    $name == "Oricorio" ||
+                    $name == "Gourgeist") {
+                    continue;
+                }
+
                 $types = isset($pokemon->type2) ? [ $this->formatType($pokemon->type), $this->formatType($pokemon->type2) ] : [ $this->formatType($pokemon->type) ];
-                
+
                 $this->pokeDatabase[$name] = [
                     'id' => substr($entryName[0], 1),
                     'stats' => [
@@ -168,7 +186,7 @@ class JsonUtil {
                         'weakAgainst' => $weakAgainst,
                         'energy' => $move->energyDelta,
                         'power' => isset($move->power) ? $move->power : 0,
-                        'dpe' => number_format( (isset($move->power) ? $move->power : 0) / $move->energyDelta, 2),
+                        'dpe' => number_format( (isset($move->power) ? $move->power : 0) / $move->energyDelta, 2) * -1,
                     ];
 
                     ksort($this->formattedChargeMoves );
@@ -259,13 +277,14 @@ class JsonUtil {
     }
     
     private function formatPokemonName($name) {
+        $name = str_replace("_", "-", $name);
         $names = explode("-", $name);
         
         foreach($names as &$name) {
             $name = ucfirst(strtolower($name));
         }
 
-        if (implode(" ", $names) == "Ho Oh") {
+        if (in_array(implode(" ", $names), [ "Ho Oh", "Jangmo O", "Hakamo O", "Kommo O"])) {
             return str_replace(" ", "-", implode(" ", $names));
         }
 
@@ -283,15 +302,12 @@ class JsonUtil {
             }
         }
 
-        if(in_array("Hisuian", $names) || in_array("Galarian", $names) || in_array("Alola", $names) || in_array("Deoxys", $names)) {
-            $names = array_reverse($names);
-        }
-
-        if(in_array("Florges", $names)) {
-            $names = array_reverse($names);
-        }
-
-        if(in_array("Gourgeist", $names)) {
+        if (in_array("Hisuian", $names) ||
+            in_array("Galarian", $names) ||
+            in_array("Alola", $names) ||
+            in_array("Deoxys", $names) ||
+            in_array("Florges", $names) ||
+            in_array("Average", $names)) {
             $names = array_reverse($names);
         }
 
@@ -301,26 +317,16 @@ class JsonUtil {
     private function getPokemonImgUrl($pkm)
     {
         $pkmName = $pkm;
+
+        if (preg_match("/oricorio/", $pkm) ||
+            preg_match("/(gourgeist)/", $pkmName) ||
+            preg_match("/(mime)/", $pkmName) ||
+            preg_match("/(mr rime)/", $pkmName)) {
+            $pkmName = str_replace(" ", "-", $pkmName);
+        }
         
         if(preg_match("/(florges)/", $pkmName) && preg_match("/( )/", $pkmName)) {
             return "671-" . explode(" ", $pkmName)[1];
-        }
-        
-        if(preg_match("/(gourgeist)/", $pkmName) && preg_match("/( )/", $pkmName)) {
-            $pkmName = str_replace(" ", "-", $pkmName);
-            return $pkmName;
-        }
-
-        if(str_contains($pkm, "hisuian")) {
-            $pkmName = explode(" ", $pkmName)[1] . "-hisui";
-        }
-        
-        if(str_contains($pkm, "galarian")) {
-            $pkmName = explode(" ", $pkmName)[1] . "-galar";
-        }
-        
-        if(str_contains($pkm, "alola")) {
-            $pkmName = explode(" ", $pkmName)[1] . "-alola";
         }
         
         if(preg_match("/(lycanroc)/", $pkmName) && preg_match("/(midday)/", $pkmName)) {
@@ -335,16 +341,20 @@ class JsonUtil {
             $pkmName = "lycanroc-midnight";
         }
         
-        if(preg_match("/(mime)/", $pkmName)) {
-            $pkmName = str_replace(" ", "-", $pkmName);
-        }
-        
         if(preg_match("/(mime)/", $pkmName) && preg_match("/(galar)/", $pkmName)) {
             $pkmName = "mr-mime-galar";
         }
+
+        if(str_contains($pkm, "hisuian")) {
+            $pkmName = explode(" ", $pkmName)[1] . "-hisui";
+        }
         
-        if(preg_match("/(mr rime)/", $pkmName)) {
-            $pkmName = str_replace(" ", "-", $pkmName);
+        if(str_contains($pkm, "galarian")) {
+            $pkmName = explode(" ", $pkmName)[1] . "-galar";
+        }
+        
+        if(str_contains($pkm, "alola")) {
+            $pkmName = explode(" ", $pkmName)[1] . "-alola";
         }
 
         return $this->csv[$pkmName];
