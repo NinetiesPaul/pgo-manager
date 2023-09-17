@@ -6,6 +6,7 @@ include 'vendor/autoload.php';
 
 use Classes\JsBuilderController;
 use Classes\JsonUtil;
+use Classes\v2\JsonUtil as JsonV2;
 
 switch ($argv[1]) {
     case 'jsquick':
@@ -36,6 +37,11 @@ switch ($argv[1]) {
     case 'update_jscharge':
         $class = new JsonUtil();
         $class->getChargeMoves(true);
+        break;
+
+    case 'new_database':
+        $class = new JsonV2();
+        $class->run();
         break;
 
     default:

@@ -8,11 +8,5 @@ includes/php/conn.php
 phinx.yml
 .env
 /.idea
-/includes/files/db/
-/includes/files/*.csv
-/includes/files/*.sql
-/includes/files/*.txt
-/includes/files/*.json
-/includes/files/*.js
-/includes/files/pokedb/*.json
+/includes/files/
 composer.phar
