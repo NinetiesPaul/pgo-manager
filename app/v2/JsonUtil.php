@@ -177,6 +177,16 @@ class JsonUtil {
                             $weakAgainst[] = $key;
                         }
                     }
+
+                    $buffs = [];
+
+                    if (isset($move->buffs)){
+                        $innerBuffs = (array) $move->buffs;
+
+                        $buffs['activationChance'] = end($innerBuffs);
+                        unset($innerBuffs[array_key_last($innerBuffs)]);
+                        $buffs['effects'] = $innerBuffs;
+                    }
         
                     $this->formattedChargeMoves[$this->formatSpacedName($formattedName[1])] = [
                         'uniqueId' => $uniqueId[1],
@@ -187,6 +197,7 @@ class JsonUtil {
                         'energy' => $move->energyDelta,
                         'power' => isset($move->power) ? $move->power : 0,
                         'dpe' => number_format( (isset($move->power) ? $move->power : 0) / $move->energyDelta, 2) * -1,
+                        'buffs' => $buffs,
                     ];
 
                     ksort($this->formattedChargeMoves );
@@ -388,6 +399,7 @@ class JsonUtil {
             $moveData['energy'] = $data['energy'];
             $moveData['power'] = $data['power'];
             $moveData['dpe'] = $data['dpe'];
+            $moveData['buffs'] = $data['buffs'];
 
             $jsDB .= "\"$chargeMove\": " . json_encode($moveData, JSON_PRETTY_PRINT) . ",\n";
         }
