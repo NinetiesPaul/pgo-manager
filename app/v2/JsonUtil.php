@@ -257,6 +257,7 @@ class JsonUtil {
         foreach($quickMoves as $quickMove) {
             $formatting[] = $this->formatSpacedName(explode("_FAST", $quickMove)[0] . (str_contains($quickMove, "*") ?  "*" : ''));
         }
+        sort($formatting);
         return $formatting;
     }
     
@@ -266,6 +267,7 @@ class JsonUtil {
         foreach($chargeMoves as $chargeMove) {
             $formatting[] = $this->formatSpacedName($chargeMove);
         }
+        sort($formatting);
         return $formatting;
     }
 
