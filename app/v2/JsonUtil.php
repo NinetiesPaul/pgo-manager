@@ -57,13 +57,8 @@ class JsonUtil {
 
     public function __construct()
     {
-        if (!file_exists("includes/files/v2/latest.json")) {
-            file_put_contents("includes/files/v2/latest.json", file_get_contents("https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json"));
-        }
-        if (!file_exists("includes/files/v2/pokemon.csv")) {
-            file_put_contents("includes/files/v2/pokemon.csv", file_get_contents("https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon.csv"));
-        }
-
+        file_put_contents("includes/files/v2/latest.json", file_get_contents("https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json"));
+        file_put_contents("includes/files/v2/pokemon.csv", file_get_contents("https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon.csv"));
         $this->csv = $this->getCsv();
     }
 
