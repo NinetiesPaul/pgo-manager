@@ -10,3 +10,4 @@ phinx.yml
 /.idea
 /includes/files/
 composer.phar
+.vscode
