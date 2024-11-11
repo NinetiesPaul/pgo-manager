@@ -30,6 +30,8 @@ Creating full database file
 `php index.php jsdb`
 
 ### v2 commands
-`php index.php new_database`
+```
+php index.php new_database
+```
 
 Analyse and proccess content of Pokemon Go's game master file at [here](https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json) to generate the properly formmated database files for the front end application
