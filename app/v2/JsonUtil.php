@@ -118,7 +118,8 @@ class JsonUtil {
 
                 if ($name == "Lycanroc" ||
                     $name == "Oricorio" ||
-                    $name == "Gourgeist") {
+                    $name == "Gourgeist" ||
+                    $name == "Darmanitan") {
                     continue;
                 }
 
@@ -279,8 +280,8 @@ class JsonUtil {
         return ucfirst(strtolower(explode("_", $rawType)[2]));
     }
     
-    private function formatPokemonName($name) {
-        $name = str_replace("_", "-", $name);
+    private function formatPokemonName($originalName) {
+        $name = str_replace("_", "-", $originalName);
         $names = explode("-", $name);
         
         foreach($names as &$name) {
@@ -343,11 +344,21 @@ class JsonUtil {
         }
         
         if(str_contains($pkmName, "galarian")) {
-            $pkmName = explode(" ", $pkmName)[1] . "-galar";
+            if(str_contains($pkmName, "standard")) {
+                $pkmName = "darmanitan-galar-standard";
+            } else if(str_contains($pkmName, "zen")) {
+                $pkmName = "darmanitan-galar-zen";
+            } else {
+                $pkmName = explode(" ", $pkmName)[1] . "-galar";
+            }
         }
         
         if(str_contains($pkmName, "alola")) {
             $pkmName = explode(" ", $pkmName)[1] . "-alola";
+        }
+
+        if(str_contains($pkmName, "darmanitan")) {
+            $pkmName = str_replace(" ", "-", $pkmName);
         }
 
         return $this->csv[$pkmName];
