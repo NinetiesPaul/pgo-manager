@@ -121,6 +121,56 @@ class JsonUtil {
 
                 $types = isset($pokemon->type2) ? [ $this->formatType($pokemon->type), $this->formatType($pokemon->type2) ] : [ $this->formatType($pokemon->type) ];
 
+                $regions = [ 'Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Unova', 'Kalos', 'Alola', 'Galar', 'Hisui', 'Paldea' ];
+
+                $pkmRegion = "";
+
+                foreach ($regions as $region) {
+                    if (is_integer(strpos($name, $region))) {
+                        $pkmRegion = $region;
+                    }
+                }
+
+                if ($pkmRegion === "") {
+                    $id = (int) (substr($entryName[0], 1));
+
+                    if ($id >= 1 && $id <= 151) {
+                        $pkmRegion = "Kanto";
+                    }
+
+                    if ($id >= 152 && $id <= 251) {
+                        $pkmRegion = "Johto";
+                    }
+
+                    if ($id >= 252 && $id <= 386) {
+                        $pkmRegion = "Hoenn";
+                    }
+                    
+                    if ($id >= 387 && $id <= 493) {
+                        $pkmRegion = "Sinnoh";
+                    }
+
+                    if ($id >= 494 && $id <= 649) {
+                        $pkmRegion = "Unova";
+                    }
+
+                    if ($id >= 650 && $id <= 721) {
+                        $pkmRegion = "Kalos";
+                    }
+
+                    if ($id >= 722 && $id <= 809) {
+                        $pkmRegion = "Alola";
+                    }
+                    
+                    if ($id >= 810 && $id <= 898) {
+                        $pkmRegion = "Galar";
+                    }
+
+                    if ($id >= 899) {
+                        $pkmRegion = "Paldea";
+                    }
+                }
+
                 $this->pokeDatabase[$name] = [
                     'id' => substr($entryName[0], 1),
                     'stats' => [
@@ -137,6 +187,7 @@ class JsonUtil {
                     ],
                     "defense_data" => $this->getPokemonDefenseData($types),
                     "is_shadow" => isset($pokemon->shadow) ? true : false,
+                    "region" => $pkmRegion
                     //'templateId' => $entry->templateId
                 ];
             }
