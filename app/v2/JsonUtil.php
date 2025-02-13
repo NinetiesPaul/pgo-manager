@@ -317,9 +317,18 @@ class JsonUtil {
 
     private function getPokemonImgUrl($pkmName)
     {
+        if (str_contains($pkmName, "deoxys")) {
+            $toArray = explode(" ", $pkmName);
+            $toArray = array_reverse($toArray);
+            $pkmName = implode(" ", $toArray);
+            if ($pkmName == "deoxys") {
+                $pkmName = "deoxys-normal";
+            }
+        }
+
         if (preg_match("/oricorio/", $pkmName) ||
             preg_match("/(mime)/", $pkmName) ||
-            preg_match("/(mr rime)/", $pkmName)) {
+            preg_match("/(mr rime)/", $pkmName) || str_contains($pkmName, "deoxys") || str_contains($pkmName, "darmanitan") || str_contains($pkmName, "tornadus") || str_contains($pkmName, "thundurus") || str_contains($pkmName, "landorus") || str_contains($pkmName, "enamorus")) {
             $pkmName = str_replace(" ", "-", $pkmName);
         }
 
@@ -351,10 +360,6 @@ class JsonUtil {
         
         if(str_contains($pkmName, "alola")) {
             $pkmName = explode(" ", $pkmName)[1] . "-alola";
-        }
-
-        if(str_contains($pkmName, "darmanitan") || str_contains($pkmName, "tornadus") || str_contains($pkmName, "thundurus") || str_contains($pkmName, "landorus") || str_contains($pkmName, "enamorus")) {
-            $pkmName = str_replace(" ", "-", $pkmName);
         }
 
         return $this->csv[$pkmName];
