@@ -171,6 +171,11 @@ class JsonUtil {
                     }
                 }
 
+                $isFinalStage = false;
+                if (!isset($pokemon->evolutionBranch) || (isset($pokemon->evolutionBranch[0]->temporaryEvolution))) {
+                    $isFinalStage = true;
+                }
+
                 $this->pokeDatabase[$name] = [
                     'id' => substr($entryName[0], 1),
                     'stats' => [
@@ -187,7 +192,8 @@ class JsonUtil {
                     ],
                     "defense_data" => $this->getPokemonDefenseData($types),
                     "is_shadow" => isset($pokemon->shadow) ? true : false,
-                    "region" => $pkmRegion
+                    "region" => $pkmRegion,
+                    "is_final_stage" => $isFinalStage
                     //'templateId' => $entry->templateId
                 ];
             }
