@@ -612,7 +612,7 @@ class JsonUtil {
     private function typeEffectiveness()
     {
         if (!file_exists("includes/files/type_effectiveness.json")) {
-            file_put_contents("includes/files/type_effectiveness.json", file_get_contents("https://pogoapi.net/api/v1/includes/files/type_effectiveness.json"));
+            file_put_contents("includes/files/type_effectiveness.json", file_get_contents("https://pogoapi.net/api/v1/type_effectiveness.json"));
         }
 
         $content = file_get_contents("includes/files/type_effectiveness.json");
