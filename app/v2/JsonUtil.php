@@ -115,7 +115,7 @@ class JsonUtil {
                 
                 $name = (isset($pokemon->form)) ? $pokemon->form : $pokemon->pokemonId;
                 $name = $this->formatPokemonName($name);
-                if (in_array($name, [ "Oricorio", "Gourgeist", "Darmanitan", "Thundurus", "Tornadus", "Landorus", "Enamorus", "Meloetta" ])) {
+                if (in_array($name, [ "Oricorio", "Gourgeist", "Darmanitan", "Thundurus", "Tornadus", "Landorus", "Enamorus", "Meloetta", "Giratina" ])) {
                     continue;
                 }
 
@@ -173,6 +173,7 @@ class JsonUtil {
 
                 $isFinalStage = false;
                 if (!isset($pokemon->evolutionBranch) || (isset($pokemon->evolutionBranch[0]->temporaryEvolution))) {
+                    // add exemptions to non final stage/single stage relevant options
                     $isFinalStage = true;
                 }
 
@@ -386,7 +387,9 @@ class JsonUtil {
         if (preg_match("/oricorio/", $pkmName) ||
             preg_match("/(mime)/", $pkmName) ||
             preg_match("/(mr rime)/", $pkmName) ||
-            preg_match("/(tapu)/", $pkmName) || str_contains($pkmName, "deoxys") || str_contains($pkmName, "darmanitan") || str_contains($pkmName, "tornadus") || str_contains($pkmName, "thundurus") || str_contains($pkmName, "landorus") || str_contains($pkmName, "enamorus") || str_contains($pkmName, "meloetta" || str_contains($pkmName, "tapu"))) {
+            preg_match("/(tapu)/", $pkmName) ||
+            preg_match("/(giratina)/", $pkmName) ||
+            str_contains($pkmName, "deoxys") || str_contains($pkmName, "darmanitan") || str_contains($pkmName, "tornadus") || str_contains($pkmName, "thundurus") || str_contains($pkmName, "landorus") || str_contains($pkmName, "enamorus") || str_contains($pkmName, "meloetta" || str_contains($pkmName, "tapu"))) {
             $pkmName = str_replace(" ", "-", $pkmName);
         }
 
