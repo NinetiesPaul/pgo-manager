@@ -384,11 +384,16 @@ class JsonUtil {
             }
         }
 
+        if (preg_match("/(tauros paldea)/", $pkmName)) {
+            $pkmName .= " breed";
+        }
+
         if (preg_match("/oricorio/", $pkmName) ||
             preg_match("/(mime)/", $pkmName) ||
             preg_match("/(mr rime)/", $pkmName) ||
             preg_match("/(tapu)/", $pkmName) ||
             preg_match("/(giratina)/", $pkmName) ||
+            preg_match("/(tauros paldea)/", $pkmName) ||
             str_contains($pkmName, "deoxys") || str_contains($pkmName, "darmanitan") || str_contains($pkmName, "tornadus") || str_contains($pkmName, "thundurus") || str_contains($pkmName, "landorus") || str_contains($pkmName, "enamorus") || str_contains($pkmName, "meloetta" || str_contains($pkmName, "tapu"))) {
             $pkmName = str_replace(" ", "-", $pkmName);
         }
