@@ -17,7 +17,9 @@ class JsonUtil {
         389 => 'OBLIVION_WING',
         391 => 'TRIPLE_AXEL',
         392 => 'TRAILBLAZE',
-        393 => 'SCORCHING_SANDS'
+        393 => 'SCORCHING_SANDS',
+        406 => 'AURA_WHEEL_ELECTRIC',
+        407 => 'AURA_WHEEL_DARK'
     ];
 
     protected $fixQuickMoveTurnValues = [
@@ -115,7 +117,7 @@ class JsonUtil {
                 
                 $name = (isset($pokemon->form)) ? $pokemon->form : $pokemon->pokemonId;
                 $name = $this->formatPokemonName($name);
-                if (in_array($name, [ "Oricorio", "Gourgeist", "Darmanitan", "Thundurus", "Tornadus", "Landorus", "Enamorus", "Meloetta", "Giratina" ])) {
+                if (in_array($name, [ "Oricorio", "Gourgeist", "Darmanitan", "Thundurus", "Tornadus", "Landorus", "Enamorus", "Meloetta", "Giratina", "Morpeko" ])) {
                     continue;
                 }
 
@@ -394,6 +396,7 @@ class JsonUtil {
             preg_match("/(tapu)/", $pkmName) ||
             preg_match("/(giratina)/", $pkmName) ||
             preg_match("/(tauros paldea)/", $pkmName) ||
+            preg_match("/(morpeko)/", $pkmName) ||
             str_contains($pkmName, "deoxys") || str_contains($pkmName, "darmanitan") || str_contains($pkmName, "tornadus") || str_contains($pkmName, "thundurus") || str_contains($pkmName, "landorus") || str_contains($pkmName, "enamorus") || str_contains($pkmName, "meloetta" || str_contains($pkmName, "tapu"))) {
             $pkmName = str_replace(" ", "-", $pkmName);
         }
