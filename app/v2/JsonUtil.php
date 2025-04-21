@@ -174,7 +174,8 @@ class JsonUtil {
                 }
 
                 $isFinalStage = false;
-                if (!isset($pokemon->evolutionBranch) || (isset($pokemon->evolutionBranch[0]->temporaryEvolution))) {
+                if (!isset($pokemon->evolutionBranch) || (isset($pokemon->evolutionBranch[0]->temporaryEvolution)) ||
+                in_array($name, [ 'Marshtomp', 'Dewott', 'Vigoroth', 'Scyther' ])) {
                     // add exemptions to non final stage/single stage relevant options
                     $isFinalStage = true;
                 }
