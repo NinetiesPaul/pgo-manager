@@ -117,7 +117,7 @@ class JsonUtil {
                 
                 $name = (isset($pokemon->form)) ? $pokemon->form : $pokemon->pokemonId;
                 $name = $this->formatPokemonName($name);
-                if (in_array($name, [ "Oricorio", "Gourgeist", "Darmanitan", "Thundurus", "Tornadus", "Landorus", "Enamorus", "Meloetta", "Giratina", "Morpeko", "Toxtricity" ])) {
+                if (in_array($name, [ "Oricorio", "Gourgeist", "Darmanitan", "Thundurus", "Tornadus", "Landorus", "Enamorus", "Meloetta", "Giratina", "Morpeko", "Toxtricity", "Urshifu" ])) {
                     continue;
                 }
 
@@ -399,6 +399,7 @@ class JsonUtil {
             preg_match("/(tauros paldea)/", $pkmName) ||
             preg_match("/(morpeko)/", $pkmName) ||
             preg_match("/(toxtricity)/", $pkmName) ||
+            preg_match("/(urshifu)/", $pkmName) ||
             str_contains($pkmName, "deoxys") || str_contains($pkmName, "darmanitan") || str_contains($pkmName, "tornadus") || str_contains($pkmName, "thundurus") || str_contains($pkmName, "landorus") || str_contains($pkmName, "enamorus") || str_contains($pkmName, "meloetta" || str_contains($pkmName, "tapu"))) {
             $pkmName = str_replace(" ", "-", $pkmName);
         }
