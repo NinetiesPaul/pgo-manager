@@ -79,6 +79,8 @@ class JsonUtil {
                     preg_match("/(_2020)/", $entry->templateId) ||
                     preg_match("/(_2021)/", $entry->templateId) ||
                     preg_match("/(_2022)/", $entry->templateId) ||
+                    preg_match("/(_2024)/", $entry->templateId) ||
+                    preg_match("/(_2025)/", $entry->templateId) ||
                     preg_match("/(_HO_OH_S)/", $entry->templateId) ||
                     preg_match("/(_LUGIA_S)/", $entry->templateId) ||
                     preg_match("/(_LATIOS_S)/", $entry->templateId) ||
@@ -175,7 +177,7 @@ class JsonUtil {
 
                 $isFinalStage = false;
                 if (!isset($pokemon->evolutionBranch) || (isset($pokemon->evolutionBranch[0]->temporaryEvolution)) ||
-                in_array($name, [ 'Marshtomp', 'Dewott', 'Vigoroth', 'Scyther' ])) {
+                in_array($name, [ 'Marshtomp', 'Dewott', 'Vigoroth', 'Scyther', 'Bisharp', 'Gabite' ])) {
                     // add exemptions to non final stage/single stage relevant options
                     $isFinalStage = true;
                 }
@@ -197,7 +199,9 @@ class JsonUtil {
                     "defense_data" => $this->getPokemonDefenseData($types),
                     "is_shadow" => isset($pokemon->shadow) ? true : false,
                     "region" => $pkmRegion,
-                    "is_final_stage" => $isFinalStage
+                    "is_final_stage" => $isFinalStage,
+                    "is_fast_hitter" => false,
+                    "is_heavy_hitter" => false,
                     //'templateId' => $entry->templateId
                 ];
             }
