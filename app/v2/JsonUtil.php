@@ -170,7 +170,11 @@ class JsonUtil {
                         $pkmRegion = "Galar";
                     }
 
-                    if ($id >= 899) {
+                    if ($id >= 899 && $id <= 905) {
+                        $pkmRegion = "Hisui";
+                    }
+
+                    if ($id >= 906) {
                         $pkmRegion = "Paldea";
                     }
                 }
@@ -200,8 +204,8 @@ class JsonUtil {
                     "is_shadow" => isset($pokemon->shadow) ? true : false,
                     "region" => $pkmRegion,
                     "is_final_stage" => $isFinalStage,
-                    "is_fast_hitter" => false,
-                    "is_heavy_hitter" => false,
+                    /*"is_fast_hitter" => false,
+                    "is_heavy_hitter" => false,*/
                     //'templateId' => $entry->templateId
                 ];
             }
