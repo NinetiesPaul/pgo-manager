@@ -12,6 +12,8 @@ class JsonUtil {
     protected $formattedQuickMoves = [];
     protected $formattedChargeMoves = [];
 
+    protected $csv = [];
+
     protected $moveIds = [
         387 => 'GEOMANCY',
         389 => 'OBLIVION_WING',
@@ -54,8 +56,6 @@ class JsonUtil {
             'turns' => 0
         ],
     ];
-
-    protected $csv = [];
 
     public function __construct()
     {
@@ -312,7 +312,8 @@ class JsonUtil {
         $this->writeChargeData();
     }
     
-    private function formatQuickMoves($quickMoves){
+    private function formatQuickMoves($quickMoves)
+    {
         $formatting = [];
     
         foreach($quickMoves as $quickMove) {
@@ -322,7 +323,8 @@ class JsonUtil {
         return $formatting;
     }
     
-    private function formatChargeMoves($chargeMoves){
+    private function formatChargeMoves($chargeMoves)
+    {
         $formatting = [];
     
         foreach($chargeMoves as $chargeMove) {
@@ -332,7 +334,8 @@ class JsonUtil {
         return $formatting;
     }
 
-    private function formatSpacedName($spacedName) {
+    private function formatSpacedName($spacedName)
+    {
         $names = explode("_", $spacedName);
     
         foreach($names as &$name) {
@@ -341,11 +344,13 @@ class JsonUtil {
         return implode(" ", $names);
     }
     
-    private function formatType($rawType) {
+    private function formatType($rawType)
+    {
         return ucfirst(strtolower(explode("_", $rawType)[2]));
     }
     
-    private function formatPokemonName($originalName) {
+    private function formatPokemonName($originalName)
+    {
         $name = str_replace("_", "-", $originalName);
         $names = explode("-", $name);
         
@@ -628,7 +633,8 @@ class JsonUtil {
         ];
     }
     
-    private function formatValue($number, $decimal = 0) {
+    private function formatValue($number, $decimal = 0)
+    {
         return number_format($number * 100, $decimal) . "%";
     }
 
