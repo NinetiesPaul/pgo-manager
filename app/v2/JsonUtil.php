@@ -119,7 +119,10 @@ class JsonUtil {
                 
                 $name = (isset($pokemon->form)) ? $pokemon->form : $pokemon->pokemonId;
                 $name = $this->formatPokemonName($name);
-                if (in_array($name, [ "Oricorio", "Gourgeist", "Darmanitan", "Thundurus", "Tornadus", "Landorus", "Enamorus", "Meloetta", "Giratina", "Morpeko", "Toxtricity", "Urshifu" ])) {
+                if (in_array($name, [ "Maushold", "Tatsugiri", "Palafin", "Squawkabilly", "Maushould", "Indeedee", "Oricorio", "Gourgeist", "Darmanitan", "Thundurus", "Tornadus", "Landorus", "Enamorus", "Meloetta", "Giratina", "Morpeko", "Toxtricity", "Urshifu" ])) {
+                    continue;
+                }
+                if (preg_match("/(Flabebe )/", $name) || preg_match("/(Floette )/", $name) || preg_match("/( Florges)/", $name)) {
                     continue;
                 }
 
@@ -181,7 +184,7 @@ class JsonUtil {
 
                 $isFinalStage = false;
                 if (!isset($pokemon->evolutionBranch) || (isset($pokemon->evolutionBranch[0]->temporaryEvolution)) ||
-                in_array($name, [ 'Marshtomp', 'Dewott', 'Vigoroth', 'Scyther', 'Bisharp', 'Gabite' ])) {
+                in_array($name, [ 'Marshtomp', 'Dewott', 'Vigoroth', 'Scyther', 'Bisharp', 'Gabite', 'Togetic' ])) {
                     // add exemptions to non final stage/single stage relevant options
                     $isFinalStage = true;
                 }
@@ -268,7 +271,7 @@ class JsonUtil {
                     $formattedName = explode("_MOVE_", $entry->templateId);
                     $formattedName = explode("_FAST", $formattedName[1]);
                     
-                    $moveTurns = isset($move->durationTurns) ? $move->durationTurns : $this->fixQuickMoveTurnValues[$formattedName[0]]['turns'];
+                    $moveTurns = isset($move->durationTurns) ? $move->durationTurns : 0;//$this->fixQuickMoveTurnValues[$formattedName[0]]['turns'];
                     $moveTurns++;
                     $movePower = isset($move->power) ? $move->power : 0;
 
@@ -413,17 +416,23 @@ class JsonUtil {
             preg_match("/(morpeko)/", $pkmName) ||
             preg_match("/(toxtricity)/", $pkmName) ||
             preg_match("/(urshifu)/", $pkmName) ||
+            preg_match("/(maushold)/", $pkmName) ||
+            preg_match("/(palafin)/", $pkmName) ||
+            preg_match("/(tatsugiri)/", $pkmName) ||
+            preg_match("/(squawkabilly)/", $pkmName) ||
+            preg_match("/(indeedee)/", $pkmName) ||
             str_contains($pkmName, "deoxys") || str_contains($pkmName, "darmanitan") || str_contains($pkmName, "tornadus") || str_contains($pkmName, "thundurus") || str_contains($pkmName, "landorus") || str_contains($pkmName, "enamorus") || str_contains($pkmName, "meloetta" || str_contains($pkmName, "tapu"))) {
             $pkmName = str_replace(" ", "-", $pkmName);
+        }
+
+        if (preg_match("/(squawkabilly)/", $pkmName)) {
+            $pkmName .= "-plumage";
         }
 
         if (preg_match("/(gourgeist)/", $pkmName) || preg_match("/(lycanroc)/", $pkmName)) {
             $pkmName = implode("-", array_reverse(explode(" ", $pkmName)));
         }
         
-        if(preg_match("/(florges)/", $pkmName) && preg_match("/( )/", $pkmName)) {
-            return "671-" . explode(" ", $pkmName)[1];
-        }
         
         if(preg_match("/(mime)/", $pkmName) && preg_match("/(galar)/", $pkmName)) {
             $pkmName = "mr-mime-galar";
@@ -471,6 +480,7 @@ class JsonUtil {
             $moveData['type'] = $data['type'];
             $moveData['weakAgainst'] = $data['weakAgainst'];
             $moveData['goodAgainst'] = $data['goodAgainst'];
+            $moveData['turns'] = $data['turns'];
             $moveData['ept'] = $data['ept'];
             $moveData['dpt'] = $data['dpt'];
 
