@@ -118,8 +118,11 @@ class JsonUtil {
                 }
                 
                 $name = (isset($pokemon->form)) ? $pokemon->form : $pokemon->pokemonId;
+                if (ctype_digit($name)) {
+                    $name = ucfirst(strtolower($entryName[2]));
+                }
                 $name = $this->formatPokemonName($name);
-                if (in_array($name, [ "Maushold", "Tatsugiri", "Palafin", "Squawkabilly", "Maushould", "Indeedee", "Oricorio", "Gourgeist", "Darmanitan", "Thundurus", "Tornadus", "Landorus", "Enamorus", "Meloetta", "Giratina", "Morpeko", "Toxtricity", "Urshifu" ])) {
+                if (in_array($name, [ "Lycanroc", "Maushold", "Tatsugiri", "Palafin", "Squawkabilly", "Maushould", "Indeedee", "Oricorio", "Gourgeist", "Darmanitan", "Thundurus", "Tornadus", "Landorus", "Enamorus", "Meloetta", "Giratina", "Morpeko", "Toxtricity", "Urshifu" ])) {
                     continue;
                 }
                 if (preg_match("/(Flabebe )/", $name) || preg_match("/(Floette )/", $name) || preg_match("/( Florges)/", $name)) {
